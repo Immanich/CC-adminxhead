@@ -47,12 +47,21 @@ class OfficeController extends Controller
         return view('offices.feedbacks');
     }
 
-    public function showServices($id) {
+    public function showServices($id)
+{
+    // Fetch the services related to the office
+    $services = Service::where('office_id', $id)->get();
 
-        $services = Service::where('office_id', $id)->get();
-        $office = Office::findOrFail($id);
-        return view('offices.services', compact('services', 'office'));
-    }
+    // Fetch the office information
+    $office = Office::findOrFail($id);
+
+    // Fetch all transactions
+    $transactions = Transaction::all();
+
+    // Pass the services, office, and transactions to the view
+    return view('offices.services', compact('services', 'office', 'transactions'));
+}
+
 
     public function serviceDetails($service_id, $office_id){
         $service = Service::findOrFail($service_id);

@@ -25,27 +25,35 @@
     <!-- Cards for Offices -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @foreach($offices as $office)
-            <div class="bg-[#ccd8fe] p-4 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-center">{{ $office->office_name }}</h2>
-                <div class="flex justify-between mt-4">
+            <div class="bg-[#ccd8fe] p-4 rounded-lg shadow-md flex flex-col justify-between h-full">
+                <h2 class="text-xl font-semibold mb-4 text-center">{{ $office->office_name }}</h2>
+                <div class="mt-auto flex justify-center space-x-2 mt-4">
                     <!-- View Office Services -->
-                    <a href="{{ route('offices.services', $office->id) }}" class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600">View</a>
+                    <a href="{{ route('offices.services', $office->id) }}" class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600">
+                        View
+                    </a>
 
                     @role('admin')
                         <!-- Edit Button -->
-                        <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}')" class="bg-yellow-500 text-white py-1 px-2 rounded-lg hover:bg-yellow-600">Edit</button>
+                        <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}')" class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600">
+                            Edit
+                        </button>
 
                         <!-- Delete Button -->
                         <form action="{{ route('admin.deleteOffice', $office->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this office?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">Delete</button>
+                            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
+                                Delete
+                            </button>
                         </form>
                     @endrole
                 </div>
             </div>
         @endforeach
     </div>
+
+
 
     <!-- Add Office Modal -->
     @role('admin')

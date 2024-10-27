@@ -49,6 +49,35 @@ class ServicesInfoController extends Controller
             ->with('error', 'Failed to add service info: ' . $e->getMessage());
     }
 }
+public function update(Request $request, $service_id, $info_id)
+{
+    // Validate the request data
+    $request->validate([
+        'clients' => 'required|string|max:255',
+        'agency_action' => 'required|string|max:255',
+        'info_title' => 'required|string|max:255',
+        'fees' => 'required|string|max:255',
+        'processing_time' => 'required|string|max:255',
+        'person_responsible' => 'required|string|max:255',
+    ]);
+
+    // Find the service info by ID
+    $info = ServicesInfo::where('id', $info_id)->where('service_id', $service_id)->firstOrFail();
+
+    // Update the service info fields
+    $info->clients = json_encode([$request->clients]);
+    $info->agency_action = json_encode([$request->agency_action]);
+    $info->info_title = $request->info_title;
+    $info->fees = $request->fees;
+    $info->processing_time = json_encode([$request->processing_time]);
+    $info->person_responsible = json_encode([$request->person_responsible]);
+
+    // Save the changes
+    $info->save();
+
+    // Redirect back to the service show page with success message
+    return redirect()->route('services.show', $service_id)->with('success', 'Service info updated successfully.');
+}
 
 
     // Show service and its service info

@@ -74,7 +74,7 @@
         </table>
 
         <!-- Service Info Table -->
-        <table class="border-collapse w-full mt-6">
+        <table class="border-collapse w-full mt-1">
             <tbody>
                 <tr>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">CLIENTS</td>
@@ -97,9 +97,25 @@
                         <tr>
                             <td class="border border-black px-4 py-2">{{ $client }}</td>
                             <td class="border border-black px-4 py-2">{{ $agencyActions[$index] ?? '' }}</td>
-                            <td class="border border-black px-4 py-2">{{ $info->fees }}</td>                            <td class="border border-black px-4 py-2">{{ $processingTimes[$index] ?? 'N/A' }}</td>
+                            <td class="border border-black px-4 py-2">{{ $info->fees }}</td>
+                            <td class="border border-black px-4 py-2">{{ $processingTimes[$index] ?? 'N/A' }}</td>
                             <td class="border border-black px-4 py-2">{{ $personsResponsible[$index] ?? 'N/A' }}</td>
-                            <td class="border border-black px-4 py-2"></td>
+                            <td class="border border-black px-4 py-2">
+                                <!-- Edit Button -->
+                                <button class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600"
+                                        onclick="openEditModal({{ $info->id }}, '{{ $client }}', '{{ $agencyActions[$index] ?? '' }}', '{{ $info->fees }}', '{{ $processingTimes[$index] ?? '' }}', '{{ $personsResponsible[$index] ?? '' }}')">
+                                    Edit
+                                </button>
+
+                                <!-- Delete Button -->
+                                <form action="{{ route('services.info.delete', ['service_id' => $service->id, 'info_id' => $info->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service info?');" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 @endforeach
@@ -215,10 +231,65 @@
         </div>
     </div>
 
-    <!-- JavaScript for confirmation -->
+    <!-- Modal for Editing Service Info -->
+    <div id="editServiceInfoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h2 class="text-xl font-bold mb-4">Edit Service Info</h2>
+
+            <form id="editServiceInfoForm" method="POST">
+                @csrf
+                @method('PUT')
+
+                <!-- Form Fields -->
+                <div class="mb-4">
+                    <label for="edit_clients" class="block text-sm font-medium">Clients</label>
+                    <input type="text" id="edit_clients" name="clients" class="mt-1 p-2 block w-full border rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_agency_action" class="block text-sm font-medium">Agency Action</label>
+                    <input type="text" id="edit_agency_action" name="agency_action" class="mt-1 p-2 block w-full border rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_info_title" class="block text-sm font-medium">Info Title</label>
+                    <input type="text" id="edit_info_title" name="info_title" class="mt-1 p-2 block w-full border rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_fees" class="block text-sm font-medium">Fees</label>
+                    <input type="text" id="edit_fees" name="fees" class="mt-1 p-2 block w-full border rounded" required> <!-- Fees input accepts text -->
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_processing_time" class="block text-sm font-medium">Processing Time</label>
+                    <input type="text" id="edit_processing_time" name="processing_time" class="mt-1 p-2 block w-full border rounded" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_person_responsible" class="block text-sm font-medium">Person Responsible</label>
+                    <input type="text" id="edit_person_responsible" name="person_responsible" class="mt-1 p-2 block w-full border rounded" required>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-300 px-4 py-2 rounded mr-2" onclick="document.getElementById('editServiceInfoModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript for Modal and Form -->
     <script>
-        function confirmDeletion() {
-            return confirm('Are you sure you want to delete this item? This action cannot be undone.');
+        function openEditModal(infoId, client, agencyAction, fees, processingTime, personResponsible) {
+            document.getElementById('edit_clients').value = client;
+            document.getElementById('edit_agency_action').value = agencyAction;
+            document.getElementById('edit_fees').value = fees;
+            document.getElementById('edit_processing_time').value = processingTime;
+            document.getElementById('edit_person_responsible').value = personResponsible;
+
+            document.getElementById('editServiceInfoForm').action = '/services/' + {{ $service->id }} + '/info/' + infoId;
+            document.getElementById('editServiceInfoModal').style.display = 'flex';
         }
     </script>
 @endsection

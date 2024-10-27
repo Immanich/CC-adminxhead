@@ -12,12 +12,20 @@ use Illuminate\Support\Facades\Log;
 class ServiceController extends Controller
 {
     public function show($id)
-    {
-        // $servicesInfo = ServicesInfo::first();
-        $service = Service::with('serviceInfos')->findOrFail($id);
-        // $office = load(Office);
-        return view('services.show', compact('service', 'office', 'transaction'));
-    }
+{
+    // Fetch the service by its ID
+    $service = Service::with('serviceInfos')->findOrFail($id);
+
+    // Fetch the office information (if you are using $office)
+    $office = Office::find($service->office_id);
+
+    // Fetch all transactions to display in the dropdown
+    $transactions = Transaction::all();
+
+    // Return the view with the service, office, and transactions
+    return view('services.show', compact('service', 'office', 'transactions'));
+}
+
 
     public function showService($serviceId)
 {
@@ -36,39 +44,98 @@ public function storeService(Request $request, $officeId)
         'service_name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'classification' => 'required|in:SIMPLE,COMPLEX,SIMPLE - COMPLEX,HIGHLY TECHNICAL',
-        'transaction_id' => 'required|exists:transactions,id',  // Make sure the transaction_id exists
-        'checklist_of_requirements' => 'nullable|string', // Allow nullable
-        'where_to_secure' => 'nullable|string',  // Allow nullable
+        'transaction_id' => 'required|exists:transactions,id',
+        'checklist_of_requirements' => 'nullable|string',
+        'where_to_secure' => 'nullable|string',
     ]);
 
-    // Find the office
+    // Find the office by ID
     $office = Office::findOrFail($officeId);
 
-    // Create the service with 'pending' status
+    // Convert checklist_of_requirements to JSON if not empty
+    $checklist = $request->checklist_of_requirements ? json_encode(explode("\n", $request->checklist_of_requirements)) : null;
+
+    // Determine the status based on user role
+    $status = auth()->user()->hasRole('admin') ? 'approved' : 'pending';
+
+    // Create a new service for the office
     $service = $office->services()->create([
         'service_name' => $request->service_name,
         'description' => $request->description,
         'classification' => $request->classification,
-        'transaction_id' => $request->transaction_id, // Pass transaction ID
-        'checklist_of_requirements' => $request->checklist_of_requirements,
+        'transaction_id' => $request->transaction_id,
+        'checklist_of_requirements' => $checklist,
         'where_to_secure' => $request->where_to_secure,
-        'status' => 'pending',  // Default status is pending
+        'status' => $status,
     ]);
 
-    // Redirect back with a success message
-    return redirect()->back()->with('success', 'Service added and pending approval.');
+    // Set a different success message based on the status
+    $message = $status === 'approved'
+        ? 'Service created successfully.'
+        : 'Service created and is waiting for approval.';
+
+    return redirect()->back()->with('success', $message);
 }
 
-    public function showOfficeServices($officeId)
-    {
-        $services = Service::where('office_id', $officeId)
-            ->where('status', 'approved')
-            ->get();
 
-        $transactions = Transaction::all(); // Fetch all transactions
 
-        return view('services.show', compact('services', 'transactions'));
+public function showOfficeServices($officeId)
+{
+    // Fetch services with appropriate filters based on user role
+    $query = Service::where('office_id', $officeId);
+
+    if (!auth()->user()->hasRole('admin')) {
+        $query->where('status', 'approved'); // Show only approved services for non-admins
     }
+
+    $services = $query->get();
+
+    // Fetch the office information
+    $office = Office::findOrFail($officeId);
+
+    // Fetch all transactions for the dropdown in the modal
+    $transactions = Transaction::all();
+
+    return view('services.services', compact('services', 'office', 'transactions'));
+}
+
+public function edit($id)
+{
+    $service = Service::findOrFail($id);
+    return response()->json($service);
+}
+
+public function updateService(Request $request, $serviceId)
+{
+    // Validate the request
+    $request->validate([
+        'service_name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'classification' => 'required|in:SIMPLE,COMPLEX,SIMPLE - COMPLEX,HIGHLY TECHNICAL',
+        'transaction_id' => 'required|exists:transactions,id',
+        'checklist_of_requirements' => 'nullable|string',
+        'where_to_secure' => 'nullable|string',
+    ]);
+
+    // Find the service and update its fields
+    $service = Service::findOrFail($serviceId);
+    $service->update($request->all());
+
+    return redirect()->back()->with('success', 'Service updated successfully.');
+}
+
+
+
+public function deleteService($serviceId)
+{
+    // Find the service and delete it
+    $service = Service::findOrFail($serviceId);
+    $service->delete();
+
+    return redirect()->back()->with('success', 'Service deleted successfully.');
+}
+
+
 
     // Admin page for showing pending services
     public function pendingServices()

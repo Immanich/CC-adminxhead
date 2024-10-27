@@ -10,35 +10,71 @@ class EventController extends Controller
 {
     public function index()
     {
-        // Fetch all approved events
         $approvedEvents = Event::where('status', 'approved')->get();
         return view('pages.events', compact('approvedEvents'));
     }
 
     public function store(Request $request)
-{
-    // Validate the request
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'image' => 'required|url', // Validate as a URL
-    ]);
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'required|url',
+        ]);
 
-    try {
-        // Create the event
-        $event = new Event();
+        try {
+            $event = new Event();
+            $event->title = $request->title;
+            $event->description = $request->description;
+            $event->image = $request->image;
+            $event->user_id = auth()->id();
+
+            if (auth()->user()->hasRole('admin')) {
+                $event->status = 'approved';
+                $message = 'Event created successfully.';
+            } else {
+                $event->status = 'pending';
+                $message = 'Event created and waiting for approval.';
+            }
+
+            $event->save();
+
+            return redirect()->route('events.page')->with('success', $message);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to create event.');
+        }
+    }
+
+    public function edit($id)
+    {
+        $event = Event::findOrFail($id);
+        return response()->json($event);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'required|url',
+        ]);
+
+        $event = Event::findOrFail($id);
         $event->title = $request->title;
         $event->description = $request->description;
-        $event->image = $request->image; // Save the image URL into the 'image' column
-        $event->status = 'pending';
-        $event->user_id = auth()->id(); // Set the user_id to the authenticated user
+        $event->image = $request->image;
         $event->save();
 
-        return redirect()->route('events.page')->with('success', 'Event created and waiting for approval.');
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Failed to create event.');
+        return redirect()->route('events.page')->with('success', 'Event updated successfully.');
     }
-}
+
+    public function delete($id)
+    {
+        $event = Event::findOrFail($id);
+        $event->delete();
+
+        return redirect()->route('events.page')->with('success', 'Event deleted successfully.');
+    }
 
     public function showPendingEvents()
     {
