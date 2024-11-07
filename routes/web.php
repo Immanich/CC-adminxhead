@@ -103,6 +103,11 @@ Route::delete('/admin/offices/{id}', [OfficeController::class, 'destroy'])->name
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
 Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
 Route::post('/feedbacks/{feedback}/reply', [FeedbackController::class, 'reply'])->name('feedbacks.reply');
+Route::put('/feedbacks/{id}/update-reply', [FeedbackController::class, 'updateReply'])->name('feedbacks.updateReply');
+// web.php
+// Route::put('/feedbacks/{id}/reply', [FeedbackController::class, 'updateReply'])->name('feedbacks.updateReply');
+
+
 
 // Authentication routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');

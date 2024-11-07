@@ -32,8 +32,9 @@ class Service extends Model
     }
 
     // Define the relationship with service info
-    public function serviceInfos()
+    public function servicesInfos()
     {
         return $this->hasMany(ServicesInfo::class, 'service_id');
     }
 }
+

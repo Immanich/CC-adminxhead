@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onDelete('cascade');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');  // Status column
             $table->json('checklist_of_requirements')->nullable();
-            $table->string('where_to_secure')->nullable();
+            $table->json('where_to_secure')->nullable();
             $table->timestamps();
         });
     }

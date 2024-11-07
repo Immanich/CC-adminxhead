@@ -13,17 +13,18 @@ return new class extends Migration
     {
         Schema::create('services_infos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
             $table->foreignId('office_id')->constrained('offices')->onDelete('cascade');
-            $table->integer('step');
-            $table->string('info_title');
-            $table->json('clients');
-            $table->json('agency_action');
-            $table->string('fees');
-            $table->json('processing_time');
-            $table->json('person_responsible');
-            $table->double('total_fees', 8, 2)->default(0);  // Add default value
-            $table->string('total_response_time')->default('N/A');  // Add default value
+            $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
+            $table->integer('step')->nullable();
+            $table->string('info_title')->nullable();
+            $table->json('clients')->nullable();
+            $table->json('agency_action')->nullable();
+            $table->json('fees')->nullable();
+            $table->json('processing_time')->nullable();
+            $table->json('person_responsible')->nullable();
+            $table->string('total_fees')->nullable();
+            $table->string('total_response_time')->nullable();
+            $table->string('note')->nullable();
             $table->timestamps();
         });
 

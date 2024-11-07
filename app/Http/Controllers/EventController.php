@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -54,6 +55,11 @@ class EventController extends Controller
         $event->status = 'approved';
         $event->save();
 
+        Notification::create([
+        'event_id' => $event->id,
+        'status' => 'approved',
+    ]);
+        
         return redirect()->route('pending.events')->with('success', 'Event approved successfully.');
     }
 
@@ -64,6 +70,11 @@ class EventController extends Controller
         $event->status = 'rejected';
         $event->save();
 
+        Notification::create([
+            'event_id' => $event->id,
+            'status' => 'rejected',
+        ]);
+        
         return redirect()->route('pending.events')->with('success', 'Event rejected successfully.');
     }
 }
