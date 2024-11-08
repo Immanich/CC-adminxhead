@@ -66,4 +66,9 @@ class User extends Authenticatable
     public function guest() {
         return $this->hasMany(Office::class);
     }
+
+    public function mvmsp()
+    {
+        return $this->hasOneThrough(Mvmsp::class, Office::class, 'id', 'office_id', 'office_id', 'id');
+    }
 }

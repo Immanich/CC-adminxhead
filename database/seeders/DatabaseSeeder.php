@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ServiceSeeder::class);
         $this->call(ServicesInfoSeeder::class);
         $this->call(EventSeeder::class);
+        $this->call(MvmspSeeder::class);
 
     }
 }

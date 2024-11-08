@@ -30,13 +30,13 @@
                 <div class="mt-auto flex justify-center space-x-2 mt-4">
                     <!-- View Office Services -->
                     <a href="{{ route('offices.services', $office->id) }}" class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600">
-                        View
+                        <i class="fas fa-eye"></i>
                     </a>
 
                     @role('admin')
                         <!-- Edit Button -->
                         <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}')" class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600">
-                            Edit
+                            <i class="fas fa-pen"></i>
                         </button>
 
                         <!-- Delete Button -->
@@ -44,7 +44,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
-                                Delete
+                                <i class="fas fa-trash alt"></i>
                             </button>
                         </form>
                     @endrole

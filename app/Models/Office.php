@@ -32,4 +32,9 @@ class Office extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    public function mvmsp()
+    {
+        return $this->hasOne(Mvmsp::class);
+    }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\MvmspController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
@@ -83,6 +84,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/offices', [OfficeController::class, 'index'])->name('offices');
     Route::get('/offices/{id}', [OfficeController::class, 'showServices'])->name('offices.services');
     Route::get('/offices/{office_id}/services/{service_id}', [OfficeController::class, 'serviceDetails'])->name('services.show');
+        // para sa back button
+    Route::get('/offices/{id}/services', [OfficeController::class, 'showServices'])->name('offices.showServices');
+
 
     // Feedback page
     Route::get('/offices/feedbacks', [OfficeController::class, 'feedbacks'])->name('feedbacks');
@@ -95,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/services/{service_id}/info/{info_id}', [ServicesInfoController::class, 'destroy'])->name('services.info.delete');
 });
 Route::get('/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
+Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 Route::put('/events/{id}/update', [EventController::class, 'update'])->name('events.update');
 Route::delete('/events/{id}', [EventController::class, 'delete'])->name('events.delete');
 
@@ -102,6 +107,11 @@ Route::delete('/events/{id}', [EventController::class, 'delete'])->name('events.
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
 Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
 Route::post('/feedbacks/{feedback}/reply', [FeedbackController::class, 'reply'])->name('feedbacks.reply');
+
+// web.php
+Route::get('/mvmsp', [MvmspController::class, 'show'])->name('mvmsp')->middleware('auth');
+
+
 
 // Authentication routes
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');

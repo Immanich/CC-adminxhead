@@ -23,7 +23,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('{{ asset('images/logo.png') }}');
+            background-image: url('{{ asset('assets/images/logo.png') }}');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center 40%;

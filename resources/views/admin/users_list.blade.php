@@ -33,14 +33,14 @@
                     @if(auth()->user()->hasRole('admin') && $user->roles->pluck('name')->implode(', ') !== 'admin')
                         <td class="py-3 px-6 border-b">
                             <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
-                                <button class="bg-yellow-500 text-white px-4 py-2 rounded editUserButton"
-                                        data-user="{{ $user->id }}">Edit</button>
+                                <button class="bg-green-500 text-white px-4 py-2 rounded editUserButton"
+                                        data-user="{{ $user->id }}"><i class="fas fa-edit"></i></button>
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded"
                                             onclick="return confirm('Are you sure you want to delete this user?');">
-                                        Delete
+                                            <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>
