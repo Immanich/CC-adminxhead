@@ -13,7 +13,7 @@ class RoleManagementController extends Controller
 {
     public function createUser()
     {
-        $roles = Role::whereIn('name', ['head', 'sub_head'])->get();
+        $roles = Role::whereIn('name', ['user', 'sub_user'])->get();
         $offices = Office::all();  // Get all offices for selection
         return view('admin.create_user', compact('roles', 'offices'));
     }
@@ -25,7 +25,7 @@ class RoleManagementController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,name',
-            'office_id' => 'required_if:role,head|exists:offices,id', // Office is required for heads
+            'office_id' => 'required_if:role,user|exists:offices,id', // Office is required for users
         ]);
 
         $user = User::create([

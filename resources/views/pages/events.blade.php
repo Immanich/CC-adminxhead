@@ -4,7 +4,7 @@
     <!-- Header with Centered Title and Right-Aligned Add Button -->
     <div class="flex items-center justify-center mb-4 relative">
         <h1 class="text-3xl font-bold">EVENTS</h1>
-        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('head'))
+        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('user'))
             <button class="absolute right-0 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" id="openAddModal">
                 Add Event
             </button>

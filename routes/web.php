@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/elected-officials', function() { return view('pages.elected-officials'); })->name('elected-officials');
 
     // Routes accessible to both admin and head roles
-    Route::middleware('role:admin|head')->group(function () {
+    Route::middleware('role:admin|user')->group(function () {
         // User management
         // Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         // Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/pending-events', [EventController::class, 'showPendingEvents'])->name('pending.events');
         Route::post('/admin/events/{id}/approve', [EventController::class, 'approveEvent'])->name('events.approve');
         Route::post('/admin/events/{id}/reject', [EventController::class, 'rejectEvent'])->name('events.reject');
+
+        Route::post('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
     });
 
     // Events management for users
@@ -114,5 +116,6 @@ Route::get('/mvmsp', [MvmspController::class, 'show'])->name('mvmsp')->middlewar
 
 
 // Authentication routes
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

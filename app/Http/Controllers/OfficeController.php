@@ -17,9 +17,9 @@ class OfficeController extends Controller
 {
     $user = auth()->user();
 
-    // Check if the user has the 'head' role
-    if ($user->hasRole('head')) {
-        // Fetch the office assigned to this head user
+    // Check if the user has the 'user' role
+    if ($user->hasRole('user')) {
+        // Fetch the office assigned to this user user
         $office = $user->office; // Assuming 'office' is a relationship in the User model
 
         if ($office) {
@@ -29,10 +29,10 @@ class OfficeController extends Controller
             // Fetch all transactions for the dropdown (optional)
             $transactions = Transaction::all();
 
-            // Redirect the head user directly to the services of their assigned office
+            // Redirect the user user directly to the services of their assigned office
             return view('offices.services', compact('office', 'services', 'transactions'));
         } else {
-            // Handle the case where the head user has no office assigned
+            // Handle the case where the user user has no office assigned
             return redirect()->back()->with('error', 'No office assigned to this user.');
         }
     }

@@ -13,7 +13,7 @@
                         document.getElementById('name').value = data.name;
                         document.getElementById('email').value = data.email;
                         document.getElementById('role').value = data.roles[0].name;
-                        if (data.roles[0].name === 'head') {
+                        if (data.roles[0].name === 'user') {
                             document.getElementById('office-selection').classList.remove('hidden');
                             document.getElementById('office_id').value = data.office_id;
                         } else {

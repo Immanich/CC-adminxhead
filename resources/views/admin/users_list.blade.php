@@ -3,7 +3,7 @@
 @section('content')
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">User Accounts</h2>
-        <button id="openAddModalButton" class="bg-blue-500 text-white px-4 py-2 rounded">Add User</button>
+        <button type="button" id="openAddModalButton" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Create</button>
     </div>
 
     @if(session('success'))
@@ -33,14 +33,34 @@
                     @if(auth()->user()->hasRole('admin') && $user->roles->pluck('name')->implode(', ') !== 'admin')
                         <td class="py-3 px-6 border-b">
                             <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
-                                <button class="bg-green-500 text-white px-4 py-2 rounded editUserButton"
+                                <!-- Edit User Button -->
+                                {{-- <button class="bg-green-500 text-white px-4 py-2 rounded editUserButton"
+                                        data-user="{{ $user->id }}"><i class="fas fa-edit"></i></button> --}}
+                                        <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 editUserButton"
                                         data-user="{{ $user->id }}"><i class="fas fa-edit"></i></button>
+
+                                <!-- Delete User Button -->
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded"
+                                    <button type="submit" class="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900" onclick="return confirm('Are you sure you want to delete this user?');">
+                                        <i class="fas fa-trash-alt"></i></button>
+                                    {{-- <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded"
                                             onclick="return confirm('Are you sure you want to delete this user?');">
                                             <i class="fas fa-trash-alt"></i>
+                                    </button> --}}
+                                </form>
+
+                                <!-- Enable/Disable Account Button -->
+                                <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('POST')
+                                    <button type="submit" class="text-gray-700 hover:text-white border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-400 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-500 dark:focus:ring-gray-900">
+                                        @if($user->is_disabled)
+                                        <i class="bi bi-toggle2-off"></i>
+                                        @else
+                                            <i class="bi bi-toggle2-on"></i>
+                                        @endif
                                     </button>
                                 </form>
                             </div>

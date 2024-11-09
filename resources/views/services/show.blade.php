@@ -14,10 +14,10 @@
         </div>
     @endif
 
-    <!-- Header Section -->
+    <!-- User Section -->
     <div class="flex items-center justify-between mb-4">
         <!-- Back Button -->
-        @role('admin|head')
+        @role('admin|user')
         <a href="{{ route('offices.showServices', $service->office_id) }}" class="bg-gray-300 text-black py-2 px-4 rounded-lg hover:bg-gray-400">
             ← Back
         </a>
@@ -28,8 +28,8 @@
             {{ $service->service_name }}
         </h1>
 
-        <!-- Add Service Button (Visible only to Admin or Head) -->
-        @role('admin|head')
+        <!-- Add Service Button (Visible only to Admin or user) -->
+        @role('admin|user')
             <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
                     onclick="document.getElementById('addServiceModal').style.display='flex'">
                 Add
@@ -77,7 +77,6 @@
         <table class="border-collapse w-full mt-1">
             <tbody>
                 <tr>
-                    {{-- <td class="border border-black px-4 py-2 bg-blue-300 font-bold">STEP</td> --}}
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">INFO TITLE</td>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">CLIENTS</td>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">AGENCY ACTION</td>
@@ -96,7 +95,6 @@
                     @endphp
 
                     <tr>
-                        {{-- <td class="border border-black px-4 py-2">{{ $info->step }}</td> --}}
                         <td class="border border-black px-4 py-2">{{ $info->info_title }}</td>
                         <td class="border border-black px-4 py-2">{!! $clients !!}</td>
                         <td class="border border-black px-4 py-2">{!! $agencyActions !!}</td>
@@ -104,20 +102,21 @@
                         <td class="border border-black px-4 py-2">{!! $processingTimes !!}</td>
                         <td class="border border-black px-4 py-2">{!! $personsResponsible !!}</td>
                         <td class="border border-black px-4 py-2">
-                            <!-- Edit Button -->
-                            <button class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600"
-                                    onclick="openEditModal({{ $info->id }}, '{{ $info->step }}', '{{ $info->info_title }}', `{!! $clients !!}`, `{!! $agencyActions !!}`, '{{ $info->fees }}', `{!! $processingTimes !!}`, `{!! $personsResponsible !!}`)">
-                                Edit
-                            </button>
-
-                            <!-- Delete Button -->
-                            <form action="{{ route('services.info.delete', ['service_id' => $service->id, 'info_id' => $info->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service info?');" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
-                                    Delete
+                            <!-- Edit and Delete Buttons Side by Side -->
+                            <div class="flex space-x-2">
+                                <button class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600"
+                                        onclick="openEditModal({{ $info->id }}, '{{ $info->step }}', '{{ $info->info_title }}', `{!! $clients !!}`, `{!! $agencyActions !!}`, '{{ $info->fees }}', `{!! $processingTimes !!}`, `{!! $personsResponsible !!}`)">
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                            </form>
+
+                                <form action="{{ route('services.info.delete', ['service_id' => $service->id, 'info_id' => $info->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service info?');" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -160,7 +159,6 @@
 
                     <td colspan="2" class="border border-gray-300 p-2"></td>
                 </tr>
-
             </tbody>
         </table>
     </div>
