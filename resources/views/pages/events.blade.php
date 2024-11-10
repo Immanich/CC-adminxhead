@@ -5,9 +5,12 @@
     <div class="flex items-center justify-center mb-4 relative">
         <h1 class="text-3xl font-bold">EVENTS</h1>
         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('user'))
-            <button class="absolute right-0 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" id="openAddModal">
-                Add Event
-            </button>
+        <button type="button"
+        id="openAddModal"
+        class="absolute right-0 mt-5 text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+   Create
+</button>
+
         @endif
     </div>
 
@@ -48,7 +51,7 @@
 
                 <!-- Centered Action Buttons -->
                 <div class="flex justify-center space-x-4 p-4">
-                    <a href="{{ route('events.show', $event->id) }}" class="text-blue-500 hover:text-blue-700">
+                    <a href="{{ route('events.show', $event->id) }}" class="text-gray-400 hover:text-gray-700">
                         <i class="fas fa-eye"></i>
                     </a>
                     <button onclick="editEvent({{ $event->id }})" class="text-green-500 hover:text-green-700">

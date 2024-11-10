@@ -13,37 +13,61 @@ class UserController extends Controller
 {
 
     public function index()
-    {
-        $users = User::with('roles', 'office')->get();
-        $roles = Role::all();
-        $offices = Office::all();
+{
+    // Retrieve all users and sort them by 'is_disabled' (false first, then true for disabled users)
+    $users = User::with('roles', 'office')
+                 ->orderBy('is_disabled', 'asc')  // 'asc' will place active users first, disabled users at the bottom
+                 ->get();
 
-        return view('admin.users_list', compact('users', 'roles', 'offices'));
+    $roles = Role::all();
+    $offices = Office::all();
+
+    return view('admin.users_list', compact('users', 'roles', 'offices'));
+}
+
+
+public function store(Request $request)
+{
+    // Custom error messages for username and password
+    $messages = [
+        'username.unique' => 'The selected username already exists. Please choose a different username.',
+        'username.required' => 'Username is required.',
+        'username.max' => 'Username is too long. Please choose a username with less than 255 characters.',
+        'password.required' => 'Password is required.',
+        'password.min' => 'Password must be at least 8 characters long.',
+        'password.confirmed' => 'Passwords do not match.',
+    ];
+
+    // Validation rules focusing on username and password
+    $validatedData = $request->validate([
+        'username' => 'required|string|max:255|unique:users,username,' . $request->user_id,
+        'password' => $request->user_id ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
+    ], $messages);
+
+    // Create or update the user
+    $user = User::updateOrCreate(
+        ['id' => $request->user_id],
+        [
+            'username' => $validatedData['username'],
+            'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : null,
+        ]
+    );
+
+    // Assign the role (this assumes that you are handling roles separately)
+    if ($request->has('role')) {
+        $user->syncRoles([$request->role]);
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'username' => 'required|string|max:255|unique:users,username,' . $request->user_id,
-            'password' => $request->user_id ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
-            'role' => 'required|exists:roles,name',
-            'office_id' => 'nullable|exists:offices,id',
-        ]);
-
-        $user = User::updateOrCreate(
-            ['id' => $request->user_id],
-            [
-                'username' => $validatedData['username'],
-                'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : null,
-            ]
-        );
-
-        $user->syncRoles([$validatedData['role']]);
-        $user->office_id = $validatedData['role'] === 'user' ? $validatedData['office_id'] : null;
-        $user->save();
-
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+    // If the user role is 'user', we can set the office_id as well, assuming that behavior
+    if ($request->role === 'user' && $request->has('office_id')) {
+        $user->office_id = $request->office_id;
     }
+
+    $user->save();
+
+    return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+}
+
 
     // Add the update method to handle PUT/PATCH requests
     public function update(Request $request, $id)
@@ -83,8 +107,6 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
     }
 
-    // app/Http/Controllers/Admin/UserController.php
-    // app/Http/Controllers/Admin/UserController.php
     public function toggleStatus($id)
     {
         $user = User::findOrFail($id);

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\MvmspController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
@@ -31,6 +32,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/mvmsp', function() { return view('pages.mvmsp'); })->name('mvmsp');
     Route::get('/org-chart', function() { return view('pages.org-chart'); })->name('org-chart');
     Route::get('/elected-officials', function() { return view('pages.elected-officials'); })->name('elected-officials');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+    // Route to mark notifications as read
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
     // Routes accessible to both admin and head roles
     Route::middleware('role:admin|user')->group(function () {

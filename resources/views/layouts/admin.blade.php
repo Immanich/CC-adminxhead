@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -56,6 +57,17 @@
                     <a href="#" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('elected-officials') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
                         <i class="fas fa-user-tie mr-3"></i> ELECTED OFFICIALS
                     </a>
+                    <a href="{{ route('notifications.index') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('notifications.index') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
+                        <i class="fas fa-bell mr-3"></i> NOTIFICATIONS
+                        @if(isset($unreadCount) && $unreadCount > 0)
+                            <span class="ml-2 text-xs bg-red-500 text-white rounded-full px-2 py-1">{{ $unreadCount }}</span>
+                        @endif
+                    </a>
+
+
+
+
+
 
                     {{-- <div class="text-gray-600 font-semibold text-center mt-6">Administration</div> --}}
                     <a href="{{ route('offices') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('offices') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">

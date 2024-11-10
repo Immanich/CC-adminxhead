@@ -1,16 +1,28 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">User Accounts</h2>
+    <!-- Success and Error Messages -->
+    @if(session('success'))
+    <div id="successMessage" class="bg-green-100 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
+    @endif
+
+    @if ($errors->any())
+    <div id="errorMessage" class="bg-red-100 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-4xl font-bold flex-1 text-center">User Accounts</h2>
         <button type="button" id="openAddModalButton" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Create</button>
     </div>
-
-    @if(session('success'))
-        <div class="bg-green-100 text-green-800 p-2 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
 
     <table class="min-w-full bg-white border border-gray-200 rounded">
         <thead>
@@ -26,7 +38,14 @@
         <tbody>
             @foreach($users as $user)
                 <tr>
-                    <td class="py-3 px-6 border-b">{{ $user->username }}</td>
+                    <!-- Username with circle indicator -->
+                    <td class="py-3 px-6 border-b {{ $user->is_disabled ? 'text-gray-500' : 'text-black' }}">
+                        <div class="flex items-center space-x-2">
+                            <!-- Circle indicating user status -->
+                            <span class="w-2.5 h-2.5 rounded-full {{ $user->is_disabled ? 'bg-gray-500' : 'bg-green-500' }}"></span>
+                            <span>{{ $user->username }}</span>
+                        </div>
+                    </td>
                     <td class="py-3 px-6 border-b">{{ $user->office ? $user->office->office_name : 'N/A' }}</td>
                     <td class="py-3 px-6 border-b">{{ $user->roles->pluck('name')->implode(', ') }}</td>
 
@@ -34,21 +53,18 @@
                         <td class="py-3 px-6 border-b">
                             <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
                                 <!-- Edit User Button -->
-                                {{-- <button class="bg-green-500 text-white px-4 py-2 rounded editUserButton"
-                                        data-user="{{ $user->id }}"><i class="fas fa-edit"></i></button> --}}
-                                        <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 editUserButton"
-                                        data-user="{{ $user->id }}"><i class="fas fa-edit"></i></button>
+                                <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 editUserButton"
+                                        data-user="{{ $user->id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
 
                                 <!-- Delete User Button -->
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900" onclick="return confirm('Are you sure you want to delete this user?');">
-                                        <i class="fas fa-trash-alt"></i></button>
-                                    {{-- <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded"
-                                            onclick="return confirm('Are you sure you want to delete this user?');">
-                                            <i class="fas fa-trash-alt"></i>
-                                    </button> --}}
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </form>
 
                                 <!-- Enable/Disable Account Button -->
@@ -57,7 +73,7 @@
                                     @method('POST')
                                     <button type="submit" class="text-gray-700 hover:text-white border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-400 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-500 dark:focus:ring-gray-900">
                                         @if($user->is_disabled)
-                                        <i class="bi bi-toggle2-off"></i>
+                                            <i class="bi bi-toggle2-off"></i>
                                         @else
                                             <i class="bi bi-toggle2-on"></i>
                                         @endif
@@ -159,5 +175,26 @@
         document.getElementById('closeModalButton').addEventListener('click', function () {
             document.getElementById('userModal').classList.add('hidden');
         });
+
+        // Ensure window.onload is defined once, combining both success and error message fade logic
+        window.onload = function() {
+            var successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                // Fade out the success message after 2 seconds
+                setTimeout(function() {
+                    successMessage.style.opacity = 0;
+                }, 2000); // 2 seconds delay before starting fade-out
+            }
+
+            var errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                // Fade out the error message after 1.5 seconds
+                setTimeout(function() {
+                    errorMessage.style.opacity = 0;
+                }, 2000); // 1.5 seconds delay before starting fade-out
+            }
+        };
     </script>
+
+
 @endsection

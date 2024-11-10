@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -29,12 +30,22 @@ class EventController extends Controller
             $event->image = $request->image;
             $event->user_id = auth()->id();
 
+            // If it's an admin creating the event, mark it as 'approved', else mark it as 'pending'
             if (auth()->user()->hasRole('admin')) {
                 $event->status = 'approved';
                 $message = 'Event created successfully.';
             } else {
                 $event->status = 'pending';
                 $message = 'Event created and waiting for approval.';
+
+                // Create a notification for the admin about the new event
+                Notification::create([
+                    'title' => 'New Event Pending Approval',
+                    'description' => 'A user has created a new event, awaiting your approval.',
+                    'dateTime' => now(),
+                    'user_id' => 1, // Assuming the admin has ID = 1
+                    'link' => route('pending.events'), // Link to pending events page
+                ]);
             }
 
             $event->save();
@@ -46,11 +57,10 @@ class EventController extends Controller
     }
 
     public function show($id)
-{
-    $event = Event::findOrFail($id);
-    return view('pages.view-events', compact('event'));
-}
-
+    {
+        $event = Event::findOrFail($id);
+        return view('pages.view-events', compact('event'));
+    }
 
     public function edit($id)
     {
@@ -97,6 +107,15 @@ class EventController extends Controller
         $event->status = 'approved';
         $event->save();
 
+        // Create notification for the user
+        Notification::create([
+            'title' => 'Event Approved',
+            'description' => 'Your event has been approved by the admin.',
+            'dateTime' => now(),
+            'user_id' => $event->user_id, // The user who created the event
+            'link' => route('events.page'), // Link to approved events page
+        ]);
+
         return redirect()->route('pending.events')->with('success', 'Event approved successfully.');
     }
 
@@ -106,6 +125,15 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $event->status = 'rejected';
         $event->save();
+
+        // Create notification for the user
+        Notification::create([
+            'title' => 'Event Rejected',
+            'description' => 'Your event has been rejected by the admin.',
+            'dateTime' => now(),
+            'user_id' => $event->user_id, // The user who created the event
+            'link' => route('events.page'), // Link to approved events page
+        ]);
 
         return redirect()->route('pending.events')->with('success', 'Event rejected successfully.');
     }

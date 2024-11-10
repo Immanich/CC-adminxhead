@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->dateTime('dateTime');
+            $table->string('link')->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->boolean('is_read')->default(false); // For tracking if the notification is read
             $table->timestamps();
         });
     }

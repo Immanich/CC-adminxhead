@@ -9,6 +9,16 @@ class Notification extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'description',
+        'dateTime',
+        'user_id',
+        'is_read', // To track if a notification is read
+    ];
+
+    protected $dates = ['dateTime'];
+
     public function user()
     {
         return $this->belongsTo(User::class);

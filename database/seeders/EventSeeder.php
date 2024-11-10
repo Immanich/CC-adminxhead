@@ -31,7 +31,7 @@ class EventSeeder extends Seeder
                 'image' => "assets/images/event-pic-3.png",
                 'title' => "TITLE 3",
                 'description' => "description 3",
-                'status' => "pending",
+                'status' => "approved",
                 'user_id' => $user->id,
             ],
         ];
