@@ -14,21 +14,31 @@ class UserController extends Controller
 
     public function index()
 {
-    // Retrieve all users and sort them by 'is_disabled' (false first, then true for disabled users)
-    $users = User::with('roles', 'office')
-                 ->orderBy('is_disabled', 'asc')  // 'asc' will place active users first, disabled users at the bottom
-                 ->get();
+    // If the user is an admin, show all users; otherwise, filter by office
+    if (auth()->user()->hasRole('admin')) {
+        $users = User::with('roles', 'office')->orderBy('is_disabled', 'asc')->get();
+    } else {
+        // Get only users from the same office as the logged-in user and sub-users they created
+        $users = User::where('office_id', auth()->user()->office_id)
+                     ->orWhere('created_by', auth()->id())  // Include sub-users created by this user
+                     ->with('roles', 'office')
+                     ->orderBy('is_disabled', 'asc')
+                     ->get();
+    }
 
-    $roles = Role::all();
+    // Show roles based on user's role: admin sees all roles; user sees only 'sub_user'
+    $roles = auth()->user()->hasRole('admin') ? Role::all() : Role::where('name', 'sub_user')->get();
     $offices = Office::all();
 
     return view('admin.users_list', compact('users', 'roles', 'offices'));
 }
 
 
+
+
 public function store(Request $request)
 {
-    // Custom error messages for username and password
+    // Custom error messages for validation
     $messages = [
         'username.unique' => 'The selected username already exists. Please choose a different username.',
         'username.required' => 'Username is required.',
@@ -38,29 +48,31 @@ public function store(Request $request)
         'password.confirmed' => 'Passwords do not match.',
     ];
 
-    // Validation rules focusing on username and password
+    // Validate the request
     $validatedData = $request->validate([
         'username' => 'required|string|max:255|unique:users,username,' . $request->user_id,
         'password' => $request->user_id ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
     ], $messages);
 
+    // Determine if the current user is creating a sub-user
+    $isSubUser = auth()->user()->hasRole('user') && !$request->has('user_id');
+
+    // Prepare user data, setting `created_by` and `office_id` based on whether it's a sub-user
+    $userData = [
+        'username' => $validatedData['username'],
+        'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : null,
+        'created_by' => $isSubUser ? auth()->id() : null,
+        'office_id' => $isSubUser ? auth()->user()->office_id : $request->office_id,
+    ];
+
     // Create or update the user
-    $user = User::updateOrCreate(
-        ['id' => $request->user_id],
-        [
-            'username' => $validatedData['username'],
-            'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : null,
-        ]
-    );
+    $user = User::updateOrCreate(['id' => $request->user_id], $userData);
 
-    // Assign the role (this assumes that you are handling roles separately)
-    if ($request->has('role')) {
+    // Assign the appropriate role
+    if ($isSubUser) {
+        $user->syncRoles(['sub_user']); // Assign 'sub_user' role if created by a non-admin user
+    } elseif ($request->has('role')) {
         $user->syncRoles([$request->role]);
-    }
-
-    // If the user role is 'user', we can set the office_id as well, assuming that behavior
-    if ($request->role === 'user' && $request->has('office_id')) {
-        $user->office_id = $request->office_id;
     }
 
     $user->save();
@@ -69,29 +81,35 @@ public function store(Request $request)
 }
 
 
+
     // Add the update method to handle PUT/PATCH requests
     public function update(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'username' => 'required|string|max:255|unique:users,username,' . $id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|exists:roles,name',
-            'office_id' => 'nullable|exists:offices,id',
-        ]);
+{
+    $validatedData = $request->validate([
+        'username' => 'required|string|max:255|unique:users,username,' . $id,
+        'password' => 'nullable|string|min:8|confirmed',
+        'role' => 'required|exists:roles,name',
+        'office_id' => 'nullable|exists:offices,id', // Ensure office_id can be nullable and exists
+    ]);
 
-        $user = User::findOrFail($id);
-        $user->username = $validatedData['username'];
+    $user = User::findOrFail($id);
+    $user->username = $validatedData['username'];
 
-        if (!empty($validatedData['password'])) {
-            $user->password = Hash::make($validatedData['password']);
-        }
-
-        $user->syncRoles([$validatedData['role']]);
-        $user->office_id = $validatedData['role'] === 'user' ? $validatedData['office_id'] : null;
-        $user->save();
-
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+    // Update password if provided
+    if (!empty($validatedData['password'])) {
+        $user->password = Hash::make($validatedData['password']);
     }
+
+    // Sync role
+    $user->syncRoles([$validatedData['role']]);
+
+    // Always set office_id if provided, regardless of role
+    $user->office_id = $validatedData['office_id'];
+    $user->save();
+
+    return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+}
+
 
     public function edit($id)
     {

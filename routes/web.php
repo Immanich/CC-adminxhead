@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
     // Routes accessible to both admin and head roles
-    Route::middleware('role:admin|user')->group(function () {
+    Route::middleware('role:admin|user|sub_user')->group(function () {
         // User management
         // Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         // Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Routes accessible only to the admin role
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('role:admin|user')->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
         Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');

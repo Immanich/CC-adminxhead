@@ -19,7 +19,7 @@
         </h1>
 
         <!-- Add Service Button (Visible only to Admin) -->
-        @role('admin|user')
+        @role('admin|user|sub_user')
             <button id="openAddServiceModalButton" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
                 Add Service
             </button>
@@ -40,7 +40,7 @@
                     <a href="{{ route('services.show', ['id' => $service->id]) }}" class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600">
                         View
                     </a>
-                    @role('admin|user')
+                    @role('admin|user|sub_user')
                         <!-- Edit Button -->
                         <button type="button" onclick="openEditServiceModal({{ $service->id }})" class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600">
                             Edit
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Add Service Modal -->
-    @role('admin|user')
+    @role('admin|user|sub_user')
         <div id="addServiceModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
             <div class="bg-white rounded-lg w-1/3 p-4">
                 <h2 class="text-xl font-bold mb-4">Add New Service</h2>

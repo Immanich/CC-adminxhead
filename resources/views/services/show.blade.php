@@ -17,7 +17,7 @@
     <!-- User Section -->
     <div class="flex items-center justify-between mb-4">
         <!-- Back Button -->
-        @role('admin|user')
+        @role('admin|user|sub_user')
         <a href="{{ route('offices.showServices', $service->office_id) }}" class="bg-gray-300 text-black py-2 px-4 rounded-lg hover:bg-gray-400">
             ← Back
         </a>
@@ -78,7 +78,7 @@
             <tbody>
                 <tr>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">INFO TITLE</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">CLIENTS</td>
+                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">FOLLOW THESE STEPS</td>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">AGENCY ACTION</td>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">FEES TO BE PAID</td>
                     <td class="border border-black px-4 py-2 bg-blue-300 font-bold">PROCESSING TIME</td>

@@ -86,14 +86,16 @@
                     <a href="{{ route('feedbacks.index') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('feedbacks.index') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
                         <i class="fas fa-comment-alt mr-3"></i> FEEDBACKS
                     </a>
+                    @role('admin|user|')
                     <a href="/admin/users" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('admin.users.index') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
                         <i class="fas fa-users mr-3"></i> USERS
                     </a>
+                    @endrole
                 </nav>
             </div>
 
             <!-- Logout Button -->
-            <div class="mb-2">
+            <div class="">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded flex items-center justify-center transition-colors duration-300">

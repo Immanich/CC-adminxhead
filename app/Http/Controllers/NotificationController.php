@@ -9,8 +9,11 @@ class NotificationController extends Controller
 {
     public function index()
 {
-    $notifications = Notification::where('user_id', auth()->id())->get();
-    $unreadCount = Notification::where('user_id', auth()->id())->where('is_read', false)->count(); // Get unread notifications count
+    $notifications = Notification::where('user_id', auth()->id())
+        ->orderBy('is_read', 'asc')
+        ->orderBy('dateTime', 'desc')
+        ->get();
+    $unreadCount = $notifications->where('is_read', false)->count();
     return view('notifications.index', compact('notifications', 'unreadCount'));
 }
 
@@ -25,9 +28,16 @@ class NotificationController extends Controller
         $notification->is_read = true;
         $notification->save();
 
-        // Redirect to the notification link or fallback to dashboard
-        return redirect($notification->link ?? route('pending.events')); // Fallback to dashboard if link is empty
+        // Redirect to the notification link if available
+        if ($notification->link) {
+            return redirect($notification->link);
+        }
+
+        // Fallback: redirect to notifications page if no specific link is present
+        return redirect()->route('notifications.index');
     }
+
+
 
 
 }

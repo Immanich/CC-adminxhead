@@ -49,7 +49,7 @@
                     <td class="py-3 px-6 border-b">{{ $user->office ? $user->office->office_name : 'N/A' }}</td>
                     <td class="py-3 px-6 border-b">{{ $user->roles->pluck('name')->implode(', ') }}</td>
 
-                    @if(auth()->user()->hasRole('admin') && $user->roles->pluck('name')->implode(', ') !== 'admin')
+                    @if(auth()->user()->hasRole('admin|user') && $user->roles->pluck('name')->implode(', ') !== 'admin')
                         <td class="py-3 px-6 border-b">
                             <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
                                 <!-- Edit User Button -->
@@ -116,22 +116,31 @@
                 <div class="mb-4">
                     <label for="role" class="block text-sm font-medium">Role</label>
                     <select id="role" name="role" class="mt-1 p-2 block w-full border rounded" required>
-                        @foreach($roles as $role)
-                            @if($role->name !== 'admin') {{-- Exclude admin role --}}
-                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                            @endif
-                        @endforeach
+                        @if(auth()->user()->hasRole('user'))
+                            <option value="sub_user">Sub User</option>
+                        @else
+                            @foreach($roles as $role)
+                                @if($role->name !== 'admin') {{-- Exclude admin role --}}
+                                    <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                                @endif
+                            @endforeach
+                        @endif
                     </select>
                 </div>
 
                 <div class="mb-4">
                     <label for="office_id" class="block text-sm font-medium">Office</label>
-                    <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded">
+                    <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded" {{ auth()->user()->hasRole('user') ? 'disabled' : '' }}>
                         <option value="">Select Office</option>
                         @foreach($offices as $office)
-                            <option value="{{ $office->id }}">{{ $office->office_name }}</option>
+                            <option value="{{ $office->id }}" {{ auth()->user()->hasRole('user') && auth()->user()->office_id == $office->id ? 'selected' : '' }}>
+                                {{ $office->office_name }}
+                            </option>
                         @endforeach
                     </select>
+                    @if(auth()->user()->hasRole('user'))
+                        <input type="hidden" name="office_id" value="{{ auth()->user()->office_id }}">
+                    @endif
                 </div>
 
                 <div class="flex justify-end">

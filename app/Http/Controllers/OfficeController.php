@@ -18,7 +18,7 @@ class OfficeController extends Controller
     $user = auth()->user();
 
     // Check if the user has the 'user' role
-    if ($user->hasRole('user')) {
+    if ($user->hasRole('user|sub_user')) {
         // Fetch the office assigned to this user user
         $office = $user->office; // Assuming 'office' is a relationship in the User model
 

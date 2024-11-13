@@ -101,40 +101,47 @@ class EventController extends Controller
     }
 
     public function approveEvent($id)
-    {
-        // Approve the event
-        $event = Event::findOrFail($id);
-        $event->status = 'approved';
-        $event->save();
+{
+    $event = Event::findOrFail($id);
+    $event->status = 'approved';
+    $event->save();
 
-        // Create notification for the user
+    // Create a notification for the user who created the event
+    if ($event->user_id) {
         Notification::create([
             'title' => 'Event Approved',
             'description' => 'Your event has been approved by the admin.',
             'dateTime' => now(),
             'user_id' => $event->user_id, // The user who created the event
-            'link' => route('events.page'), // Link to approved events page
+            'link' => route('events.show', ['id' => $event->id]), // Link directly to the specific event
         ]);
-
-        return redirect()->route('pending.events')->with('success', 'Event approved successfully.');
+    } else {
+        Log::error("Approval notification failed: User ID is missing for event ID {$id}");
     }
 
-    public function rejectEvent($id)
-    {
-        // Reject the event
-        $event = Event::findOrFail($id);
-        $event->status = 'rejected';
-        $event->save();
+    return redirect()->route('pending.events')->with('success', 'Event approved successfully.');
+}
 
-        // Create notification for the user
+public function rejectEvent($id)
+{
+    $event = Event::findOrFail($id);
+    $event->status = 'rejected';
+    $event->save();
+
+    // Create a notification for the user who created the event
+    if ($event->user_id) {
         Notification::create([
             'title' => 'Event Rejected',
             'description' => 'Your event has been rejected by the admin.',
             'dateTime' => now(),
             'user_id' => $event->user_id, // The user who created the event
-            'link' => route('events.page'), // Link to approved events page
+            'link' => route('events.page'), // Link to events page
         ]);
-
-        return redirect()->route('pending.events')->with('success', 'Event rejected successfully.');
+    } else {
+        Log::error("Rejection notification failed: User ID is missing for event ID {$id}");
     }
+
+    return redirect()->route('pending.events')->with('success', 'Event rejected successfully.');
+}
+
 }
