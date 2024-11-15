@@ -30,7 +30,7 @@
                 <th class="py-3 px-6 border-b text-left">Username</th>
                 <th class="py-3 px-6 border-b text-left">Office</th>
                 <th class="py-3 px-6 border-b text-left">Role</th>
-                @if(auth()->user()->hasRole('admin'))
+                @if(auth()->user()->hasRole('admin|user'))
                     <th class="py-3 px-6 border-b text-left">Actions</th>
                 @endif
             </tr>

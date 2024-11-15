@@ -14,103 +14,132 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased">
-    <div class="flex">
-        <!-- Sidebar -->
-        <aside class="fixed top-0 left-0 h-full bg-[#e7ecfe] text-black w-64 p-4 flex flex-col justify-between">
-            <div>
-                <!-- Logo and Title -->
-                <div class="flex items-center px-2 mb-6">
-                    <a href="">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                    <span class="text-lg font-bold ml-2">
-                        Citizen's Charter
-                    </span>
-                </div>
+    <div class="h-screen flex flex-col">
+        <!-- Navbar -->
+        <nav class="w-full bg-[#9fb3fb]  px-6 py-4 flex items-center justify-between fixed top-0 left-0 z-50">
+            <!-- Logo and Title -->
+            <div class="flex items-center">
+                <a href="">
+                    <x-application-logo class="h-9 w-auto fill-current text-gray-800" />
+                </a>
+                <span class="text-lg font-bold ml-2 text-blue-900 mb-2"> Citizen's Charter</span>
+            </div>
 
-                <!-- User Display -->
-                <div class="flex flex-col items-center mb-8">
-                    @if(Auth::check())
-                        <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                            {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
-                        </div>
-                        <div class="text-gray-700 font-semibold mt-2">
-                            {{ Auth::user()->username }}
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Navigation Sections -->
-                <nav class="space-y-2">
-                    {{-- <div class="text-gray-600 font-semibold text-center">General Information</div> --}}
-                    <a href="{{ route('mvmsp') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('mvmsp') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
-                        <i class="fas fa-info-circle mr-3"></i> MVMSP
-                    </a>
-                    <a href="#" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('org-chart') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
-                        <i class="fas fa-sitemap mr-3"></i> ORG. CHART
-                    </a>
-                    <a href="#" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('elected-officials') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
-                        <i class="fas fa-user-tie mr-3"></i> ELECTED OFFICIALS
-                    </a>
-                    <a href="{{ route('notifications.index') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('notifications.index') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
-                        <i class="fas fa-bell mr-3"></i> NOTIFICATIONS
+            <!-- User and Notifications -->
+            <div class="flex items-center space-x-4">
+                <!-- Notifications Bell -->
+                <div class="relative">
+                    <a href="{{ route('notifications.index') }}" class="text-gray-700 hover:text-blue-500 transition-colors duration-300">
+                        <i class="fas fa-bell text-lg"></i>
                         @if(isset($unreadCount) && $unreadCount > 0)
-                            <span class="ml-2 text-xs bg-red-500 text-white rounded-full px-2 py-1">{{ $unreadCount }}</span>
+                            <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">{{ $unreadCount }}</span>
                         @endif
                     </a>
+                </div>
+                <!-- User Dropdown -->
+                <div class="relative z-50">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-500 transition">
+                                <div>{{ Auth::user()->username }}</div>
+                                <div class="ml-1">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                    {{ __('Log Out') }}
+                                </x-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                </div>
+            </div>
+        </nav>
 
+        <!-- Sidebar and Main Content -->
+        <div class="flex flex-1 overflow-hidden mt-16">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-[#e7ecfe] text-black p-4 space-y-3 fixed top-16 left-0 h-[calc(100%-4rem)] overflow-y-auto">
+                <!-- Navigation Links -->
+                <nav class="space-y-3">
+                    <div class="text-gray-600 font-semibold text-center">General Information</div>
 
+                    <a href="{{ route('mvmsp') }}" class="sidebar-link {{ request()->is('mvmsp') ? 'active' : '' }}">
+                        <i class="fas fa-info-circle mr-3"></i> MVMSP
+                    </a>
+                    <a href="#" class="sidebar-link {{ request()->is('org-chart') ? 'active' : '' }}">
+                        <i class="fas fa-sitemap mr-3"></i> ORG. CHART
+                    </a>
+                    <a href="#" class="sidebar-link {{ request()->is('elected-officials') ? 'active' : '' }}">
+                        <i class="fas fa-user-tie mr-3"></i> ELECTED OFFICIALS
+                    </a>
 
+                    <div class="text-gray-600 font-semibold text-center">Administration</div>
 
-
-
-                    {{-- <div class="text-gray-600 font-semibold text-center mt-6">Administration</div> --}}
-                    <a href="{{ route('offices') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('offices') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
+                    <a href="{{ route('offices') }}" class="sidebar-link {{ request()->routeIs('offices') ? 'active' : '' }}">
                         <i class="fas fa-building mr-3"></i> OFFICES
                     </a>
-                    <a href="{{ route('events.page') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('events') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
+                    <a href="{{ route('events.page') }}" class="sidebar-link {{ request()->is('events') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt mr-3"></i> EVENTS
                     </a>
 
                     @role('admin')
-                    <a href="{{ route('pendings') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('pendings') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
+                    <a href="{{ route('pendings') }}" class="sidebar-link {{ request()->routeIs('pendings') ? 'active' : '' }}">
                         <i class="fas fa-tasks mr-3"></i> PENDINGS
                     </a>
                     @endrole
 
-                    <a href="{{ route('feedbacks.index') }}" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->routeIs('feedbacks.index') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
+                    <a href="{{ route('feedbacks.index') }}" class="sidebar-link {{ request()->routeIs('feedbacks.index') ? 'active' : '' }}">
                         <i class="fas fa-comment-alt mr-3"></i> FEEDBACKS
                     </a>
-                    @role('admin|user|')
-                    <a href="/admin/users" class="flex items-center py-2.5 px-4 rounded transition-colors duration-300 {{ request()->is('admin.users.index') ? 'bg-[#9fb3fb] text-white' : 'bg-[#cfd9fd] hover:bg-[#9fb3fb]' }}">
+
+                    @role('admin|user')
+                    <a href="/admin/users" class="sidebar-link {{ request()->is('admin.users.index') ? 'active' : '' }}">
                         <i class="fas fa-users mr-3"></i> USERS
                     </a>
                     @endrole
                 </nav>
-            </div>
+            </aside>
 
-            <!-- Logout Button -->
-            <div class="">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded flex items-center justify-center transition-colors duration-300">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Log Out
-                    </button>
-                </form>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="ml-64 flex-1 bg-white p-6 rounded-lg shadow-md min-h-screen overflow-y-auto">
-            <div>
-                @yield('content')
-            </div>
-        </main>
+            <!-- Main Content Area -->
+            <main class="flex-1 bg-gray-100 p-6 ml-64 overflow-y-auto">
+                <div>
+                    @yield('content')
+                </div>
+            </main>
+        </div>
     </div>
+
+    <!-- Styles -->
+    <style>
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            color: #4a5568;
+        }
+
+        .sidebar-link:hover {
+            background-color: #9fb3fb;
+            color: #fff;
+        }
+
+        .sidebar-link.active {
+            background-color: #9fb3fb;
+            color: #fff;
+        }
+    </style>
 </body>
 </html>
