@@ -21,6 +21,13 @@ class MvmspSeeder extends Seeder
                 'mission' => 'Mission for Accounting Office...',
                 'service_pledge' => 'Service pledge for Accounting Office...',
             ],
+            [
+                'office_id' => 4,
+                'mandate' => 'Mandate for Engineering Office...',
+                'vision' => 'Vision for Engineering Office...',
+                'mission' => 'Mission for Engineering Office...',
+                'service_pledge' => 'Service pledge for Engineering Office...',
+            ],
             // Additional entries for other offices
         ];
 

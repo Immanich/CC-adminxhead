@@ -7,11 +7,48 @@
             {{-- <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="w-24 h-24"> --}}
         </div>
 
-        <!-- Heading -->
-        <div class="flex justify-center mb-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4">
             <h1 class="text-4xl font-bold text-indigo-800">M V M S P</h1>
+            <div class="flex space-x-4">
+                <button id="openAddModal"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                    Create
+                </button>
+                <button onclick="editMvmsp({{ $officeMvmsp->id ?? 'null' }})"
+                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Edit
+                </button>
+
+
+
+                <form action="{{ route('mvmsp.delete', $officeMvmsp->id ?? 0) }}" method="POST"
+                    onsubmit="return confirm('Are you sure?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Delete
+                    </button>
+                </form>
+            </div>
         </div>
 
+
+        <!-- Success/Error Messages -->
+        @if (session('success'))
+            <div class="bg-green-500 text-white p-2 rounded mb-4 text-center">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="bg-red-500 text-white p-2 rounded mb-4 text-center">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- MVMSP Display -->
         <ul>
             <li class="mb-6 text-xl text-justify">I. <span class="underline font-semibold text-gray-800">MANDATE</span>
                 <p class="mt-2 text-gray-700 leading-relaxed">&emsp;&emsp;{{ $officeMvmsp->mandate }}</p>
@@ -62,12 +99,51 @@
         </ul>
     </div>
 
+    <!-- Add/Edit Modal -->
+    <div id="mvmspModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 class="text-lg font-bold mb-4" id="modalTitle">Create MVMSP</h2>
+            <form id="mvmspForm" action="{{ route('mvmsp.store') }}" method="POST">
+                @csrf
+                <input type="hidden" id="mvmspId" name="id">
+                <div class="mb-4">
+                    <label for="mandate" class="block text-sm font-medium">Mandate</label>
+                    <textarea id="mandate" name="mandate" class="w-full border rounded p-2" rows="3" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="vision" class="block text-sm font-medium">Vision</label>
+                    <textarea id="vision" name="vision" class="w-full border rounded p-2" rows="3" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="mission" class="block text-sm font-medium">Mission</label>
+                    <textarea id="mission" name="mission" class="w-full border rounded p-2" rows="3" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="service_pledge" class="block text-sm font-medium">Service Pledge</label>
+                    <textarea id="service_pledge" name="service_pledge" class="w-full border rounded p-2" rows="3" required></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" id="submitButton"
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Save
+                    </button>
+                    <button type="button" id="closeModal"
+                        class="ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <style>
         .acronym-item {
             display: flex;
             align-items: baseline;
             margin-bottom: 10px;
         }
+
         .acronym-letter {
             font-size: 2rem;
             font-weight: bold;
@@ -75,10 +151,12 @@
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             margin-right: 5px;
         }
+
         .acronym-description {
             font-size: 1.2rem;
             color: #333;
         }
+
         .town-name {
             font-size: 2rem;
             font-weight: bold;
@@ -88,6 +166,7 @@
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
+
         .slogan {
             color: green;
             font-style: italic;
@@ -96,4 +175,84 @@
             text-align: center;
         }
     </style>
+
+    <!-- Modal Script -->
+    <script>
+        const openAddModal = document.getElementById('openAddModal');
+        const closeModalButton = document.getElementById('closeModal');
+        const modal = document.getElementById('mvmspModal');
+        const form = document.getElementById('mvmspForm');
+
+        openAddModal.addEventListener('click', () => {
+            document.getElementById('mvmspId').value = '';
+            document.getElementById('mandate').value = '';
+            document.getElementById('vision').value = '';
+            document.getElementById('mission').value = '';
+            document.getElementById('service_pledge').value = '';
+            form.action = '{{ route("mvmsp.store") }}';
+            document.getElementById('modalTitle').textContent = "Create MVMSP";
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        function editMvmsp(id) {
+    // Ensure we have a valid ID
+    if (!id) {
+        alert("No MVMSP data to edit.");
+        return;
+    }
+
+    // Fetch MVMSP data from the server
+    fetch(`/mvmsp/${id}/edit`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch MVMSP data.");
+            }
+            return response.json(); // Parse JSON response
+        })
+        .then(data => {
+            // Populate the modal fields with fetched data
+            document.getElementById('mvmspId').value = data.id;
+            document.getElementById('mandate').value = data.mandate;
+            document.getElementById('vision').value = data.vision;
+            document.getElementById('mission').value = data.mission;
+            document.getElementById('service_pledge').value = data.service_pledge;
+
+            // Update the form action for updating the MVMSP
+            const form = document.getElementById('mvmspForm');
+            form.action = `/mvmsp/${data.id}/update`;
+
+            // Remove any existing _method input field
+            const existingMethodField = form.querySelector('input[name="_method"]');
+            if (existingMethodField) {
+                existingMethodField.remove();
+            }
+
+            // Add a hidden _method field for PUT
+            const hiddenMethod = document.createElement('input');
+            hiddenMethod.type = 'hidden';
+            hiddenMethod.name = '_method';
+            hiddenMethod.value = 'PUT';
+            form.appendChild(hiddenMethod);
+
+            // Update modal title
+            document.getElementById('modalTitle').textContent = "Edit MVMSP";
+
+            // Show the modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        })
+        .catch(error => {
+            console.error(error);
+            alert("Unable to load MVMSP data for editing.");
+        });
+}
+
+
+    </script>
 @endsection

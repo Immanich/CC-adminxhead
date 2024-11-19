@@ -14,10 +14,13 @@
         @endif
 
         @if($pendingServices->isEmpty())
-            <p class="text-gray-600">No pending services available.</p>
+        <div class="text-center bg-gray-100 p-6 rounded-lg shadow-lg">
+            <h3 class="text-2xl font-semibold text-gray-800">0 pending services.</h3>
+            <p class="text-gray-600 mt-2">There are currently no services awaiting approval.</p>
+        </div>
         @else
             <table class="w-full bg-white rounded-lg shadow-md overflow-hidden">
-                <thead class="bg-blue-500 text-white">
+                <thead class="bg-[#9fb3fb] text-black">
                     <tr>
                         <th class="py-3 px-6 text-left font-semibold text-sm">Service Name</th>
                         <th class="py-3 px-6 text-left font-semibold text-sm">Description</th>

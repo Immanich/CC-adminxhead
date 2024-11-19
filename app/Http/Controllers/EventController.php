@@ -16,45 +16,58 @@ class EventController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'required|url',
-        ]);
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'image' => 'nullable|string|url', // Allow nullable for image URL
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Allow file upload
+    ]);
 
-        try {
-            $event = new Event();
-            $event->title = $request->title;
-            $event->description = $request->description;
+    try {
+        $event = new Event();
+        $event->title = $request->title;
+        $event->description = $request->description;
+        $event->user_id = auth()->id();
+
+        // Check if a file is uploaded
+        if ($request->hasFile('image_file')) {
+            // Save the file and store its path
+            $imagePath = $request->file('image_file')->store('events', 'public'); // Save to 'storage/app/public/events'
+            $event->image = "/storage/$imagePath"; // Store public path in the 'image' column
+        } elseif ($request->filled('image')) {
+            // Use the image URL if provided
             $event->image = $request->image;
-            $event->user_id = auth()->id();
-
-            // If it's an admin creating the event, mark it as 'approved', else mark it as 'pending'
-            if (auth()->user()->hasRole('admin')) {
-                $event->status = 'approved';
-                $message = 'Event created successfully.';
-            } else {
-                $event->status = 'pending';
-                $message = 'Event created and waiting for approval.';
-
-                // Create a notification for the admin about the new event
-                Notification::create([
-                    'title' => 'New Event Pending Approval',
-                    'description' => 'A user has created a new event, awaiting your approval.',
-                    'dateTime' => now(),
-                    'user_id' => 1, // Assuming the admin has ID = 1
-                    'link' => route('pending.events'), // Link to pending events page
-                ]);
-            }
-
-            $event->save();
-
-            return redirect()->route('events.page')->with('success', $message);
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to create event.');
+        } else {
+            return redirect()->back()->with('error', 'Please provide an image URL or upload an image file.');
         }
+
+        // Set status based on user role
+        if (auth()->user()->hasRole('admin')) {
+            $event->status = 'approved';
+            $message = 'Event created successfully.';
+        } else {
+            $event->status = 'pending';
+            $message = 'Event created and waiting for approval.';
+
+            // Create a notification for admin
+            Notification::create([
+                'title' => 'New Event Pending Approval',
+                'description' => 'A user has created a new event, awaiting your approval.',
+                'dateTime' => now(),
+                'user_id' => 1, // Assuming admin ID is 1
+                'link' => route('pending.events'), // Link to pending events page
+            ]);
+        }
+
+        $event->save();
+
+        return redirect()->route('events.page')->with('success', $message);
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Failed to create event.');
     }
+}
+
 
     public function show($id)
     {
@@ -69,21 +82,30 @@ class EventController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'required|url',
-        ]);
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'image' => 'nullable|string|url',
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $event = Event::findOrFail($id);
-        $event->title = $request->title;
-        $event->description = $request->description;
+    $event = Event::findOrFail($id);
+    $event->title = $request->title;
+    $event->description = $request->description;
+
+    if ($request->hasFile('image_file')) {
+        $imagePath = $request->file('image_file')->store('events', 'public');
+        $event->image = "/storage/$imagePath";
+    } elseif ($request->filled('image')) {
         $event->image = $request->image;
-        $event->save();
-
-        return redirect()->route('events.page')->with('success', 'Event updated successfully.');
     }
+
+    $event->save();
+
+    return redirect()->route('events.page')->with('success', 'Event updated successfully.');
+}
+
 
     public function delete($id)
     {

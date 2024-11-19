@@ -7,15 +7,26 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
     $notifications = Notification::where('user_id', auth()->id())
         ->orderBy('is_read', 'asc')
         ->orderBy('dateTime', 'desc')
-        ->get();
+        ->paginate(10); // Paginate results
+
     $unreadCount = $notifications->where('is_read', false)->count();
+
+    if ($request->ajax()) {
+        return response()->json([
+            'notifications' => $notifications->items(), // Return paginated data
+            'unreadCount' => $unreadCount,
+        ]);
+    }
+
     return view('notifications.index', compact('notifications', 'unreadCount'));
 }
+
+
 
 
     // Mark notification as read
@@ -37,6 +48,29 @@ class NotificationController extends Controller
         return redirect()->route('notifications.index');
     }
 
+    public function fetchNotifications(Request $request)
+    {
+        $notifications = Notification::where('user_id', auth()->id())
+            ->orderBy('is_read', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->take(10) // Limit to the latest 10 notifications
+            ->get();
+
+        $unreadCount = $notifications->where('is_read', false)->count();
+
+        return response()->json([
+            'notifications' => $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->title,
+                    'description' => $notification->description,
+                    'created_at' => $notification->created_at->diffForHumans(),
+                    'is_read' => $notification->is_read,
+                ];
+            }),
+            'unreadCount' => $unreadCount,
+        ]);
+    }
 
 
 

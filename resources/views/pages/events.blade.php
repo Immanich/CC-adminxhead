@@ -69,79 +69,146 @@
         @endforeach
     </div>
 
-    <!-- Add/Edit Event Modal -->
-    <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
-        <div class="bg-white p-4 rounded-lg shadow-lg max-w-md w-full">
-            <h2 class="text-lg font-bold mb-2" id="modalTitle">Create New Event</h2>
-            <form id="eventForm" action="{{ route('events.store') }}" method="POST">
-                @csrf
-                <input type="hidden" id="eventId" name="event_id">
-                <div class="mb-2">
-                    <label for="title" class="block text-sm font-medium">Event Title</label>
-                    <input type="text" id="title" name="title" class="mt-1 block w-full p-1 border rounded" required>
-                </div>
+ <!-- Add/Edit Event Modal -->
+<div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white p-4 rounded-lg shadow-lg max-w-md w-full">
+        <h2 class="text-lg font-bold mb-2" id="modalTitle">Create New Event</h2>
+        <form id="eventForm" action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <!-- Hidden Method Field -->
+            <input type="hidden" name="_method" value="POST" id="formMethod">
 
-                <div class="mb-2">
-                    <label for="description" class="block text-sm font-medium">Event Description</label>
-                    <textarea id="description" name="description" class="mt-1 block w-full p-1 border rounded" rows="3" required></textarea>
-                </div>
+            <input type="hidden" id="eventId" name="event_id">
 
-                <div class="mb-2">
-                    <label for="image" class="block text-sm font-medium">Event Image URL</label>
-                    <input type="url" id="image" name="image" class="mt-1 block w-full p-1 border rounded" placeholder="Paste image URL here" required>
-                </div>
+            <!-- Event Title -->
+            <div class="mb-2">
+                <label for="title" class="block text-sm font-medium">Event Title</label>
+                <input type="text" id="title" name="title" class="mt-1 block w-full p-1 border rounded" required>
+            </div>
 
-                <div class="flex justify-end">
-                    <button type="submit" id="submitButton" class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600">
-                        Save Event
-                    </button>
-                    <button type="button" id="closeModal" class="ml-2 bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">
-                        Cancel
-                    </button>
+            <!-- Event Description -->
+            <div class="mb-2">
+                <label for="description" class="block text-sm font-medium">Event Description</label>
+                <textarea id="description" name="description" class="mt-1 block w-full p-1 border rounded" rows="3" required></textarea>
+            </div>
+
+            <!-- Image Type Selector -->
+            <div class="mb-2">
+                <label class="block text-sm font-medium">Image Source</label>
+                <div class="flex items-center space-x-4">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="image_type" value="url" id="image_type_url" class="form-radio" checked>
+                        <span>Image URL</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="image_type" value="file" id="image_type_file" class="form-radio">
+                        <span>Upload Image</span>
+                    </label>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <!-- Image URL Input -->
+            <div id="imageUrlField" class="mb-2">
+                <label for="image" class="block text-sm font-medium">Image URL</label>
+                <input type="url" id="image" name="image" class="mt-1 block w-full p-1 border rounded" placeholder="Paste image URL here">
+            </div>
+
+            <!-- Image File Upload -->
+            <div id="imageFileField" class="mb-2 hidden">
+                <label for="image_file" class="block text-sm font-medium">Upload Image</label>
+                <input type="file" id="image_file" name="image_file" class="mt-1 block w-full p-1 border rounded">
+            </div>
+
+            <!-- Modal Buttons -->
+            <div class="flex justify-end space-x-4">
+                <button type="button" id="closeModal" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+                    Cancel
+                </button>
+                <button type="submit" id="submitButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Save Event
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <!-- Modal Script -->
-    <script>
-        const openAddModal = document.getElementById('openAddModal');
-        const closeModalButton = document.getElementById('closeModal');
-        const modal = document.getElementById('eventModal');
-        const submitButton = document.getElementById('submitButton');
-        const eventForm = document.getElementById('eventForm');
 
-        openAddModal.addEventListener('click', () => {
-            document.getElementById('eventId').value = '';
-            document.getElementById('title').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('image').value = '';
-            eventForm.action = '{{ route("events.store") }}';
-            document.getElementById('modalTitle').textContent = "Create New Event";
+<!-- Modal Script -->
+<script>
+   const openAddModal = document.getElementById('openAddModal');
+const closeModalButton = document.getElementById('closeModal');
+const modal = document.getElementById('eventModal');
+const eventForm = document.getElementById('eventForm');
+const formMethodField = document.getElementById('formMethod');
+const imageTypeUrl = document.getElementById('image_type_url');
+const imageTypeFile = document.getElementById('image_type_file');
+const imageUrlField = document.getElementById('imageUrlField');
+const imageFileField = document.getElementById('imageFileField');
+
+// Toggle between Image URL and File Upload
+function toggleImageFields() {
+    if (imageTypeUrl.checked) {
+        imageUrlField.classList.remove('hidden');
+        imageFileField.classList.add('hidden');
+    } else if (imageTypeFile.checked) {
+        imageFileField.classList.remove('hidden');
+        imageUrlField.classList.add('hidden');
+    }
+}
+
+// Attach event listeners to the radio buttons
+imageTypeUrl.addEventListener('change', toggleImageFields);
+imageTypeFile.addEventListener('change', toggleImageFields);
+
+// Open modal for adding a new event
+openAddModal.addEventListener('click', () => {
+    document.getElementById('eventId').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('image').value = '';
+    document.getElementById('image_file').value = '';
+    imageTypeUrl.checked = true; // Default to Image URL
+    toggleImageFields(); // Reset input fields
+
+    // Set form for creating
+    formMethodField.value = 'POST';
+    eventForm.action = '{{ route("events.store") }}';
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+});
+
+// Close modal
+closeModalButton.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+});
+
+// Open modal for editing an event
+function editEvent(id) {
+    fetch(`/events/${id}/edit`)
+        .then(response => response.json())
+        .then(event => {
+            document.getElementById('eventId').value = event.id;
+            document.getElementById('title').value = event.title;
+            document.getElementById('description').value = event.description;
+
+            if (event.image.startsWith('http')) {
+                imageTypeUrl.checked = true;
+                document.getElementById('image').value = event.image;
+            } else {
+                imageTypeFile.checked = true;
+                document.getElementById('image_file').value = '';
+            }
+
+            toggleImageFields();
+
+            // Correct the form action to match the route
+            eventForm.action = `/events/${event.id}/update`;
+            formMethodField.value = 'PUT'; // Set method as PUT
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         });
+}
 
-        closeModalButton.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        });
-
-        function editEvent(id) {
-            fetch(`/events/${id}/edit`)
-                .then(response => response.json())
-                .then(event => {
-                    document.getElementById('eventId').value = event.id;
-                    document.getElementById('title').value = event.title;
-                    document.getElementById('description').value = event.description;
-                    document.getElementById('image').value = event.image;
-                    eventForm.action = `/events/${event.id}/update`;
-                    submitButton.form.method = 'POST';
-                    submitButton.insertAdjacentHTML('beforebegin', '<input type="hidden" name="_method" value="PUT">');
-                    document.getElementById('modalTitle').textContent = "Edit Event";
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                });
-        }
-    </script>
+</script>
 @endsection

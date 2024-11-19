@@ -31,25 +31,30 @@
                 <h2 class="text-xl font-semibold mb-4 text-center">{{ $office->office_name }}</h2>
                 <div class="mt-auto flex justify-center space-x-2 mt-4">
                     <!-- View Office Services -->
-                    <a href="{{ route('offices.services', $office->id) }}" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-eye"></i>
-                    </a>
+                    <a href="{{ route('offices.services', $office->id) }}"
+                        class="text-blue-500 hover:text-blue-700 p-3 bg-blue-100 rounded-full inline-flex items-center justify-center">
+                         <i class="fas fa-eye"></i>
+                     </a>
 
-                    @role('admin')
-                        <!-- Edit Button -->
-                        <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}')" class="text-green-500 hover:text-green-700">
-                            <i class="fas fa-edit"></i>
-                        </button>
+                     @role('admin')
+                         <!-- Edit Button -->
+                         <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}')"
+                                 class="text-green-500 hover:text-green-700 p-3 bg-green-100 rounded-full inline-flex items-center justify-center">
+                             <i class="fas fa-edit"></i>
+                         </button>
 
-                        <!-- Delete Button -->
-                        <form action="{{ route('admin.deleteOffice', $office->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this office?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:text-red-700">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
-                    @endrole
+                         <!-- Delete Button -->
+                         <form action="{{ route('admin.deleteOffice', $office->id) }}" method="POST"
+                               onsubmit="return confirm('Are you sure you want to delete this office?');">
+                             @csrf
+                             @method('DELETE')
+                             <button type="submit"
+                                     class="text-red-500 hover:text-red-700 p-3 bg-red-100 rounded-full inline-flex items-center justify-center">
+                                 <i class="fas fa-trash-alt"></i>
+                             </button>
+                         </form>
+                     @endrole
+
                 </div>
             </div>
         @endforeach

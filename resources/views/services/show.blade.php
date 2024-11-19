@@ -47,20 +47,20 @@
         <table class="border-collapse w-full">
             <tbody>
                 <tr>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">Office or Division:</td>
+                    <td class="border border-black px-4 py-2  font-bold">Office or Division:</td>
                     <td class="border border-black px-4 py-2">{{ $service->office ? $service->office->office_name : 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">Classification</td>
+                    <td class="border border-black px-4 py-2  font-bold">Classification</td>
                     <td class="border border-black px-4 py-2">{{ $service->classification }}</td>
                 </tr>
                 <tr>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">Type of Transaction:</td>
+                    <td class="border border-black px-4 py-2  font-bold">Type of Transaction:</td>
                     <td class="border border-black px-4 py-2">{{ $service->transaction->type_of_transaction }}</td>
                 </tr>
                 <tr>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">CHECKLIST OF REQUIREMENTS</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">WHERE TO SECURE</td>
+                    <td class="border border-black px-4 py-2  font-bold">CHECKLIST OF REQUIREMENTS</td>
+                    <td class="border border-black px-4 py-2  font-bold">WHERE TO SECURE</td>
                 </tr>
                 @foreach(json_decode($service->checklist_of_requirements, true) ?? [] as $index => $checklist)
                     <tr>
@@ -77,13 +77,13 @@
         <table class="border-collapse w-full mt-1">
             <tbody>
                 <tr>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">INFO TITLE</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">FOLLOW THESE STEPS</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">AGENCY ACTION</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">FEES TO BE PAID</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">PROCESSING TIME</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">PERSON RESPONSIBLE</td>
-                    <td class="border border-black px-4 py-2 bg-blue-300 font-bold">ACTION</td>
+                    <td class="border border-black px-4 py-2  font-bold">INFO TITLE</td>
+                    <td class="border border-black px-4 py-2  font-bold">FOLLOW THESE STEPS</td>
+                    <td class="border border-black px-4 py-2  font-bold">AGENCY ACTION</td>
+                    <td class="border border-black px-4 py-2  font-bold">FEES TO BE PAID</td>
+                    <td class="border border-black px-4 py-2  font-bold">PROCESSING TIME</td>
+                    <td class="border border-black px-4 py-2  font-bold">PERSON RESPONSIBLE</td>
+                    <td class="border border-black px-4 py-2  font-bold">ACTION</td>
                 </tr>
 
                 @foreach($service->serviceInfos as $info)
@@ -139,7 +139,7 @@
                     </td>
 
                     <!-- Calculate total processing time -->
-                    <td class="border border-gray-300 p-2">
+                    {{-- <td class="border border-gray-300 p-2">
                         @php
                             $totalProcessingTime = 0;
 
@@ -155,7 +155,7 @@
                         @endphp
 
                         {{ $totalProcessingTime > 0 ? $totalProcessingTime . ' minutes' : 'Depends' }}
-                    </td>
+                    </td> --}}
 
                     <td colspan="2" class="border border-gray-300 p-2"></td>
                 </tr>

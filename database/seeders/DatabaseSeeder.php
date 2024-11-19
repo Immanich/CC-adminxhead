@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ServicesInfoSeeder::class);
         $this->call(EventSeeder::class);
         $this->call(MvmspSeeder::class);
+        $this->call(MunicipalOfficialSeeder::class);
 
     }
 }

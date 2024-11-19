@@ -20,7 +20,7 @@
 <body class="font-sans antialiased">
     <div class="h-screen flex flex-col">
         <!-- Navbar -->
-        <nav class="w-full bg-[#9fb3fb]  px-6 py-4 flex items-center justify-between fixed top-0 left-0 z-50">
+        <nav class="w-full bg-[#9fb3fb] shadow-md px-6 py-4 flex items-center justify-between fixed top-0 left-0 z-50">
             <!-- Logo and Title -->
             <div class="flex items-center">
                 <a href="">
@@ -32,14 +32,35 @@
             <!-- User and Notifications -->
             <div class="flex items-center space-x-4">
                 <!-- Notifications Bell -->
-                <div class="relative">
-                    <a href="{{ route('notifications.index') }}" class="text-gray-700 hover:text-blue-500 transition-colors duration-300">
-                        <i class="fas fa-bell text-lg"></i>
-                        @if(isset($unreadCount) && $unreadCount > 0)
-                            <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">{{ $unreadCount }}</span>
-                        @endif
-                    </a>
-                </div>
+                <!-- Notification Dropdown -->
+<div class="relative">
+    <!-- Notification Icon -->
+    <button id="notificationBell" class="text-gray-700 hover:text-blue-500 transition-colors duration-300">
+        <i class="fas fa-bell text-lg"></i>
+        @if($unreadCount > 0)
+            <span
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {{ $unreadCount }}
+            </span>
+        @endif
+    </button>
+
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
+        <div class="p-4 border-b">
+            <h3 class="font-bold text-lg">Notifications</h3>
+        </div>
+        <div id="dropdownNotifications" class="max-h-64 overflow-y-auto">
+            <p class="p-4 text-gray-500 text-sm text-center">Loading...</p>
+        </div>
+        <div class="p-4 border-t text-center">
+            <a href="{{ route('notifications.index') }}" class="text-blue-500 text-sm">See All Notifications</a>
+        </div>
+    </div>
+</div>
+
+
+
                 <!-- User Dropdown -->
                 <div class="relative z-50">
                     <x-dropdown align="right" width="48">
@@ -69,7 +90,7 @@
         <!-- Sidebar and Main Content -->
         <div class="flex flex-1 overflow-hidden mt-16">
             <!-- Sidebar -->
-            <aside class="w-64 bg-[#e7ecfe] text-black p-4 space-y-3 fixed top-16 left-0 h-[calc(100%-4rem)] overflow-y-auto">
+            <aside class="w-64 bg-[#e7ecfe] shadow-md text-black p-4 space-y-3 fixed top-16 left-0 h-[calc(100%-4rem)] overflow-y-auto">
                 <!-- Navigation Links -->
                 <nav class="space-y-3">
                     <div class="text-gray-600 font-semibold text-center">General Information</div>
@@ -80,9 +101,10 @@
                     <a href="#" class="sidebar-link {{ request()->is('org-chart') ? 'active' : '' }}">
                         <i class="fas fa-sitemap mr-3"></i> ORG. CHART
                     </a>
-                    <a href="#" class="sidebar-link {{ request()->is('elected-officials') ? 'active' : '' }}">
-                        <i class="fas fa-user-tie mr-3"></i> ELECTED OFFICIALS
+                    <a href="{{ route('municipal-officials') }}" class="sidebar-link {{ request()->is('municipal-officials') ? 'active' : '' }}">
+                        <i class="fas fa-user-tie mr-3"></i> MUNICIPAL OFFICIALS
                     </a>
+
 
                     <div class="text-gray-600 font-semibold text-center">Administration</div>
 
@@ -104,7 +126,7 @@
                     </a>
 
                     @role('admin|user')
-                    <a href="/admin/users" class="sidebar-link {{ request()->is('admin.users.index') ? 'active' : '' }}">
+                    <a href="/admin/users" class="sidebar-link {{ request()->is('admin/users') ? 'active' : '' }}">
                         <i class="fas fa-users mr-3"></i> USERS
                     </a>
                     @endrole
@@ -141,5 +163,41 @@
             color: #fff;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const bell = document.getElementById('notificationBell');
+            const dropdown = document.getElementById('notificationDropdown');
+            const dropdownNotifications = document.getElementById('dropdownNotifications');
+
+            bell.addEventListener('click', function () {
+                dropdown.classList.toggle('hidden');
+
+                if (!dropdown.classList.contains('hidden')) {
+                    fetch('{{ route('notifications.fetch') }}') // Use the new fetch route
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.notifications.length) {
+                                dropdownNotifications.innerHTML = data.notifications.map(notification => `
+                                    <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                                        <div class="text-sm font-medium">${notification.title}</div>
+                                        <div class="text-xs text-gray-500">${notification.description}</div>
+                                        <div class="text-xs text-gray-400">${notification.created_at}</div>
+                                    </a>`).join('');
+                            } else {
+                                dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">No notifications</p>`;
+                            }
+                        });
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>

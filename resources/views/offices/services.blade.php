@@ -20,7 +20,8 @@
 
         <!-- Add Service Button (Visible only to Admin) -->
         @role('admin|user|sub_user')
-            <button id="openAddServiceModalButton" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+
+            <button id="openAddServiceModalButton" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ">
                 Add Service
             </button>
         @endrole
@@ -37,12 +38,12 @@
                 <p class="text-center">{{ $service->description }}</p>
 
                 <div class="flex justify-center space-x-4 mt-4">
-                    <a href="{{ route('services.show', ['id' => $service->id]) }}" class="bg-blue-500 text-white py-1 px-2 rounded-lg hover:bg-blue-600">
+                    <a href="{{ route('services.show', ['id' => $service->id]) }}" class="text-white bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                         View
                     </a>
                     @role('admin|user|sub_user')
                         <!-- Edit Button -->
-                        <button type="button" onclick="openEditServiceModal({{ $service->id }})" class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600">
+                        <button type="button" onclick="openEditServiceModal({{ $service->id }})" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                             Edit
                         </button>
 
@@ -50,7 +51,7 @@
                         <form action="{{ route('admin.deleteService', $service->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
+                            <button type="submit" class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                                 Delete
                             </button>
                         </form>
