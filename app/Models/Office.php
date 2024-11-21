@@ -17,6 +17,28 @@ class Office extends Model
         // 'description',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Listen for creation and update events
+        static::created(function ($office) {
+            Notification::create([
+                'office_id' => $office->id,
+                'status' => 'approved',
+                'dateTime' => now(),
+            ]);
+        });
+
+        static::updated(function ($office) {
+            Notification::create([
+                'office_id' => $office->id,
+                'status' => 'approved',
+                'dateTime' => now(),
+            ]);
+        });
+    }
+
     public function services()
     {
         return $this->hasMany(Service::class);

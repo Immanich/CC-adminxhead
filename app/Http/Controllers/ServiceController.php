@@ -14,7 +14,7 @@ class ServiceController extends Controller
     public function show($id)
     {
         // $servicesInfo = ServicesInfo::first();
-        $service = Service::with('serviceInfos')->findOrFail($id);
+        $service = Service::with('servicesInfos')->findOrFail($id);
         // $office = load(Office);
         return view('services.show', compact('service', 'office', 'transaction'));
     }

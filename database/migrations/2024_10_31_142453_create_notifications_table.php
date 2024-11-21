@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('event_id');
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->foreignId('event_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('office_id')->nullable()->constrained()->onDelete('cascade');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->foreignId('service_id')->nullable()->constrained()->onDelete('cascade');
+            $table->timestamp('dateTime');
             $table->timestamps();
         });
     }

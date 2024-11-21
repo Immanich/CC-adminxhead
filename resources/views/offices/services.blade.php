@@ -3,9 +3,9 @@
 @section('content')
     <div class="flex items-center justify-between mb-4">
         <!-- Feedback Button -->
-        <a href="{{ route('feedbacks') }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
+        <!-- <a href="{{ route('feedbacks') }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
             Feedback
-        </a>
+        </a> -->
 
         <!-- List of Offices Title -->
         <h1 class="text-2xl font-bold text-center flex-1">
