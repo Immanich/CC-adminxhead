@@ -83,7 +83,10 @@ public function update(Request $request, $service_id, $info_id)
     // Show service and its service info
     public function show($id)
     {
-        $service = Service::with('serviceInfos')->findOrFail($id);
+        $service = Service::with(['serviceInfos' => function ($query) {
+            $query->orderBy('step', 'asc'); // Order by step
+        }])->findOrFail($id);
+
         return view('services.show', compact('service'));
     }
 

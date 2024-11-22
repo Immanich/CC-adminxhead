@@ -2,19 +2,39 @@
 
 @section('content')
     <!-- Header with Centered Title and Right-Aligned Add Button -->
-    <div class="flex items-center justify-center mb-4 relative">
-        <h1 class="text-3xl font-bold">EVENTS</h1>
+    <div class="flex items-center space-x-4 justify-center relative mb-4">
+        <h1 class="text-4xl font-bold text-center">
+            Events
+        </h1>
+
+        <!-- Add Button -->
         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('user') || auth()->user()->hasRole('sub_user'))
         <button type="button"
-        id="openAddModal"
-        class="absolute right-0 mt-5 text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
-   Create
-</button>
-
+                id="openAddModal"
+                class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-10 h-10 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+            <i class="fa-solid fa-plus"></i>
+        </button>
         @endif
     </div>
 
-    @if (session('success'))
+
+    @if(session('success'))
+<div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+    <span class="block sm:inline">{{ session('success') }}</span>
+</div>
+@endif
+
+@if ($errors->any())
+<div id="errorMessage" class="bg-red-200 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+    {{-- @if (session('success'))
         <div class="bg-green-500 text-white p-2 rounded mb-4 text-center">
             {{ session('success') }}
         </div>
@@ -24,9 +44,9 @@
         <div class="bg-red-500 text-white p-2 rounded mb-4 text-center">
             {{ session('error') }}
         </div>
-    @endif
+    @endif --}}
 
-    <h2 class="text-lg font-semibold mb-2">Events for You</h2>
+    <h2 class="text-lg font-bold mb-2">Events for You</h2>
 
     <!-- Events Grid Section -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -51,20 +71,29 @@
 
                 <!-- Centered Action Buttons -->
                 <div class="flex justify-center space-x-4 p-4">
-                    <a href="{{ route('events.show', $event->id) }}" class="text-gray-400 hover:text-gray-700">
+                    <!-- View Button -->
+                    <a href="{{ route('events.show', $event->id) }}"
+                        class="text-white bg-blue-500 hover:bg-blue-600 border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <button onclick="editEvent({{ $event->id }})" class="text-green-500 hover:text-green-700">
+
+                    <!-- Edit Button -->
+                    <button onclick="editEvent({{ $event->id }})"
+                        class="text-white bg-green-500 hover:bg-green-600 border border-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                         <i class="fas fa-edit"></i>
                     </button>
+
+                    <!-- Delete Button -->
                     <form action="{{ route('events.delete', $event->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-red-500 hover:text-red-700">
+                        <button type="submit"
+                            class="text-white bg-red-500 hover:bg-red-600 border border-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </div>
+
             </div>
         @endforeach
     </div>
@@ -208,7 +237,33 @@ function editEvent(id) {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         });
-}
+};
+
+window.onload = function() {
+    var successMessage = document.getElementById('successMessage');
+    if (successMessage) {
+        // Fade out the success message after 2 seconds
+        setTimeout(function() {
+            successMessage.style.transition = "opacity 1s ease-out";
+            successMessage.style.opacity = 0;
+            setTimeout(function() {
+                successMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+
+    var errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        // Fade out the error message after 2 seconds
+        setTimeout(function() {
+            errorMessage.style.transition = "opacity 1s ease-out";
+            errorMessage.style.opacity = 0;
+            setTimeout(function() {
+                errorMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+};
 
 </script>
 @endsection

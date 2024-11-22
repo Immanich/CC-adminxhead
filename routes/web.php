@@ -80,15 +80,7 @@ Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'up
         Route::delete('/admin/services/{serviceId}', [ServiceController::class, 'deleteService'])->name('admin.deleteService');
     });
 
-    // Routes accessible only to the admin role
-    Route::middleware('role:admin|user')->group(function () {
-        Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
-        Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
-        Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-        Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-        Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-
-        // Pending services (admin approval)
+    Route::middleware('role:admin')->group(function () {
         Route::get('/admin/pending-services', [ServiceController::class, 'pendingServices'])->name('pending.services');
         Route::post('/admin/services/{serviceId}/approve', [ServiceController::class, 'approveService'])->name('services.approve');
         Route::post('/admin/services/{serviceId}/reject', [ServiceController::class, 'rejectService'])->name('services.reject');
@@ -100,6 +92,15 @@ Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'up
         Route::get('/admin/pending-events', [EventController::class, 'showPendingEvents'])->name('pending.events');
         Route::post('/admin/events/{id}/approve', [EventController::class, 'approveEvent'])->name('events.approve');
         Route::post('/admin/events/{id}/reject', [EventController::class, 'rejectEvent'])->name('events.reject');
+    });
+
+    // Routes accessible only to the admin role
+    Route::middleware('role:admin|user')->group(function () {
+        Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
+        Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+        Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
         Route::post('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
     });

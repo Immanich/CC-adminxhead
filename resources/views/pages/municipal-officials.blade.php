@@ -7,102 +7,127 @@
     <h3 class="text-xl text-center mb-8">(2023 - 2025)</h3>
 
     <!-- Officials Layout -->
-
     @if(session('success'))
-    <div class="bg-green-500 text-white text-center py-3 rounded-lg mb-4">
-        {{ session('success') }}
+    <div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+        <span class="block sm:inline">{{ session('success') }}</span>
     </div>
-@endif
+    @endif
 
-    <div class="text-center">
-        <!-- Mayor and Vice Mayor -->
-        <div class="grid grid-cols-2 gap-6 mb-20">
-            @foreach($officials->whereIn('title', ['Municipal Mayor', 'Municipal Vice Mayor']) as $official)
-            <div class="relative mb-10 group">
-                <div class="relative w-40 h-40 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
-                    <!-- Official Image -->
-                    <img src="{{ $official->image }}" alt="{{ $official->name }}" class="w-full h-full rounded-full">
-
-                    <!-- Edit Icon -->
-                    <button
-                        onclick="openEditModal({{ $official }})"
-                        class="absolute inset-0 bg-black bg-opacity-40 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <i class="fas fa-pen text-xl"></i>
-                    </button>
-                </div>
-                <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-52 h-16 text-center">
-                    <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                        <h3 class="text-sm font-bold">{{ $official->name }}</h3>
-                        <p class="text-xs">{{ $official->title }}</p>
-                    </div>
-                </div>
-            </div>
+    @if ($errors->any())
+    <div id="errorMessage" class="bg-red-200 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
             @endforeach
-        </div>
-
-        <!-- First Row of SB Members -->
-        <div class="grid grid-cols-4 gap-6 text-center mb-20">
-            @foreach($officials->where('title', 'SB Member')->take(4) as $sbMember)
-            <div class="relative mb-10">
-                <div class="relative w-36 h-36 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
-                    <img src="{{ $sbMember->image }}" alt="{{ $sbMember->name }}" class="w-full h-full rounded-full">
-                </div>
-                <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
-                    <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                        <h3 class="text-sm font-bold">{{ $sbMember->name }}</h3>
-                        <p class="text-xs">{{ $sbMember->title }}</p>
-                    </div>
-                </div>
-                <!-- Edit Button -->
-                <button onclick="openEditModal({{ $sbMember }})" class="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-lg">
-                    Edit
-                </button>
-            </div>
-            @endforeach
-        </div>
-
-        <!-- Second Row of SB Members -->
-        <div class="grid grid-cols-4 gap-6 text-center mb-20">
-            @foreach($officials->where('title', 'SB Member')->skip(4)->take(4) as $sbMember)
-            <div class="relative mb-10">
-                <div class="relative w-40 h-40 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
-                    <img src="{{ $sbMember->image }}" alt="{{ $sbMember->name }}" class="w-full h-full rounded-full">
-                </div>
-                <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
-                    <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                        <h3 class="text-sm font-bold">{{ $sbMember->name }}</h3>
-                        <p class="text-xs">{{ $sbMember->title }}</p>
-                    </div>
-                </div>
-                <!-- Edit Button -->
-                <button onclick="openEditModal({{ $sbMember }})" class="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-lg">
-                    Edit
-                </button>
-            </div>
-            @endforeach
-        </div>
-
-        <!-- Additional Positions -->
-        <div class="grid grid-cols-3 gap-6 text-center mt-8">
-            @foreach($officials->whereIn('title', ['ABC President', 'SK Federation President', 'SB Secretary']) as $official)
-            <div class="relative mb-10">
-                <div class="relative w-36 h-36 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
-                    <img src="{{ $official->image }}" alt="{{ $official->name }}" class="w-full h-full rounded-full">
-                </div>
-                <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
-                    <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                        <h3 class="text-sm font-bold">{{ $official->name }}</h3>
-                        <p class="text-xs">{{ $official->title }}</p>
-                    </div>
-                </div>
-                <!-- Edit Button -->
-                <button onclick="openEditModal({{ $official }})" class="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-lg">
-                    Edit
-                </button>
-            </div>
-            @endforeach
-        </div>
+        </ul>
     </div>
+    @endif
+
+<div class="text-center">
+    <!-- Mayor and Vice Mayor -->
+    <div class="grid grid-cols-2 gap-6 mb-20">
+        @foreach($officials->whereIn('title', ['Municipal Mayor', 'Municipal Vice Mayor']) as $official)
+        <div class="relative mb-10 group">
+            <div class="relative w-40 h-40 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
+                <!-- Official Image -->
+                <img src="{{ $official->image }}" alt="{{ $official->name }}" class="w-full h-full rounded-full">
+                <!-- Edit Icon -->
+                @role('admin')
+                <button
+                    onclick="openEditModal({{ $official }})"
+                    class="absolute inset-0 bg-black bg-opacity-40 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <i class="fas fa-pen text-xl"></i>
+                </button>
+                @endrole
+            </div>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-52 h-16 text-center">
+                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
+                    <h3 class="text-sm font-bold">{{ $official->name }}</h3>
+                    <p class="text-xs">{{ $official->title }}</p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- First Row of SB Members -->
+    <div class="grid grid-cols-4 gap-6 text-center mb-20">
+        @foreach($officials->where('title', 'SB Member')->take(4) as $sbMember)
+        <div class="relative mb-10 group">
+            <div class="relative w-36 h-36 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
+                <!-- Official Image -->
+                <img src="{{ $sbMember->image }}" alt="{{ $sbMember->name }}" class="w-full h-full rounded-full">
+                <!-- Edit Icon -->
+                @role('admin')
+                <button
+                    onclick="openEditModal({{ $sbMember }})"
+                    class="absolute inset-0 bg-black bg-opacity-40 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <i class="fas fa-pen text-xl"></i>
+                </button>
+                @endrole
+            </div>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
+                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
+                    <h3 class="text-sm font-bold">{{ $sbMember->name }}</h3>
+                    <p class="text-xs">{{ $sbMember->title }}</p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- Second Row of SB Members -->
+    <div class="grid grid-cols-4 gap-6 text-center mb-20">
+        @foreach($officials->where('title', 'SB Member')->skip(4)->take(4) as $sbMember)
+        <div class="relative mb-10 group">
+            <div class="relative w-40 h-40 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
+                <!-- Official Image -->
+                <img src="{{ $sbMember->image }}" alt="{{ $sbMember->name }}" class="w-full h-full rounded-full">
+                <!-- Edit Icon -->
+                @role('admin')
+                <button
+                    onclick="openEditModal({{ $sbMember }})"
+                    class="absolute inset-0 bg-black bg-opacity-40 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <i class="fas fa-pen text-xl"></i>
+                </button>
+                @endrole
+            </div>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
+                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
+                    <h3 class="text-sm font-bold">{{ $sbMember->name }}</h3>
+                    <p class="text-xs">{{ $sbMember->title }}</p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- Additional Positions -->
+    <div class="grid grid-cols-3 gap-6 text-center mt-8">
+        @foreach($officials->whereIn('title', ['ABC President', 'SK Federation President', 'SB Secretary']) as $official)
+        <div class="relative mb-10 group">
+            <div class="relative w-36 h-36 mx-auto border-4 border-gray-300 rounded-full shadow-lg p-2 bg-white">
+                <!-- Official Image -->
+                <img src="{{ $official->image }}" alt="{{ $official->name }}" class="w-full h-full rounded-full">
+                <!-- Edit Icon -->
+                @role('admin')
+                <button
+                    onclick="openEditModal({{ $official }})"
+                    class="absolute inset-0 bg-black bg-opacity-40 text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <i class="fas fa-pen text-xl"></i>
+                </button>
+                @endrole
+            </div>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
+                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
+                    <h3 class="text-sm font-bold">{{ $official->name }}</h3>
+                    <p class="text-xs">{{ $official->title }}</p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
 </div>
 <!-- Edit Modal -->
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
@@ -220,7 +245,31 @@ function closeEditModal() {
     document.getElementById('editModal').classList.add('hidden');
     document.getElementById('editModal').classList.remove('flex');
 }
+window.onload = function() {
+    var successMessage = document.getElementById('successMessage');
+    if (successMessage) {
+        // Fade out the success message after 2 seconds
+        setTimeout(function() {
+            successMessage.style.transition = "opacity 1s ease-out";
+            successMessage.style.opacity = 0;
+            setTimeout(function() {
+                successMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
 
+    var errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        // Fade out the error message after 2 seconds
+        setTimeout(function() {
+            errorMessage.style.transition = "opacity 1s ease-out";
+            errorMessage.style.opacity = 0;
+            setTimeout(function() {
+                errorMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+};
 </script>
 @endsection
 

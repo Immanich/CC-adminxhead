@@ -11,7 +11,7 @@ class EventController extends Controller
 {
     public function index()
     {
-        $approvedEvents = Event::where('status', 'approved')->get();
+        $approvedEvents = Event::where('status', 'approved')->orderBy('created_at', 'desc')->get();
         return view('pages.events', compact('approvedEvents'));
     }
 
@@ -50,10 +50,12 @@ class EventController extends Controller
             $event->status = 'pending';
             $message = 'Event created and waiting for approval.';
 
+            $user = auth()->user();
+            $officeName = $user->office ? $user->office->office_name : 'Unknown Office';
             // Create a notification for admin
             Notification::create([
                 'title' => 'New Event Pending Approval',
-                'description' => 'A user has created a new event, awaiting your approval.',
+                'description' => "<strong>{$user->username}</strong> from the <strong>{$officeName}</strong> created a new event, awaiting your approval.",
                 'dateTime' => now(),
                 'user_id' => 1, // Assuming admin ID is 1
                 'link' => route('pending.events'), // Link to pending events page

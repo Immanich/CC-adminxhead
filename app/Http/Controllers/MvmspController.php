@@ -43,7 +43,7 @@ public function store(Request $request)
 
     Mvmsp::create($validated);
 
-    return redirect()->route('mvmsp')->with('success', 'MVMPS created successfully!');
+    return redirect()->route('mvmsp')->with('success', 'MVMSP created successfully!');
 }
 
 public function edit($id)
@@ -64,7 +64,7 @@ public function update(Request $request, $id)
     $mvmsp = Mvmsp::findOrFail($id);
     $mvmsp->update($validated);
 
-    return redirect()->route('mvmsp')->with('success', 'MVMPS updated successfully!');
+    return redirect()->route('mvmsp')->with('success', 'MVMSP updated successfully!');
 }
 
 public function destroy($id)
@@ -72,7 +72,7 @@ public function destroy($id)
     $mvmsp = Mvmsp::findOrFail($id);
     $mvmsp->delete();
 
-    return redirect()->route('mvmsp')->with('success', 'MVMPS deleted successfully!');
+    return redirect()->route('mvmsp')->with('success', 'MVMSP deleted successfully!');
 }
 
 

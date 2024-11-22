@@ -46,12 +46,14 @@ public function store(Request $request)
         'password.required' => 'Password is required.',
         'password.min' => 'Password must be at least 8 characters long.',
         'password.confirmed' => 'Passwords do not match.',
+        'office_id.required' => 'Please assign the user to an office.',
     ];
 
     // Validate the request
     $validatedData = $request->validate([
         'username' => 'required|string|max:255|unique:users,username,' . $request->user_id,
         'password' => $request->user_id ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
+        'office_id' => 'required|exists:offices,id',
     ], $messages);
 
     // Determine if the current user is creating a sub-user

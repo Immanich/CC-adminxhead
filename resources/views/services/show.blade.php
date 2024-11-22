@@ -2,46 +2,38 @@
 
 @section('content')
     <!-- Success and Error Messages -->
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif
-
     <!-- User Section -->
     <div class="flex items-center justify-between mb-4">
         <!-- Back Button -->
         @role('admin|user|sub_user')
-        <a href="{{ route('offices.showServices', $service->office_id) }}" class="bg-gray-300 text-black py-2 px-4 rounded-lg hover:bg-gray-400">
-            ← Back
+        <a href="{{ route('offices.showServices', $service->office_id) }}" class="flex items-center rounded-full bg-gray-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+            <i class="bi bi-arrow-left"> Back</i>
         </a>
         @endrole
 
         <!-- Office Name + Services Title -->
-        <h1 class="text-2xl font-bold text-center flex-1">
-            {{ $service->service_name }}
-        </h1>
+        <div class="flex items-center space-x-4 flex-1 justify-center">
+            <h1 class="text-2xl font-bold text-center">
+                {{ $service->service_name }}
+            </h1>
 
-        <!-- Add Service Button (Visible only to Admin or user) -->
-        @role('admin|user')
-            <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+            <!-- Add Service Button (Visible only to Admin or user) -->
+            @role('admin|user')
+            <button class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-12 h-12 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                     onclick="document.getElementById('addServiceModal').style.display='flex'">
-                Add
+                <i class="fa-solid fa-plus"></i>
             </button>
-        @endrole
+            @endrole
+        </div>
     </div>
+
 
     <hr class="mb-6 border-2 border-gray-300">
 
     <!-- Services List -->
     <div id="servicesList" class="grid grid-cols-1 gap-6">
-        <h2 class="text-justify">{{ $service->description }}</h2>
+        {{-- <h2>About this service:</h2> --}}
+        <h2 class="text-justify font-semibold">{{ $service->description }}</h2>
 
         <!-- Office Information -->
         <table class="border-collapse w-full">
@@ -73,8 +65,29 @@
             </tbody>
         </table>
 
+        {{-- @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative ">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif --}}
+
+    @if(session('success'))
+<div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+    <span class="block sm:inline">{{ session('success') }}</span>
+</div>
+@endif
+
+@if ($errors->any())
+<div id="errorMessage" class="bg-red-200 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
         <!-- Service Info Table -->
-        <table class="border-collapse w-full mt-1">
+        <table class="border-collapse w-full ">
             <tbody>
                 <tr>
                     <td class="border border-black px-4 py-2  font-bold">INFO TITLE</td>
@@ -104,7 +117,7 @@
                         <td class="border border-black px-4 py-2">
                             <!-- Edit and Delete Buttons Side by Side -->
                             <div class="flex space-x-2">
-                                <button class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600"
+                                <button class="ml-3 text-green-500 hover:text-green-700"
                                         onclick="openEditModal({{ $info->id }}, '{{ $info->step }}', '{{ $info->info_title }}', `{!! $clients !!}`, `{!! $agencyActions !!}`, '{{ $info->fees }}', `{!! $processingTimes !!}`, `{!! $personsResponsible !!}`)">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -112,7 +125,7 @@
                                 <form action="{{ route('services.info.delete', ['service_id' => $service->id, 'info_id' => $info->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service info?');" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600">
+                                    <button type="submit" class="text-red-500 hover:text-red-700">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -164,7 +177,7 @@
     </div>
 
     <!-- Modal for Adding Service Info -->
-    <div id="addServiceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="addServiceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-lg">
             <h2 class="text-xl font-bold mb-4">Add Service Info</h2>
 
@@ -217,7 +230,7 @@
     </div>
 
     <!-- Modal for Editing Service Info -->
-    <div id="editServiceInfoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="editServiceInfoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-lg">
             <h2 class="text-xl font-bold mb-4">Edit Service Info</h2>
 
@@ -281,6 +294,33 @@
 
             document.getElementById('editServiceInfoForm').action = '/services/' + {{ $service->id }} + '/info/' + infoId;
             document.getElementById('editServiceInfoModal').style.display = 'flex';
-        }
+        };
+
+        window.onload = function() {
+    var successMessage = document.getElementById('successMessage');
+    if (successMessage) {
+        // Fade out the success message after 2 seconds
+        setTimeout(function() {
+            successMessage.style.transition = "opacity 1s ease-out";
+            successMessage.style.opacity = 0;
+            setTimeout(function() {
+                successMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+
+    var errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        // Fade out the error message after 2 seconds
+        setTimeout(function() {
+            errorMessage.style.transition = "opacity 1s ease-out";
+            errorMessage.style.opacity = 0;
+            setTimeout(function() {
+                errorMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+};
+
     </script>
 @endsection

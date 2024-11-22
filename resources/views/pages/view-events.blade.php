@@ -3,10 +3,10 @@
 @section('content')
     <!-- Title and Back Button -->
     <div class="flex items-center justify-center mt-8 mb-6">
-        <a href="{{ route('events.page') }}" class="text-blue-500 hover:text-blue-700 transition duration-300 mr-4">
+        <a href="{{ route('events.page') }}" class="text-gray-500 hover:text-gray-700 transition duration-300 mr-4">
             <i class="fas fa-arrow-left text-2xl"></i> <!-- Left Arrow Icon -->
         </a>
-        <h1 class="text-4xl font-bold text-gray-800">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">
             {{ $event->title }}
         </h1>
     </div>

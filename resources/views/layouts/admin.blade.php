@@ -26,7 +26,7 @@
                 <a href="">
                     <x-application-logo class="h-9 w-auto fill-current text-gray-800" />
                 </a>
-                <span class="text-lg font-bold ml-2 text-blue-900 mb-2"> Citizen's Charter</span>
+                <span class="text-2xl font-bold ml-2 text-blue-900 mb-2"> Citizen's Charter</span>
             </div>
 
             <!-- User and Notifications -->
@@ -65,7 +65,7 @@
                 <div class="relative z-50">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-500 transition">
+                            <button class="flex items-center text-m font-bold text-gray-700 hover:text-blue-900 transition">
                                 <div>{{ Auth::user()->username }}</div>
                                 <div class="ml-1">
                                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -93,43 +93,51 @@
             <aside class="w-64 bg-[#e7ecfe] shadow-md text-black p-4 space-y-3 fixed top-16 left-0 h-[calc(100%-4rem)] overflow-y-auto">
                 <!-- Navigation Links -->
                 <nav class="space-y-3">
-                    <div class="text-gray-600 font-semibold text-center">General Information</div>
+                    <div class="text-gray-600 font-bold text-center">General Information</div>
 
-                    <a href="{{ route('mvmsp') }}" class="sidebar-link {{ request()->is('mvmsp') ? 'active' : '' }}">
+                    <a href="{{ route('mvmsp') }}" class="sidebar-link font-semibold {{ request()->is('mvmsp') ? 'active' : '' }}">
                         <i class="fas fa-info-circle mr-3"></i> MVMSP
                     </a>
-                    <a href="#" class="sidebar-link {{ request()->is('org-chart') ? 'active' : '' }}">
+                    <a href="#" class="sidebar-link font-semibold {{ request()->is('org-chart') ? 'active' : '' }}">
                         <i class="fas fa-sitemap mr-3"></i> ORG. CHART
                     </a>
-                    <a href="{{ route('municipal-officials') }}" class="sidebar-link {{ request()->is('municipal-officials') ? 'active' : '' }}">
+                    <a href="{{ route('municipal-officials') }}" class="sidebar-link font-semibold {{ request()->is('municipal-officials') ? 'active' : '' }}">
                         <i class="fas fa-user-tie mr-3"></i> MUNICIPAL OFFICIALS
                     </a>
 
 
-                    <div class="text-gray-600 font-semibold text-center">Administration</div>
-
-                    <a href="{{ route('offices') }}" class="sidebar-link {{ request()->routeIs('offices') ? 'active' : '' }}">
-                        <i class="fas fa-building mr-3"></i> OFFICES
-                    </a>
-                    <a href="{{ route('events.page') }}" class="sidebar-link {{ request()->is('events') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt mr-3"></i> EVENTS
-                    </a>
-
-                    @role('admin')
-                    <a href="{{ route('pendings') }}" class="sidebar-link {{ request()->routeIs('pendings') ? 'active' : '' }}">
-                        <i class="fas fa-tasks mr-3"></i> PENDINGS
-                    </a>
-                    @endrole
-
-                    <a href="{{ route('feedbacks.index') }}" class="sidebar-link {{ request()->routeIs('feedbacks.index') ? 'active' : '' }}">
-                        <i class="fas fa-comment-alt mr-3"></i> FEEDBACKS
-                    </a>
+                    <div class="text-gray-600 font-bold text-center">Administration</div>
 
                     @role('admin|user')
-                    <a href="/admin/users" class="sidebar-link {{ request()->is('admin/users') ? 'active' : '' }}">
+                    <a href="/admin/users" class="sidebar-link font-semibold {{ request()->is('admin/users') ? 'active' : '' }}">
                         <i class="fas fa-users mr-3"></i> USERS
                     </a>
                     @endrole
+
+                    <a href="{{ route('events.page') }}"
+   class="sidebar-link font-semibold {{ request()->is('events') || request()->routeIs('events.show') ? 'active' : '' }}">
+    <i class="fas fa-calendar-alt mr-3"></i> EVENTS
+</a>
+
+
+                    <a href="{{ route('offices') }}"
+   class="sidebar-link font-semibold {{ request()->routeIs('offices*') || request()->routeIs('services.show') ? 'active' : '' }}">
+    <i class="fas fa-building mr-3"></i> OFFICES
+</a>
+
+
+
+                    @role('admin')
+                    <a href="{{ route('pendings') }}"
+   class="sidebar-link font-semibold {{ request()->is('pendings') || request()->routeIs('pending.events', 'pending.services') ? 'active' : '' }}">
+    <i class="fas fa-tasks mr-3"></i> PENDINGS
+</a>
+                    @endrole
+
+                    <a href="{{ route('feedbacks.index') }}" class="sidebar-link font-semibold {{ request()->routeIs('feedbacks.index') ? 'active' : '' }}">
+                        <i class="fas fa-comment-alt mr-3"></i> FEEDBACKS
+                    </a>
+
                 </nav>
             </aside>
 

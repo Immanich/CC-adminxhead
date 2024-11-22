@@ -11,16 +11,14 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-4xl font-bold text-indigo-800">M V M S P</h1>
             <div class="flex space-x-4">
-                <button id="openAddModal"
+                {{-- <button id="openAddModal"
                     class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
                     Create
-                </button>
+                </button> --}}
                 <button onclick="editMvmsp({{ $officeMvmsp->id ?? 'null' }})"
                     class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                     Edit
                 </button>
-
-
 
                 <form action="{{ route('mvmsp.delete', $officeMvmsp->id ?? 0) }}" method="POST"
                     onsubmit="return confirm('Are you sure?');">
@@ -34,18 +32,21 @@
             </div>
         </div>
 
-
         <!-- Success/Error Messages -->
-        @if (session('success'))
-            <div class="bg-green-500 text-white p-2 rounded mb-4 text-center">
-                {{ session('success') }}
-            </div>
+        @if(session('success'))
+        <div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
         @endif
 
-        @if (session('error'))
-            <div class="bg-red-500 text-white p-2 rounded mb-4 text-center">
-                {{ session('error') }}
-            </div>
+        @if ($errors->any())
+        <div id="errorMessage" class="bg-red-200 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
 
         <!-- MVMSP Display -->
@@ -100,7 +101,7 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <div id="mvmspModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div id="mvmspModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
             <h2 class="text-lg font-bold mb-4" id="modalTitle">Create MVMSP</h2>
             <form id="mvmspForm" action="{{ route('mvmsp.store') }}" method="POST">
@@ -135,7 +136,6 @@
             </form>
         </div>
     </div>
-
 
     <style>
         .acronym-item {
@@ -174,6 +174,10 @@
             margin-top: 10px;
             text-align: center;
         }
+
+        #mvmspModal {
+            z-index: 1000;
+        }
     </style>
 
     <!-- Modal Script -->
@@ -183,7 +187,7 @@
         const modal = document.getElementById('mvmspModal');
         const form = document.getElementById('mvmspForm');
 
-        openAddModal.addEventListener('click', () => {
+        openAddModal?.addEventListener('click', () => {
             document.getElementById('mvmspId').value = '';
             document.getElementById('mandate').value = '';
             document.getElementById('vision').value = '';
@@ -201,58 +205,68 @@
         });
 
         function editMvmsp(id) {
-    // Ensure we have a valid ID
-    if (!id) {
-        alert("No MVMSP data to edit.");
-        return;
-    }
-
-    // Fetch MVMSP data from the server
-    fetch(`/mvmsp/${id}/edit`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to fetch MVMSP data.");
-            }
-            return response.json(); // Parse JSON response
-        })
-        .then(data => {
-            // Populate the modal fields with fetched data
-            document.getElementById('mvmspId').value = data.id;
-            document.getElementById('mandate').value = data.mandate;
-            document.getElementById('vision').value = data.vision;
-            document.getElementById('mission').value = data.mission;
-            document.getElementById('service_pledge').value = data.service_pledge;
-
-            // Update the form action for updating the MVMSP
-            const form = document.getElementById('mvmspForm');
-            form.action = `/mvmsp/${data.id}/update`;
-
-            // Remove any existing _method input field
-            const existingMethodField = form.querySelector('input[name="_method"]');
-            if (existingMethodField) {
-                existingMethodField.remove();
+            if (!id) {
+                alert("No MVMSP data to edit.");
+                return;
             }
 
-            // Add a hidden _method field for PUT
-            const hiddenMethod = document.createElement('input');
-            hiddenMethod.type = 'hidden';
-            hiddenMethod.name = '_method';
-            hiddenMethod.value = 'PUT';
-            form.appendChild(hiddenMethod);
+            fetch(`/mvmsp/${id}/edit`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch MVMSP data.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('mvmspId').value = data.id;
+                    document.getElementById('mandate').value = data.mandate;
+                    document.getElementById('vision').value = data.vision;
+                    document.getElementById('mission').value = data.mission;
+                    document.getElementById('service_pledge').value = data.service_pledge;
 
-            // Update modal title
-            document.getElementById('modalTitle').textContent = "Edit MVMSP";
+                    form.action = `/mvmsp/${data.id}/update`;
 
-            // Show the modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        })
-        .catch(error => {
-            console.error(error);
-            alert("Unable to load MVMSP data for editing.");
-        });
-}
+                    const existingMethodField = form.querySelector('input[name="_method"]');
+                    if (existingMethodField) {
+                        existingMethodField.remove();
+                    }
 
+                    const hiddenMethod = document.createElement('input');
+                    hiddenMethod.type = 'hidden';
+                    hiddenMethod.name = '_method';
+                    hiddenMethod.value = 'PUT';
+                    form.appendChild(hiddenMethod);
 
+                    document.getElementById('modalTitle').textContent = "Edit MVMSP";
+
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Unable to load MVMSP data for editing.");
+                });
+        }
+
+        window.onload = function () {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (successMessage) {
+                setTimeout(() => {
+                    successMessage.style.transition = "opacity 1s ease";
+                    successMessage.style.opacity = "0";
+                    setTimeout(() => successMessage.remove(), 1000);
+                }, 2000);
+            }
+
+            if (errorMessage) {
+                setTimeout(() => {
+                    errorMessage.style.transition = "opacity 1s ease";
+                    errorMessage.style.opacity = "0";
+                    setTimeout(() => errorMessage.remove(), 1000);
+                }, 2000);
+            }
+        };
     </script>
 @endsection

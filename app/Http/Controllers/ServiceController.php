@@ -71,7 +71,7 @@ public function storeService(Request $request, $officeId)
         if ($status === 'pending') {
             Notification::create([
                 'title' => 'New Service Pending Approval',
-                'description' => 'A user has created a new service that requires approval.',
+                'description' => "The <strong>{$office->office_name}</strong> added a new service to their office, awaiting your approval.",
                 'dateTime' => now(),
                 'user_id' => 1, // ID of the single admin user
                 'link' => route('pending.services'), // Link to the pending services page
