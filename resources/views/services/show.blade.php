@@ -148,7 +148,7 @@
                             });
                         @endphp
 
-                        {{ $totalFees > 0 ? number_format($totalFees, 2) : 'Depends' }}
+                        {{ $totalFees > 0 ? '₱ ' . number_format($totalFees, 2) : 'Depends' }}
                     </td>
 
                     <!-- Calculate total processing time -->

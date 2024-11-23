@@ -30,42 +30,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Show the MVMSP page
-Route::get('/mvmsp', [MvmspController::class, 'show'])->name('mvmsp');
+    Route::get('/mvmsp', [MvmspController::class, 'show'])->name('mvmsp');
+    Route::post('/mvmsp', [MvmspController::class, 'store'])->name('mvmsp.store');
+    Route::get('/mvmsp/{id}/edit', [MvmspController::class, 'edit'])->name('mvmsp.edit');
+    Route::put('/mvmsp/{id}/update', [MvmspController::class, 'update'])->name('mvmsp.update');
+    Route::delete('/mvmsp/{id}', [MvmspController::class, 'destroy'])->name('mvmsp.delete');
 
-// Store a new MVMSP
-Route::post('/mvmsp', [MvmspController::class, 'store'])->name('mvmsp.store');
-
-// Edit a specific MVMSP (fetch data for editing)
-Route::get('/mvmsp/{id}/edit', [MvmspController::class, 'edit'])->name('mvmsp.edit');
-
-// Update a specific MVMSP
-Route::put('/mvmsp/{id}/update', [MvmspController::class, 'update'])->name('mvmsp.update');
-
-// Delete a specific MVMSP
-Route::delete('/mvmsp/{id}', [MvmspController::class, 'destroy'])->name('mvmsp.delete');
-
-Route::get('/municipal-officials', [MunicipalOfficialController::class, 'index'])->name('municipal-officials');
-Route::get('/municipal-officials/{id}/edit', [MunicipalOfficialController::class, 'edit'])->name('municipal-officials.edit');
-Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'update'])->name('municipal-officials.update');
-
-
+    Route::get('/municipal-officials', [MunicipalOfficialController::class, 'index'])->name('municipal-officials');
+    Route::get('/municipal-officials/{id}/edit', [MunicipalOfficialController::class, 'edit'])->name('municipal-officials.edit');
+    Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'update'])->name('municipal-officials.update');
 
     Route::get('/org-chart', function() { return view('pages.org-chart'); })->name('org-chart');
-
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::get('/notifications/fetch', [NotificationController::class, 'fetchNotifications'])->name('notifications.fetch');
 
 
-    // Routes accessible to both admin and head roles
+    // admin/users/sub_users
     Route::middleware('role:admin|user|sub_user')->group(function () {
-        // User management
-        // Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
-        // Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
-        // Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-        // Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-        // Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
         // Office management
         Route::get('/admin/offices', [OfficeController::class, 'index'])->name('admin.offices.index');
@@ -80,6 +63,7 @@ Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'up
         Route::delete('/admin/services/{serviceId}', [ServiceController::class, 'deleteService'])->name('admin.deleteService');
     });
 
+    // admin
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/pending-services', [ServiceController::class, 'pendingServices'])->name('pending.services');
         Route::post('/admin/services/{serviceId}/approve', [ServiceController::class, 'approveService'])->name('services.approve');
@@ -94,7 +78,7 @@ Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'up
         Route::post('/admin/events/{id}/reject', [EventController::class, 'rejectEvent'])->name('events.reject');
     });
 
-    // Routes accessible only to the admin role
+    // admin/user
     Route::middleware('role:admin|user')->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
@@ -127,22 +111,18 @@ Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'up
     Route::put('/services/{service_id}/info/{info_id}', [ServicesInfoController::class, 'update'])->name('services.info.update');
     Route::delete('/services/{service_id}/info/{info_id}', [ServicesInfoController::class, 'destroy'])->name('services.info.delete');
 });
-Route::get('/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
-Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
-Route::put('/events/{id}/update', [EventController::class, 'update'])->name('events.update');
-Route::delete('/events/{id}', [EventController::class, 'delete'])->name('events.delete');
 
-// Feedback routes
-Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
-Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
-Route::post('/feedbacks/{feedback}/reply', [FeedbackController::class, 'reply'])->name('feedbacks.reply');
+    Route::get('/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
+    Route::put('/events/{id}/update', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{id}', [EventController::class, 'delete'])->name('events.delete');
 
-// web.php
-Route::get('/mvmsp', [MvmspController::class, 'show'])->name('mvmsp')->middleware('auth');
+    // Feedback routes
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
+    Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
+    Route::post('/feedbacks/{feedback}/reply', [FeedbackController::class, 'reply'])->name('feedbacks.reply');
 
-
-
-// Authentication routes
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    // Authentication routes
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

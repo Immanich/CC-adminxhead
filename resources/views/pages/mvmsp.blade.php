@@ -11,26 +11,30 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-4xl font-bold text-indigo-800">M V M S P</h1>
             <div class="flex space-x-4">
-                {{-- <button id="openAddModal"
-                    class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
-                    Create
-                </button> --}}
-                <button onclick="editMvmsp({{ $officeMvmsp->id ?? 'null' }})"
-                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Edit
-                </button>
-
-                <form action="{{ route('mvmsp.delete', $officeMvmsp->id ?? 0) }}" method="POST"
-                    onsubmit="return confirm('Are you sure?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                        Delete
+                @if (empty($officeMvmsp->mandate) && empty($officeMvmsp->vision) && empty($officeMvmsp->mission) && empty($officeMvmsp->service_pledge))
+                    <button id="openAddModal"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                        Create
                     </button>
-                </form>
+                @else
+                    <button onclick="editMvmsp({{ $officeMvmsp->id ?? 'null' }})"
+                        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Edit
+                    </button>
+
+                    <form action="{{ route('mvmsp.delete', $officeMvmsp->id ?? 0) }}" method="POST"
+                        onsubmit="return confirm('Are you sure?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                            Delete
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
+
 
         <!-- Success/Error Messages -->
         @if(session('success'))
