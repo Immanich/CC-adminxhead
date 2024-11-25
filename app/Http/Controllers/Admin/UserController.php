@@ -128,20 +128,27 @@ public function store(Request $request)
     }
 
     public function toggleStatus($id)
-    {
-        $user = User::findOrFail($id);
+{
+    $user = User::findOrFail($id);
 
-        // Check if the logged-in user is an admin
-        if (!auth()->user()->hasRole('admin')) {
-            return redirect()->route('admin.users.index')->with('error', 'You are not authorized to perform this action.');
-        }
-
-        // Toggle the disabled status
+    // Allow admins to toggle any user
+    if (auth()->user()->hasRole('admin')) {
         $user->is_disabled = !$user->is_disabled;
         $user->save();
-
         return redirect()->route('admin.users.index')->with('success', 'User status updated successfully.');
     }
+
+    // Allow users to toggle sub_users in their office
+    if (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user')) {
+        $user->is_disabled = !$user->is_disabled;
+        $user->save();
+        return redirect()->route('admin.users.index')->with('success', 'User status updated successfully.');
+    }
+
+    // Unauthorized action
+    return redirect()->route('admin.users.index')->with('error', 'You are not authorized to perform this action.');
+}
+
 
 
 }

@@ -105,6 +105,7 @@
                         <i class="fas fa-user-tie mr-3"></i> MUNICIPAL OFFICIALS
                     </a>
 
+                    <hr class="mb-6 border-1 border-gray-400">
 
                     <div class="text-gray-600 font-bold text-center">Administration</div>
 

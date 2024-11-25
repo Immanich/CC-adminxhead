@@ -69,17 +69,24 @@
                             </form>
 
                             <!-- Enable/Disable Account Button -->
-                            <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('POST')
-                                <button type="submit" class="text-white bg-gray-500 hover:bg-gray-600 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
-                                    @if($user->is_disabled)
-                                        <i class="bi bi-toggle2-off"></i>
-                                    @else
-                                        <i class="bi bi-toggle2-on"></i>
-                                    @endif
-                                </button>
-                            </form>
+                           <!-- Enable/Disable Account Button -->
+                            @if(
+                                auth()->user()->hasRole('admin') ||
+                                (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user'))
+                            )
+                                <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('POST')
+                                    <button type="submit" class="text-white bg-gray-500 hover:bg-gray-600 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
+                                        @if($user->is_disabled)
+                                            <i class="bi bi-toggle2-off"></i>
+                                        @else
+                                            <i class="bi bi-toggle2-on"></i>
+                                        @endif
+                                    </button>
+                                </form>
+                            @endif
+
                         </div>
 
 

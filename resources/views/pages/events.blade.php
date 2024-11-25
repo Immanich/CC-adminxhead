@@ -77,13 +77,15 @@
                         <i class="fas fa-eye"></i>
                     </a>
 
-                    <!-- Edit Button -->
+                    @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
                     <button onclick="editEvent({{ $event->id }})"
                         class="text-white bg-green-500 hover:bg-green-600 border border-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                         <i class="fas fa-edit"></i>
                     </button>
+                @endif
 
-                    <!-- Delete Button -->
+                <!-- Delete Button -->
+                @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
                     <form action="{{ route('events.delete', $event->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                         @csrf
                         @method('DELETE')
@@ -92,6 +94,7 @@
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
+                @endif
                 </div>
 
             </div>

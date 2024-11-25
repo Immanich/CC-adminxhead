@@ -78,10 +78,16 @@ class EventController extends Controller
     }
 
     public function edit($id)
-    {
-        $event = Event::findOrFail($id);
-        return response()->json($event);
+{
+    $event = Event::findOrFail($id);
+
+    // Check if the logged-in user is the creator or an admin
+    if (!auth()->user()->hasRole('admin') && $event->user_id !== auth()->id()) {
+        return response()->json(['error' => 'Unauthorized action'], 403);
     }
+
+    return response()->json($event);
+}
 
     public function update(Request $request, $id)
 {
@@ -109,13 +115,19 @@ class EventController extends Controller
 }
 
 
-    public function delete($id)
-    {
-        $event = Event::findOrFail($id);
-        $event->delete();
+public function delete($id)
+{
+    $event = Event::findOrFail($id);
 
-        return redirect()->route('events.page')->with('success', 'Event deleted successfully.');
+    // Check if the logged-in user is the creator or an admin
+    if (!auth()->user()->hasRole('admin') && $event->user_id !== auth()->id()) {
+        return redirect()->route('events.page')->with('error', 'Unauthorized action.');
     }
+
+    $event->delete();
+    return redirect()->route('events.page')->with('success', 'Event deleted successfully.');
+}
+
 
     public function showPendingEvents()
     {
