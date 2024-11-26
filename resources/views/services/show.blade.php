@@ -90,8 +90,8 @@
         <table class="border-collapse w-full ">
             <tbody>
                 <tr>
-                    <td class="border border-black px-4 py-2  font-bold">INFO TITLE</td>
-                    <td class="border border-black px-4 py-2  font-bold">FOLLOW THESE STEPS</td>
+                    <!-- <td class="border border-black px-4 py-2  font-bold">INFO TITLE</td> -->
+                    <td class="border border-black px-4 py-2  font-bold">CLIENTS</td>
                     <td class="border border-black px-4 py-2  font-bold">AGENCY ACTION</td>
                     <td class="border border-black px-4 py-2  font-bold">FEES TO BE PAID</td>
                     <td class="border border-black px-4 py-2  font-bold">PROCESSING TIME</td>
@@ -108,10 +108,10 @@
                     @endphp
 
                     <tr>
-                        <td class="border border-black px-4 py-2">{{ $info->info_title }}</td>
+                        <!-- <td class="border border-black px-4 py-2">{{ $info->info_title }}</td> -->
                         <td class="border border-black px-4 py-2">{!! $clients !!}</td>
                         <td class="border border-black px-4 py-2">{!! $agencyActions !!}</td>
-                        <td class="border border-black px-4 py-2">{{ $info->fees }}</td>
+                        <td class="border border-black px-4 py-2">₱ {{ number_format($info->fees, 2) }}</td>
                         <td class="border border-black px-4 py-2">{!! $processingTimes !!}</td>
                         <td class="border border-black px-4 py-2">{!! $personsResponsible !!}</td>
                         <td class="border border-black px-4 py-2">

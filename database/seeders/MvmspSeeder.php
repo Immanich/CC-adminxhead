@@ -14,7 +14,6 @@ class MvmspSeeder extends Seeder
     public function run(): void
     {
         $officeMvmspData = [
-            // Office ID => MVMSP Data
             1 => [
                 'mandate' => 'Mandate for Accounting Office...',
                 'vision' => 'Vision for Accounting Office...',
