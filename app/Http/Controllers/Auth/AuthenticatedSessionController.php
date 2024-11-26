@@ -24,11 +24,26 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Attempt to authenticate the user
         $request->authenticate();
 
+        // Check if the user is disabled
+        $user = Auth::user();
+        if ($user->is_disabled) {
+            // Log out the user if the account is disabled
+            Auth::logout();
+
+            // Redirect with an error message
+            return redirect()->route('login')->withErrors([
+                'username' => 'Your account has been disabled. Please contact the admin.',
+            ]);
+        }
+
+        // Regenerate the session and redirect to the intended page
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirect to the MVMPS page or the intended destination
+        return redirect()->intended(route('mvmsp'));
     }
 
     /**

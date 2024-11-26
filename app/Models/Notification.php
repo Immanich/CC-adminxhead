@@ -16,7 +16,15 @@ class Notification extends NotificationBase
         'user_id',
         'status',
         'dateTime',
+        'title',
+        'description',
+        'dateTime',
+        'user_id',
+        'is_read',
+        'link'
     ];
+
+    protected $dates = ['dateTime'];
 
     public function user()
     {

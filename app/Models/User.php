@@ -23,6 +23,7 @@ class User extends Authenticatable
         'username',
         'password',
         'office_id',
+        'created_by',
     ];
 
     /**
@@ -66,4 +67,19 @@ class User extends Authenticatable
     public function guest() {
         return $this->hasMany(Office::class);
     }
+
+    public function mvmsp()
+    {
+        return $this->hasOneThrough(Mvmsp::class, Office::class, 'id', 'office_id', 'office_id', 'id');
+    }
+
+    public function subUsers()
+    {
+        return $this->hasMany(User::class, 'created_by');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+}
 }

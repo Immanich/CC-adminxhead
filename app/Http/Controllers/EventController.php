@@ -11,35 +11,123 @@ class EventController extends Controller
 {
     public function index()
     {
-        // Fetch all approved events
-        $approvedEvents = Event::where('status', 'approved')->get();
+        $approvedEvents = Event::where('status', 'approved')->orderBy('created_at', 'desc')->get();
         return view('pages.events', compact('approvedEvents'));
     }
 
     public function store(Request $request)
 {
-    // Validate the request
     $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'image' => 'required|url', // Validate as a URL
+        'image' => 'nullable|string|url', // Allow nullable for image URL
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Allow file upload
     ]);
 
     try {
-        // Create the event
         $event = new Event();
         $event->title = $request->title;
         $event->description = $request->description;
-        $event->image = $request->image; // Save the image URL into the 'image' column
-        $event->status = 'pending';
-        $event->user_id = auth()->id(); // Set the user_id to the authenticated user
+        $event->user_id = auth()->id();
+
+        // Check if a file is uploaded
+        if ($request->hasFile('image_file')) {
+            // Save the file and store its path
+            $imagePath = $request->file('image_file')->store('events', 'public'); // Save to 'storage/app/public/events'
+            $event->image = "/storage/$imagePath"; // Store public path in the 'image' column
+        } elseif ($request->filled('image')) {
+            // Use the image URL if provided
+            $event->image = $request->image;
+        } else {
+            return redirect()->back()->with('error', 'Please provide an image URL or upload an image file.');
+        }
+
+        // Set status based on user role
+        if (auth()->user()->hasRole('admin')) {
+            $event->status = 'approved';
+            $message = 'Event created successfully.';
+        } else {
+            $event->status = 'pending';
+            $message = 'Event created and waiting for approval.';
+
+            $user = auth()->user();
+            $officeName = $user->office ? $user->office->office_name : 'Unknown Office';
+            // Create a notification for admin
+            Notification::create([
+                'title' => 'New Event Pending Approval',
+                'description' => "<strong>{$user->username}</strong> from the <strong>{$officeName}</strong> created a new event, awaiting your approval.",
+                'dateTime' => now(),
+                'user_id' => 1, // Assuming admin ID is 1
+                'link' => route('pending.events'), // Link to pending events page
+            ]);
+        }
+
         $event->save();
 
-        return redirect()->route('events.page')->with('success', 'Event created and waiting for approval.');
+        return redirect()->route('events.page')->with('success', $message);
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Failed to create event.');
     }
 }
+
+
+    public function show($id)
+    {
+        $event = Event::findOrFail($id);
+        return view('pages.view-events', compact('event'));
+    }
+
+    public function edit($id)
+{
+    $event = Event::findOrFail($id);
+
+    // Check if the logged-in user is the creator or an admin
+    if (!auth()->user()->hasRole('admin') && $event->user_id !== auth()->id()) {
+        return response()->json(['error' => 'Unauthorized action'], 403);
+    }
+
+    return response()->json($event);
+}
+
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'image' => 'nullable|string|url',
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $event = Event::findOrFail($id);
+    $event->title = $request->title;
+    $event->description = $request->description;
+
+    if ($request->hasFile('image_file')) {
+        $imagePath = $request->file('image_file')->store('events', 'public');
+        $event->image = "/storage/$imagePath";
+    } elseif ($request->filled('image')) {
+        $event->image = $request->image;
+    }
+
+    $event->save();
+
+    return redirect()->route('events.page')->with('success', 'Event updated successfully.');
+}
+
+
+public function delete($id)
+{
+    $event = Event::findOrFail($id);
+
+    // Check if the logged-in user is the creator or an admin
+    if (!auth()->user()->hasRole('admin') && $event->user_id !== auth()->id()) {
+        return redirect()->route('events.page')->with('error', 'Unauthorized action.');
+    }
+
+    $event->delete();
+    return redirect()->route('events.page')->with('success', 'Event deleted successfully.');
+}
+
 
     public function showPendingEvents()
     {
@@ -49,32 +137,52 @@ class EventController extends Controller
     }
 
     public function approveEvent($id)
-    {
-        // Approve the event
-        $event = Event::findOrFail($id);
-        $event->status = 'approved';
-        $event->save();
+{
+    $event = Event::findOrFail($id);
+    $event->status = 'approved';
+    $event->save();
 
         Notification::create([
         'event_id' => $event->id,
         'status' => 'approved',
     ]);
         
-        return redirect()->route('pending.events')->with('success', 'Event approved successfully.');
-    }
-
-    public function rejectEvent($id)
-    {
-        // Reject the event
-        $event = Event::findOrFail($id);
-        $event->status = 'rejected';
-        $event->save();
-
+    // Create a notification for the user who created the event
+    if ($event->user_id) {
         Notification::create([
-            'event_id' => $event->id,
-            'status' => 'rejected',
+            'title' => 'Event Approved',
+            'description' => 'Your event has been approved by the admin.',
+            'dateTime' => now(),
+            'user_id' => $event->user_id, // The user who created the event
+            'link' => route('events.show', ['id' => $event->id]), // Link directly to the specific event
         ]);
-        
-        return redirect()->route('pending.events')->with('success', 'Event rejected successfully.');
+    } else {
+        Log::error("Approval notification failed: User ID is missing for event ID {$id}");
     }
+
+    return redirect()->route('pending.events')->with('success', 'Event approved successfully.');
+}
+
+public function rejectEvent($id)
+{
+    $event = Event::findOrFail($id);
+    $event->status = 'rejected';
+    $event->save();
+
+    // Create a notification for the user who created the event
+    if ($event->user_id) {
+        Notification::create([
+            'title' => 'Event Rejected',
+            'description' => 'Your event has been rejected by the admin.',
+            'dateTime' => now(),
+            'user_id' => $event->user_id, // The user who created the event
+            'link' => route('events.page'), // Link to events page
+        ]);
+    } else {
+        Log::error("Rejection notification failed: User ID is missing for event ID {$id}");
+    }
+
+    return redirect()->route('pending.events')->with('success', 'Event rejected successfully.');
+}
+
 }

@@ -28,7 +28,8 @@
             </form>
     </div> -->
 
-    @role(['admin', 'head'])
+    <!-- Displaying Feedbacks (Visible to user and Admin) -->
+    @role(['admin', 'user'])
         <div>
             <h2 class="text-2xl font-bold text-center mb-4">Feedbacks</h2>
 

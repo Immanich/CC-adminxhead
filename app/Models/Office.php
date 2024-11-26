@@ -74,4 +74,8 @@ class Office extends Model
 
 
     
+    public function mvmsp()
+    {
+        return $this->hasOne(Mvmsp::class);
+    }
 }

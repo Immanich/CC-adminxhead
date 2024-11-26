@@ -1,55 +1,101 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">User Accounts</h2>
-        <button id="openAddModalButton" class="bg-blue-500 text-white px-4 py-2 rounded">Add User</button>
-    </div>
+<div class="flex items-center justify-center mb-6 space-x-4">
+    <h2 class="text-4xl font-bold">User Accounts</h2>
+    <button type="button" id="openAddModalButton" class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-10 h-10 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+</div>
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-800 p-2 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
+<!-- Success and Error Messages -->
+@if(session('success'))
+<div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+    <span class="block sm:inline">{{ session('success') }}</span>
+</div>
+@endif
 
-    <table class="min-w-full bg-white border border-gray-200 rounded">
-        <thead>
+@if ($errors->any())
+<div id="errorMessage" class="bg-red-200 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+<table class="min-w-full bg-white border border-gray-200 rounded">
+    <thead>
+        <tr>
+            <th class="py-3 px-6 border-b text-left">Username</th>
+            <th class="py-3 px-6 border-b text-left">Office</th>
+            <th class="py-3 px-6 border-b text-left">Role</th>
+            @if(auth()->user()->hasRole('admin|user'))
+                <th class="py-3 px-6 border-b text-left">Actions</th>
+            @endif
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($users as $user)
             <tr>
-                <th class="py-3 px-6 border-b text-left">Username</th>
-                <th class="py-3 px-6 border-b text-left">Office</th>
-                <th class="py-3 px-6 border-b text-left">Role</th>
-                @if(auth()->user()->hasRole('admin'))
-                    <th class="py-3 px-6 border-b text-left">Actions</th>
-                @endif
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($users as $user)
-                <tr>
-                    <td class="py-3 px-6 border-b">{{ $user->username }}</td>
-                    <td class="py-3 px-6 border-b">{{ $user->office ? $user->office->office_name : 'N/A' }}</td>
-                    <td class="py-3 px-6 border-b">{{ $user->roles->pluck('name')->implode(', ') }}</td>
+                <!-- Username with circle indicator -->
+                <td class="py-3 px-6 border-b {{ $user->is_disabled ? 'text-gray-500' : 'text-black' }}">
+                    <div class="flex items-center space-x-2">
+                        <!-- Circle indicating user status -->
+                        <span class="w-2.5 h-2.5 rounded-full {{ $user->is_disabled ? 'bg-gray-500' : 'bg-green-500' }}"></span>
+                        <span>{{ $user->username }}</span>
+                    </div>
+                </td>
+                <td class="py-3 px-6 border-b">{{ $user->office ? $user->office->office_name : 'N/A' }}</td>
+                <td class="py-3 px-6 border-b">{{ $user->roles->pluck('name')->implode(', ') }}</td>
 
-                    @if(auth()->user()->hasRole('admin') && $user->roles->pluck('name')->implode(', ') !== 'admin')
-                        <td class="py-3 px-6 border-b">
-                            <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
-                                <button class="bg-yellow-500 text-white px-4 py-2 rounded editUserButton"
-                                        data-user="{{ $user->id }}">Edit</button>
-                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
+                @if(auth()->user()->hasRole('admin|user') && $user->roles->pluck('name')->implode(', ') !== 'admin')
+                    <td class="py-3 px-6 border-b">
+                        <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
+                            <!-- Edit User Button -->
+                            <button type="button" class="text-white bg-green-500 hover:bg-green-600 border border-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 editUserButton"
+                                    data-user="{{ $user->id }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+
+                            <!-- Delete User Button -->
+                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onclick="return confirm('Are you sure you want to delete this user?');">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+
+                            <!-- Enable/Disable Account Button -->
+                           <!-- Enable/Disable Account Button -->
+                            @if(
+                                auth()->user()->hasRole('admin') ||
+                                (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user'))
+                            )
+                                <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded"
-                                            onclick="return confirm('Are you sure you want to delete this user?');">
-                                        Delete
+                                    @method('POST')
+                                    <button type="submit" class="text-white bg-gray-500 hover:bg-gray-600 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
+                                        @if($user->is_disabled)
+                                            <i class="bi bi-toggle2-off"></i>
+                                        @else
+                                            <i class="bi bi-toggle2-on"></i>
+                                        @endif
                                     </button>
                                 </form>
-                            </div>
-                        </td>
-                    @endif
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+                            @endif
+
+                        </div>
+
+
+                    </td>
+                @endif
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
     <!-- Add/Edit User Modal -->
     <div id="userModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
@@ -80,22 +126,31 @@
                 <div class="mb-4">
                     <label for="role" class="block text-sm font-medium">Role</label>
                     <select id="role" name="role" class="mt-1 p-2 block w-full border rounded" required>
-                        @foreach($roles as $role)
-                            @if($role->name !== 'admin') {{-- Exclude admin role --}}
-                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                            @endif
-                        @endforeach
+                        @if(auth()->user()->hasRole('user'))
+                            <option value="sub_user">Sub User</option>
+                        @else
+                            @foreach($roles as $role)
+                                @if($role->name !== 'admin') {{-- Exclude admin role --}}
+                                    <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                                @endif
+                            @endforeach
+                        @endif
                     </select>
                 </div>
 
                 <div class="mb-4">
                     <label for="office_id" class="block text-sm font-medium">Office</label>
-                    <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded">
+                    <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded" {{ auth()->user()->hasRole('user') ? 'disabled' : '' }}>
                         <option value="">Select Office</option>
                         @foreach($offices as $office)
-                            <option value="{{ $office->id }}">{{ $office->office_name }}</option>
+                            <option value="{{ $office->id }}" {{ auth()->user()->hasRole('user') && auth()->user()->office_id == $office->id ? 'selected' : '' }}>
+                                {{ $office->office_name }}
+                            </option>
                         @endforeach
                     </select>
+                    @if(auth()->user()->hasRole('user'))
+                        <input type="hidden" name="office_id" value="{{ auth()->user()->office_id }}">
+                    @endif
                 </div>
 
                 <div class="flex justify-end">
@@ -139,5 +194,35 @@
         document.getElementById('closeModalButton').addEventListener('click', function () {
             document.getElementById('userModal').classList.add('hidden');
         });
+
+        // Ensure window.onload is defined once, combining both success and error message fade logic
+        window.onload = function() {
+    var successMessage = document.getElementById('successMessage');
+    if (successMessage) {
+        // Fade out the success message after 2 seconds
+        setTimeout(function() {
+            successMessage.style.transition = "opacity 1s ease-out";
+            successMessage.style.opacity = 0;
+            setTimeout(function() {
+                successMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+
+    var errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        // Fade out the error message after 2 seconds
+        setTimeout(function() {
+            errorMessage.style.transition = "opacity 1s ease-out";
+            errorMessage.style.opacity = 0;
+            setTimeout(function() {
+                errorMessage.remove(); // Remove the element from the DOM
+            }, 1000); // Allow fade-out animation to complete
+        }, 2000); // 2 seconds delay before starting fade-out
+    }
+};
+
     </script>
+
+
 @endsection
