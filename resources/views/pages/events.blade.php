@@ -34,18 +34,6 @@
 </div>
 @endif
 
-    {{-- @if (session('success'))
-        <div class="bg-green-500 text-white p-2 rounded mb-4 text-center">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="bg-red-500 text-white p-2 rounded mb-4 text-center">
-            {{ session('error') }}
-        </div>
-    @endif --}}
-
     <h2 class="text-lg font-bold mb-2">Events for You</h2>
 
     <!-- Events Grid Section -->
@@ -59,9 +47,14 @@
                     <!-- Title and Description Overlay -->
                     <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black to-transparent transition-opacity duration-300 ease-in-out group-hover:bg-black group-hover:bg-opacity-50">
                         <!-- Title - Positioned close to the bottom when not hovered, moves slightly up on hover -->
-                        <h2 class="text-lg font-semibold text-white opacity-100 transition-transform duration-300 ease-in-out transform group-hover:translate-y-[-5px]">
+                        <h2 class="text-xl font-semibold text-white opacity-100 transition-transform duration-300 ease-in-out transform group-hover:translate-y-[-5px]">
                             {{ $event->title }}
                         </h2>
+
+                        <h3 class="text-sm font-medium text-gray-300 opacity-90 transition-transform duration-300 ease-in-out transform group-hover:translate-y-[-5px]">
+                            {{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y') }}
+                        </h3>
+
                         <!-- Description - Initially hidden, fades in on hover -->
                         <p class="text-sm text-gray-200 opacity-0 transform translate-y-4 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-y-0">
                             {{ Str::limit($event->description, 50) }}
@@ -123,6 +116,13 @@
                 <label for="description" class="block text-sm font-medium">Event Description</label>
                 <textarea id="description" name="description" class="mt-1 block w-full p-1 border rounded" rows="3" required></textarea>
             </div>
+
+            <!-- Event Date and Time -->
+            <div class="mb-2">
+                <label for="date_time" class="block text-sm font-medium">Event Date and Time</label>
+                <input type="datetime-local" id="date_time" name="date_time" class="mt-1 block w-full p-1 border rounded" required>
+            </div>
+
 
             <!-- Image Type Selector -->
             <div class="mb-2">
@@ -197,6 +197,7 @@ openAddModal.addEventListener('click', () => {
     document.getElementById('eventId').value = '';
     document.getElementById('title').value = '';
     document.getElementById('description').value = '';
+    document.getElementById('date_time').value = '';
     document.getElementById('image').value = '';
     document.getElementById('image_file').value = '';
     imageTypeUrl.checked = true; // Default to Image URL
@@ -223,6 +224,7 @@ function editEvent(id) {
             document.getElementById('eventId').value = event.id;
             document.getElementById('title').value = event.title;
             document.getElementById('description').value = event.description;
+            document.getElementById('date_time').value = event.date_time;
 
             if (event.image.startsWith('http')) {
                 imageTypeUrl.checked = true;

@@ -11,33 +11,33 @@ class EventSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::first(); // Assuming at least one user exists
-        $events = [
-            [
-                'image' => "assets/images/event-pic-1.png",
-                'title' => "Buy your tickets for \nMiss Bohol 2024!",
-                'description' => "Buy your tickets for Miss Bohol 2024! BUY YOUR TICKETS FOR MISS BOHOL 2024",
-                'status' => "approved",
-                'user_id' => $user->id, // Add user ID here
-            ],
-            [
-                'image' => "assets/images/event-pic-2.png",
-                'title' => "TITLE 2",
-                'description' => "description 2",
-                'status' => "approved",
-                'user_id' => $user->id,
-            ],
-            [
-                'image' => "assets/images/event-pic-3.png",
-                'title' => "TITLE 3",
-                'description' => "description 3",
-                'status' => "approved",
-                'user_id' => $user->id,
-            ],
-        ];
+        // $user = User::first(); // Assuming at least one user exists
+        // $events = [
+        //     [
+        //         'image' => "assets/images/event-pic-1.png",
+        //         'title' => "Buy your tickets for \nMiss Bohol 2024!",
+        //         'description' => "Buy your tickets for Miss Bohol 2024! BUY YOUR TICKETS FOR MISS BOHOL 2024",
+        //         'status' => "approved",
+        //         'user_id' => $user->id,
+        //     ],
+        //     [
+        //         'image' => "assets/images/event-pic-2.png",
+        //         'title' => "TITLE 2",
+        //         'description' => "description 2",
+        //         'status' => "approved",
+        //         'user_id' => $user->id,
+        //     ],
+        //     [
+        //         'image' => "assets/images/event-pic-3.png",
+        //         'title' => "TITLE 3",
+        //         'description' => "description 3",
+        //         'status' => "approved",
+        //         'user_id' => $user->id,
+        //     ],
+        // ];
 
-        foreach ($events as $event) {
-            Event::create($event);
-        }
+        // foreach ($events as $event) {
+        //     Event::create($event);
+        // }
     }
 }

@@ -58,7 +58,8 @@
                 <h2 class="text-xl font-bold text-gray-800 text-center mb-2">{{ $service->service_name }}</h2>
 
                 <!-- Service Description -->
-                <p class="text-gray-600 text-center leading-relaxed">{{ $service->description }}</p>
+                <p class="text-gray-600 text-center leading-relaxed">{!! nl2br(e($service->description)) !!}</p>
+
 
                 <!-- Actions -->
                 <div class="flex justify-center space-x-4 mt-6">

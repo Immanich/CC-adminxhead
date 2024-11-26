@@ -18,6 +18,7 @@ class Service extends Model
         'status',
         'checklist_of_requirements',
         'where_to_secure',
+        'created_by',
     ];
 
     public function office()
@@ -36,4 +37,10 @@ class Service extends Model
     {
         return $this->hasMany(ServicesInfo::class, 'service_id');
     }
+
+    public function creator()
+{
+    return $this->belongsTo(User::class, 'created_by');
+}
+
 }

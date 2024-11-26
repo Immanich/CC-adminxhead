@@ -36,7 +36,8 @@
                         <!-- Event Title and Description -->
                         <div class="text-center mb-4">
                             <h3 class="text-2xl font-semibold text-gray-800 mb-2">{{ $event->title }}</h3>
-                            <p class="text-gray-600 leading-relaxed">{{ $event->description }}</p>
+                            <p class="text-xl font-semibold text-gray-800 mb-2">{{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y') }}</p>
+                            <p class="text-gray-600 leading-relaxed">{!! nl2br(e($event->description)) !!}</p>
                         </div>
 
                         <!-- Approve/Reject Buttons -->

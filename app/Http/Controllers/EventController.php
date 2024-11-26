@@ -22,12 +22,14 @@ class EventController extends Controller
         'description' => 'required|string',
         'image' => 'nullable|string|url', // Allow nullable for image URL
         'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Allow file upload
+        'date_time' => 'required|date',
     ]);
 
     try {
         $event = new Event();
         $event->title = $request->title;
         $event->description = $request->description;
+        $event->date_time = $request->date_time;
         $event->user_id = auth()->id();
 
         // Check if a file is uploaded
@@ -96,11 +98,13 @@ class EventController extends Controller
         'description' => 'required|string',
         'image' => 'nullable|string|url',
         'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'date_time' => 'required|date',
     ]);
 
     $event = Event::findOrFail($id);
     $event->title = $request->title;
     $event->description = $request->description;
+    $event->date_time = $request->date_time;
 
     if ($request->hasFile('image_file')) {
         $imagePath = $request->file('image_file')->store('events', 'public');

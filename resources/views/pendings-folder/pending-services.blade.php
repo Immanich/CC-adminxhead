@@ -40,7 +40,7 @@
                     @foreach($pendingServices as $service)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="py-4 px-6 text-gray-700">{{ $service->service_name }}</td>
-                            <td class="py-4 px-6 text-gray-600">{{ $service->description }}</td>
+                            <td class="py-4 px-6 text-gray-600">{!! nl2br(e($service->description)) !!}</td>
                             <td class="py-4 px-6 flex justify-center space-x-2">
                                 <!-- Approve Button -->
                                 <form action="{{ route('services.approve', $service->id) }}" method="POST" class="inline-block">
