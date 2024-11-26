@@ -24,6 +24,7 @@ class ServicesInfo extends Model
         'person_responsible',
     ];
 
+    
     public function service()
     {
         return $this->belongsTo(Service::class, 'service_id');
@@ -32,5 +33,16 @@ class ServicesInfo extends Model
     public function office()
     {
         return $this->belongsTo(Office::class, 'office_id');
+    }
+    public function translations()
+    {
+        return $this->hasMany(ServicesInfoTranslation::class);
+    }
+    
+    public function translation($languageCode)
+    {
+        return $this->translations()
+            ->whereHas('language', fn($query) => $query->where('code', $languageCode))
+            ->first();
     }
 }

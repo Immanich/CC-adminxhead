@@ -59,5 +59,24 @@ class Service extends Model
     {
         return $this->hasMany(ServicesInfo::class);
     }
+
+    public function translations()
+    {
+        return $this->hasMany(ServiceTranslation::class);
+    }
+
+
+    // public function translation($languageCode)
+    // {
+    //     $languageId = Language::where('code', $languageCode)->first()->id;
+    //     return $this->translations()->where('language_id', $languageId)->first();
+    // }
+
+    public function translation($languageCode)
+    {
+        return $this->translations()
+            ->whereHas('language', fn($query) => $query->where('code', $languageCode))
+            ->first();
+    }
 }
 

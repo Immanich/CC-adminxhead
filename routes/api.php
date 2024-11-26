@@ -15,9 +15,9 @@ Route::get('/user', function (Request $request) {
 Route::get('/offices', [GuestController::class, 'getOffices']);
 Route::get('/offices/{office_id}/services', [GuestController::class, 'getServicesForOffice']);
 Route::get('/offices/{office_id}/services/{service_id}', [GuestController::class, 'getServiceInfo']);
+Route::get('/notifications', [NotificationController::class, 'getNotifications']);
 Route::get('/events', [GuestController::class, 'getEvents']);
 Route::get('/events/{event_id}', [GuestController::class, 'getEventById']);
-Route::get('/notifications', [NotificationController::class, 'getNotifications']);
 
 
 Route::options('/feedback', function (Request $request) {

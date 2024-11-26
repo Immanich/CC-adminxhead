@@ -135,7 +135,17 @@ public function destroy($id)
     return redirect()->route('admin.offices.index')->with('success', 'Office deleted successfully.');
 }
 
+    public function translation(Request $request)
+    {
+        $languageCode = $request->get('lang', 'en'); // Default to English
 
+        $offices = Office::with(['translations' => function ($query) use ($languageCode) {
+            $query->whereHas('language', function ($langQuery) use ($languageCode) {
+                $langQuery->where('code', $languageCode);
+            });
+        }])->get();
 
+        return response()->json($offices);
+    }
 }
 

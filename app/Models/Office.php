@@ -39,6 +39,7 @@ class Office extends Model
         });
     }
 
+    
     public function services()
     {
         return $this->hasMany(Service::class);
@@ -54,4 +55,23 @@ class Office extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    public function translations()
+    {
+        return $this->hasMany(OfficeTranslation::class);
+    }
+
+
+    public function translation($languageCode)
+{
+    return $this->translations()
+        ->whereHas('language', function ($query) use ($languageCode) {
+            $query->where('code', $languageCode);
+        })
+        ->first();
+}
+
+
+
+    
 }

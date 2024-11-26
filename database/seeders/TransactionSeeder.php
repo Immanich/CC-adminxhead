@@ -42,6 +42,11 @@ class TransactionSeeder extends Seeder
                 'type_of_transaction' => 'G2C - for Government Services whose client is the transacting public',
             ],
             [
+                'type_of_transaction' => "G2C - Government Service to transacting public\n
+                                G2B - Government Service to business entity\n
+                                G2C - Government Service to government",
+            ],
+            [
                 'type_of_transaction' => 'For government services whose client is a business entity',
             ],
             [
