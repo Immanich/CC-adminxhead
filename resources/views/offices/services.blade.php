@@ -9,10 +9,10 @@
 @endif --}}
 <div class="flex items-center justify-between mb-4">
     <!-- Feedback Button -->
-    <a href="{{ route('feedbacks') }}"
+    <!-- <a href="{{ route('feedbacks') }}"
        class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
         Feedback
-    </a>
+    </a> -->
 
     <!-- List of Services Title + Add Service Button -->
     <div class="flex items-center space-x-4 flex-1 justify-center">

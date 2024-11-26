@@ -4,9 +4,9 @@
 
 <div class="flex items-center justify-between mb-4">
     <!-- Feedback Button -->
-    <a href="{{ route('feedbacks') }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
+    <!-- <a href="{{ route('feedbacks') }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
         Feedback
-    </a>
+    </a> -->
 
     <!-- Centered Title with Add Button -->
     <div class="flex items-center space-x-4 text-blue-900 flex-1 justify-center">

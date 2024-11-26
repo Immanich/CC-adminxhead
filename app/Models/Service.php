@@ -60,6 +60,11 @@ class Service extends Model
         return $this->hasMany(ServicesInfo::class);
     }
 
+    public function serviceInfos()
+    {
+        return $this->hasMany(ServicesInfo::class);
+    }
+
     public function translations()
     {
         return $this->hasMany(ServiceTranslation::class);
