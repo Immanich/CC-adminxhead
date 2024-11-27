@@ -31,92 +31,129 @@ class ServiceController extends Controller
     }
 
     public function storeService(Request $request, $officeId)
-    {
-        $request->validate([
-            'service_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'classification' => 'required|in:SIMPLE,COMPLEX,SIMPLE - COMPLEX,HIGHLY TECHNICAL',
-            'transaction_id' => 'required|exists:transactions,id',
-            'checklist_of_requirements' => 'nullable|string',
-            'where_to_secure' => 'nullable|string',
+{
+    $request->validate([
+        'service_name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'classification' => 'required|in:SIMPLE,COMPLEX,SIMPLE - COMPLEX,HIGHLY TECHNICAL',
+        'transaction_id' => 'required|exists:transactions,id',
+        'checklist_of_requirements' => 'nullable|string',
+        'where_to_secure' => 'nullable|string',
+    ]);
+
+    $office = Office::findOrFail($officeId);
+
+    // Convert checklist and where_to_secure to JSON format
+    $checklist = $request->checklist_of_requirements
+        ? json_encode(explode("\n", trim($request->checklist_of_requirements)))
+        : '[]';
+
+    $whereToSecure = $request->where_to_secure
+        ? json_encode(explode("\n", trim($request->where_to_secure)))
+        : '[]';
+
+    // Ensure the lengths of checklist and where_to_secure match
+    if (json_decode($checklist, true) && json_decode($whereToSecure, true) &&
+        count(json_decode($checklist, true)) !== count(json_decode($whereToSecure, true))) {
+        return back()->withErrors([
+            'where_to_secure' => 'The "Where to Secure" entries must match the number of checklist requirements.',
         ]);
-
-        $office = Office::findOrFail($officeId);
-        $checklist = $request->checklist_of_requirements
-            ? json_encode(explode("\n", $request->checklist_of_requirements))
-            : null;
-
-        $status = auth()->user()->hasRole('admin') ? 'approved' : 'pending';
-
-        // Create the service and set created_by
-        $service = $office->services()->create([
-            'service_name' => $request->service_name,
-            'description' => $request->description,
-            'classification' => $request->classification,
-            'transaction_id' => $request->transaction_id,
-            'checklist_of_requirements' => $checklist,
-            'where_to_secure' => $request->where_to_secure,
-            'status' => $status,
-            'created_by' => auth()->id(),
-        ]);
-
-        Log::info("Service created: {$service->id}, Created By: {$service->created_by}");
-
-        // Notify admin if the service is pending approval
-        if ($status === 'pending') {
-            Notification::create([
-                'title' => 'New Service Pending Approval',
-                'description' => "The <strong>{$office->office_name}</strong> added a new service, awaiting approval.",
-                'dateTime' => now(),
-                'user_id' => 1, // Admin ID
-                'link' => route('pending.services'),
-            ]);
-        }
-
-        $message = $status === 'approved'
-            ? 'Service created successfully.'
-            : 'Service created and is waiting for approval.';
-
-        return redirect()->back()->with('success', $message);
     }
 
-    public function showOfficeServices($officeId)
-    {
-        $query = Service::where('office_id', $officeId);
+    $status = auth()->user()->hasRole('admin') ? 'approved' : 'pending';
 
-        if (!auth()->user()->hasRole('admin')) {
-            $query->where('status', 'approved'); // Show approved services for non-admins
-        }
+    // Store service
+    $service = $office->services()->create([
+        'service_name' => $request->service_name,
+        'description' => $request->description,
+        'classification' => $request->classification,
+        'transaction_id' => $request->transaction_id,
+        'checklist_of_requirements' => $checklist, // Store as JSON
+        'where_to_secure' => $whereToSecure,       // Store as JSON
+        'status' => $status,
+        'created_by' => auth()->id(),
+    ]);
 
-        $services = $query->get();
-        $office = Office::findOrFail($officeId); // Fetch office info
-        $transactions = Transaction::all(); // Fetch transactions for modal
-
-        return view('services.services', compact('services', 'office', 'transactions'));
+    // Notify admin
+    if ($status === 'pending') {
+        Notification::create([
+            'title' => 'New Service Pending Approval',
+            'description' => "The <strong>{$office->office_name}</strong> added a new service, awaiting approval.",
+            'dateTime' => now(),
+            'user_id' => 1,
+            'link' => route('pending.services'),
+        ]);
     }
+
+    return redirect()->back()->with('success', $status === 'approved' ? 'Service created successfully.' : 'Service created and is waiting for approval.');
+}
+
+public function showOfficeServices($officeId)
+{
+    $query = Service::where('office_id', $officeId);
+
+    // Fetch all approved services for users and admins
+    if (!auth()->user()->hasRole('admin')) {
+        $query->where('status', 'approved');
+    }
+
+    $services = $query->get();
+    $pendingServices = Service::where('office_id', $officeId)
+        ->where('status', 'pending')
+        ->get(); // Fetch pending services for the user
+
+    $office = Office::findOrFail($officeId); // Fetch office info
+    $transactions = Transaction::all(); // Fetch transactions for modal
+
+    return view('services.services', compact('services', 'pendingServices', 'office', 'transactions'));
+}
+
 
     public function edit($id)
-    {
-        $service = Service::findOrFail($id);
-        return response()->json($service);
-    }
+{
+    $service = Service::findOrFail($id);
 
-    public function updateService(Request $request, $serviceId)
-    {
-        $request->validate([
-            'service_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'classification' => 'required|in:SIMPLE,COMPLEX,SIMPLE - COMPLEX,HIGHLY TECHNICAL',
-            'transaction_id' => 'required|exists:transactions,id',
-            'checklist_of_requirements' => 'nullable|string',
-            'where_to_secure' => 'nullable|string',
-        ]);
+    // Decode JSON and join with newlines
+    $service->checklist_of_requirements = implode("\n", json_decode($service->checklist_of_requirements, true) ?? []);
+    $service->where_to_secure = implode("\n", json_decode($service->where_to_secure, true) ?? []);
 
-        $service = Service::findOrFail($serviceId);
-        $service->update($request->all());
+    return response()->json($service);
+}
 
-        return redirect()->back()->with('success', 'Service updated successfully.');
-    }
+
+public function updateService(Request $request, $serviceId)
+{
+    $request->validate([
+        'service_name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'classification' => 'required|in:SIMPLE,COMPLEX,SIMPLE - COMPLEX,HIGHLY TECHNICAL',
+        'transaction_id' => 'required|exists:transactions,id',
+        'checklist_of_requirements' => 'nullable|string',
+        'where_to_secure' => 'nullable|string',
+    ]);
+
+    $service = Service::findOrFail($serviceId);
+
+    // Convert newline-separated strings to JSON
+    $checklist = $request->checklist_of_requirements
+        ? json_encode(explode("\n", trim($request->checklist_of_requirements)))
+        : '[]';
+
+    $whereToSecure = $request->where_to_secure
+        ? json_encode(explode("\n", trim($request->where_to_secure)))
+        : '[]';
+
+    $service->update([
+        'service_name' => $request->service_name,
+        'description' => $request->description,
+        'classification' => $request->classification,
+        'transaction_id' => $request->transaction_id,
+        'checklist_of_requirements' => $checklist,
+        'where_to_secure' => $whereToSecure,
+    ]);
+
+    return redirect()->back()->with('success', 'Service updated successfully.');
+}
 
     public function deleteService($serviceId)
     {

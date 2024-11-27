@@ -89,29 +89,28 @@ public function store(Request $request)
 {
     $validatedData = $request->validate([
         'username' => 'required|string|max:255|unique:users,username,' . $id,
-        'password' => 'nullable|string|min:8|confirmed',
+        'password' => 'nullable|string|min:8|confirmed', // Password is optional but validated if provided
         'role' => 'required|exists:roles,name',
-        'office_id' => 'nullable|exists:offices,id', // Ensure office_id can be nullable and exists
+        'office_id' => 'nullable|exists:offices,id',
     ]);
 
     $user = User::findOrFail($id);
     $user->username = $validatedData['username'];
 
-    // Update password if provided
-    if (!empty($validatedData['password'])) {
+    // Require a password if it's left blank
+    if (empty($request->password)) {
+        return redirect()->back()->withErrors(['password' => 'Password cannot be left blank when editing a user.']);
+    } else {
         $user->password = Hash::make($validatedData['password']);
     }
 
-    // Sync role
+    // Sync role and office
     $user->syncRoles([$validatedData['role']]);
-
-    // Always set office_id if provided, regardless of role
     $user->office_id = $validatedData['office_id'];
     $user->save();
 
     return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
 }
-
 
     public function edit($id)
     {

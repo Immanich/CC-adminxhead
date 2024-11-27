@@ -1,10 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-4xl font-bold text-center mb-6">Municipal Officials</h1>
-    <h2 class="text-2xl text-center mb-4">Tubigon, Bohol, Philippines</h2>
-    <h3 class="text-xl text-center mb-8">(2023 - 2025)</h3>
+<div class="container bg-white p-6 rounded-lg shadow-md bg-main-content" style="min-height: 100vh; padding-bottom: 5rem;">
+    <h1 class="text-6xl font-bold text-center mb-6" style="font-family: 'Old English Text MT', serif;">Municipal Officials</h1>
+    <h2 class="text-2xl text-center font-bold mb-4 text-red-500">TUBIGON, BOHOL, PHILIPPINES</h2>
+    <h3 class="text-xl text-center font-bold mb-8 text-red-800">
+        ({{ $officials->first()->start_year }} - {{ $officials->first()->end_year }})
+       @role('admin') <i class="fas fa-pen text-sm text-gray-500 cursor-pointer" onclick="openYearEditModal()"></i> @endrole
+    </h3>
+
 
     <!-- Officials Layout -->
     @if(session('success'))
@@ -40,12 +44,14 @@
                 </button>
                 @endrole
             </div>
-            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-52 h-16 text-center">
-                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                    <h3 class="text-sm font-bold">{{ $official->name }}</h3>
-                    <p class="text-xs">{{ $official->title }}</p>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-64 h-16 text-center">
+                <div class="px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full"
+                     style="background: linear-gradient(90deg, #BF953F, #FCF6BA, #FCF6BA, #FBF5B7, #AA771C);">
+                    <h3 class="text-base font-bold text-red-600">{{ $official->name }}</h3>
+                    <p class="text-sm font-semibold text-red-800">{{ $official->title }}</p>
                 </div>
             </div>
+
         </div>
         @endforeach
     </div>
@@ -66,10 +72,11 @@
                 </button>
                 @endrole
             </div>
-            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
-                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                    <h3 class="text-sm font-bold">{{ $sbMember->name }}</h3>
-                    <p class="text-xs">{{ $sbMember->title }}</p>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-64 h-16 text-center">
+                <div class="px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full"
+                     style="background: linear-gradient(90deg, #BF953F, #FCF6BA, #FCF6BA, #FBF5B7, #AA771C);">
+                    <h3 class="text-base font-bold text-red-600">{{ $sbMember->name }}</h3>
+                    <p class="text-sm font-semibold text-red-800">{{ $sbMember->title }}</p>
                 </div>
             </div>
         </div>
@@ -92,10 +99,11 @@
                 </button>
                 @endrole
             </div>
-            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
-                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                    <h3 class="text-sm font-bold">{{ $sbMember->name }}</h3>
-                    <p class="text-xs">{{ $sbMember->title }}</p>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-64 h-16 text-center">
+                <div class="px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full"
+                     style="background: linear-gradient(90deg, #BF953F, #FCF6BA, #FCF6BA, #FBF5B7, #AA771C);">
+                    <h3 class="text-base font-bold text-red-600">{{ $sbMember->name }}</h3>
+                    <p class="text-sm font-semibold text-red-800">{{ $sbMember->title }}</p>
                 </div>
             </div>
         </div>
@@ -118,10 +126,11 @@
                 </button>
                 @endrole
             </div>
-            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-48 h-16 text-center">
-                <div class="bg-blue-600 text-white px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full">
-                    <h3 class="text-sm font-bold">{{ $official->name }}</h3>
-                    <p class="text-xs">{{ $official->title }}</p>
+            <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-64 h-16 text-center">
+                <div class="px-2 py-1 rounded-lg shadow-lg flex flex-col items-center justify-center h-full"
+                     style="background: linear-gradient(90deg, #BF953F, #FCF6BA, #FCF6BA, #FBF5B7, #AA771C);">
+                    <h3 class="text-base font-bold text-red-600">{{ $official->name }}</h3>
+                    <p class="text-sm font-semibold text-red-800">{{ $official->title }}</p>
                 </div>
             </div>
         </div>
@@ -189,6 +198,43 @@
     </div>
 </div>
 
+<div id="yearEditModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Edit Year Range</h2>
+        <form action="{{ route('updateYear') }}" method="POST">
+            @csrf
+            <div class="mb-4">
+                <label for="start_year" class="block text-sm font-medium">Start Year</label>
+                <input type="text" id="start_year" name="start_year" value="{{ $officials->first()->start_year }}" class="w-full border rounded p-2" required>
+            </div>
+            <div class="mb-4">
+                <label for="end_year" class="block text-sm font-medium">End Year</label>
+                <input type="text" id="end_year" name="end_year" value="{{ $officials->first()->end_year }}" class="w-full border rounded p-2" required>
+            </div>
+            <div class="flex justify-end space-x-4">
+                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500" onclick="closeYearEditModal()">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .bg-main-content {
+    background-image: url('/assets/images/bg.jpg'); /* Adjust path as needed */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(255, 255, 255, 0.5); /* Adjust color and opacity */
+    background-blend-mode: overlay; /* Blend color with the image */
+}
+
+
+</style>
 <script>
     // Function to toggle between Image URL and Upload Image
     function toggleImageFields() {
@@ -239,6 +285,16 @@
     // Show the modal
     document.getElementById('editModal').classList.remove('hidden');
     document.getElementById('editModal').classList.add('flex');
+}
+
+function openYearEditModal() {
+    document.getElementById('yearEditModal').classList.remove('hidden');
+    document.getElementById('yearEditModal').classList.add('flex');
+}
+
+function closeYearEditModal() {
+    document.getElementById('yearEditModal').classList.add('hidden');
+    document.getElementById('yearEditModal').classList.remove('flex');
 }
 
 function closeEditModal() {

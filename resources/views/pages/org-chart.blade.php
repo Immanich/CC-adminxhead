@@ -1,8 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
-        <h1 class="text-4xl font-bold mb-2 text-center">ORGANIZATIONAL CHART</h1>
-        <img class="aspect-auto" src="/images/chart.png" alt="Organization Chart of LGU Tubigon">
-    </div>
+<div class="container  rounded-lg shadow-md" style="max-width: 100%;">
+    <img src="/assets/images/org.jpg" alt="Organizational Chart" style="width: 100%; height: auto; display: block;">
+</div>
 @endsection

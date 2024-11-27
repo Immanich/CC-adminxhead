@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('municipal_officials', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Name of the official
-            $table->string('title'); // Title (e.g., Mayor, Vice Mayor, etc.)
-            $table->string('image')->nullable(); // Path to the image (optional)
+            $table->string('name');
+            $table->string('title');
+            $table->string('image')->nullable();
+            $table->string('start_year')->default('2023');
+            $table->string('end_year')->default('2025');
             $table->timestamps();
         });
     }

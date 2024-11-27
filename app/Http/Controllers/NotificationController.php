@@ -26,6 +26,15 @@ class NotificationController extends Controller
     return view('notifications.index', compact('notifications', 'unreadCount'));
 }
 
+public function markAllAsRead()
+{
+    $user = auth()->user();
+
+    // Update all notifications for the authenticated user
+    Notification::where('user_id', $user->id)->update(['is_read' => true]);
+
+    return response()->json(['success' => true]);
+}
 
 
 

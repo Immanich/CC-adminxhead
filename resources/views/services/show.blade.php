@@ -75,15 +75,19 @@
                     <td class="border border-gray-300 px-4 py-3 font-bold text-gray-900">Checklist of Requirements</td>
                     <td class="border border-gray-300 px-4 py-3 font-bold text-gray-900">Where to Secure</td>
                 </tr>
-                <!-- Checklist Items -->
                 @foreach(json_decode($service->checklist_of_requirements, true) ?? [] as $index => $checklist)
                 <tr class="{{ $loop->odd ? 'bg-gray-50' : '' }}">
                     <td class="border border-gray-300 px-4 py-3 text-gray-700">{{ $checklist }}</td>
                     <td class="border border-gray-300 px-4 py-3 text-gray-700">
-                        {{ json_decode($service->where_to_secure, true)[$index] ?? ($service->office ? $service->office->office_name : 'N/A') }}
+                        @php
+                            $whereToSecureList = json_decode($service->where_to_secure, true) ?? [];
+                        @endphp
+                        {{ $whereToSecureList[$index] ?? 'N/A' }}
                     </td>
                 </tr>
                 @endforeach
+
+                {{-- @endforeach --}}
             </tbody>
         </table>
         <!-- Service Info Table -->

@@ -39,12 +39,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/municipal-officials', [MunicipalOfficialController::class, 'index'])->name('municipal-officials');
     Route::get('/municipal-officials/{id}/edit', [MunicipalOfficialController::class, 'edit'])->name('municipal-officials.edit');
     Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'update'])->name('municipal-officials.update');
+    Route::get('/year/edit', [MunicipalOfficialController::class, 'editYear']);
+    Route::post('/year/update', [MunicipalOfficialController::class, 'updateYear'])->name('updateYear');
 
-    Route::get('/org-chart', function() { return view('pages.org-chart'); })->name('org-chart');
+
+    Route::view('/pages/org-chart', 'pages.org-chart')->name('org-chart');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::get('/notifications/fetch', [NotificationController::class, 'fetchNotifications'])->name('notifications.fetch');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
 
     // admin/users/sub_users
