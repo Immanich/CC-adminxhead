@@ -13,44 +13,28 @@ class OfficeTranslationSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run()
-    {
-        $languages = [
-            ['code' => 'en', 'name' => 'English'],
-            ['code' => 'fil', 'name' => 'Filipino'],
-        ];
+    public function run(){
+    $languages = [
+        ['code' => 'en', 'name' => 'English'],
+        ['code' => 'fil', 'name' => 'Filipino'],
+    ];
 
-        $offices = Office::all();
+    $offices = Office::all();
 
-        foreach ($offices as $office) {
-            foreach ($languages as $language) {
-                $translation = [
-                    'office_id' => $office->id,
-                    'language_id' => Language::where('code', $language['code'])->first()->id,
-                    'office_name' => ($language['code'] === 'en') ? $office->office_name : "Translated {$office->office_name}",
-                    'description' => ($language['code'] === 'en') ? "Default description" : "Translated description",
-                ];
-                OfficeTranslation::create($translation);
-            }
+    foreach ($offices as $office) {
+        foreach ($languages as $language) {
+            $translation = [
+                'office_id' => $office->id,
+                'language_id' => Language::where('code', $language['code'])->first()->id,
+                'office_name' => ($language['code'] === 'en') ? $office->office_name : $this->getFilipinoTranslation($office->office_name),
+                'description' => ($language['code'] === 'en') ? "Default description" : $this->getFilipinoDescription($office->office_name),
+            ];
+            OfficeTranslation::create($translation);
         }
+    }
 }
 
-        
-        // foreach ($offices as $office) {
-        //     foreach ($languages as $language) {
-        //         $translation = [
-        //             'office_id' => $office->id,
-        //             'language_id' => Language::where('code', $language['code'])->first()->id,
-        //             'office_name' => ($language['code'] === 'en') 
-        //                 ? $office->office_name 
-        //                 : $this->getFilipinoTranslation($office->office_name),
-        //             'description' => ($language['code'] === 'en') 
-        //                 ? "Default description for {$office->office_name}" 
-        //                 : $this->getFilipinoDescription($office->office_name),
-        //         ];
-        //         OfficeTranslation::create($translation);
-        //     }
-        // }
+
 
     private function getFilipinoTranslation($officeName)
     {

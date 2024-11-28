@@ -7,10 +7,16 @@
         </div>
 
         @if(session('success'))
-<div id="successMessage" class="bg-green-100 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
-    <span class="block sm:inline">{{ session('success') }}</span>
-</div>
-@endif
+            <div class="alert {{ strpos(session('success'), 'rejected') !== false ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }} px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        <!-- @if(session('success'))
+            <div id="successMessage" class="bg-green-100 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        @endif -->
 
 @if ($errors->any())
 <div id="errorMessage" class="bg-red-100 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">

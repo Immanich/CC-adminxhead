@@ -16,7 +16,7 @@ class ServiceSeeder extends Seeder
     public function run(): void
     {
         // $transactions = Transaction::where('type_of_transaction', 'type_of_transaction');
-        $g2gTransaction = Transaction::where('type_of_transaction', 'G2G-Government to Government')->first();
+        $g2gTransaction = Transaction::where('type_of_transaction', 'G2G - Government to Government')->first();
         $g2cTransaction = Transaction::where('type_of_transaction', 
                                 "G2C - Government Service to transacting public\n
                                 G2B - Government Service to business entity\n

@@ -130,6 +130,8 @@ Route::put('/feedbacks/{id}/update-reply', [FeedbackController::class, 'updateRe
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
     Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
     Route::post('/feedbacks/{feedback}/reply', [FeedbackController::class, 'reply'])->name('feedbacks.reply');
+    Route::delete('/feedbacks/{feedback}', [FeedbackController::class, 'destroy'])->name('feedbacks.destroy');
+
 
     // Authentication routes
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');

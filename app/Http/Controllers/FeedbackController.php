@@ -124,6 +124,18 @@ public function getReplies($feedbackId)
 
         return redirect()->route('feedbacks.index')->with('success', 'Reply updated successfully');
     }
+
+    public function destroy($id){
+        try {
+            $feedback = Feedback::findOrFail($id);
+            $feedback->delete();
+
+            return redirect()->route('feedbacks.index')->with('success', 'Feedback deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('feedbacks.index')->with('error', 'Failed to delete feedback.');
+        }
+    }
+
 }
 
     // public function updateReply(Request $request, $id){

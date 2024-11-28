@@ -15,13 +15,13 @@ class TransactionSeeder extends Seeder
     {
         $transactions = [
             [
-                'type_of_transaction' => 'G2G-Government to Government',
+                'type_of_transaction' => 'G2G - Government to Government',
             ],
             [
-                'type_of_transaction' => "G2C, Government to CLIENT",
+                'type_of_transaction' => "G2C - Government to CLIENT",
             ],
             [
-                'type_of_transaction' => 'G2C-Gov Service to transacting public',
+                'type_of_transaction' => 'G2C - Gov Service to transacting public',
             ],
             [
                 'type_of_transaction' => 'G2B - Gov Service to business entity',

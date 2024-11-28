@@ -173,7 +173,7 @@ public function deleteService($serviceId)
         Log::error("Approval notification failed: User ID is missing for service ID {$serviceId}");
     }
 
-    return redirect()->route('pending.services')->with('success', 'Service approved successfully.');
+    return redirect()->route('pending.services')->with('success', "Service '{$service->service_name}' approved successfully.");
 }
 
 public function rejectService($serviceId)
@@ -197,7 +197,7 @@ public function rejectService($serviceId)
         Log::error("Rejection notification failed: User ID is missing for service ID {$serviceId}");
     }
 
-    return redirect()->route('pending.services')->with('success', 'Service rejected successfully.');
+    return redirect()->route('pending.services')->with('success', "Service '{$service->service_name}' rejected successfully.");
 }
 
 }

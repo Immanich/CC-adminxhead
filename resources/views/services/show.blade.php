@@ -136,7 +136,7 @@
 
                 <!-- Total Fees and Processing Time -->
                 <tr>
-                    <td colspan="3" class="border border-gray-300 p-2 text-right font-bold">TOTAL</td>
+                    <td colspan="2" class="border border-gray-300 p-2 text-right font-bold">TOTAL</td>
 
                     <!-- Calculate the total of numeric fees only -->
                     <td class="border border-gray-300 p-2">
@@ -148,7 +148,7 @@
                             });
                         @endphp
 
-                        {{ $totalFees > 0 ? '₱ ' . number_format($totalFees, 2) : 'Depends' }}
+                        {{ $totalFees > 0 ? '₱ ' . number_format($totalFees, 2) : 'None' }}
                     </td>
 
                     <!-- Calculate total processing time -->
