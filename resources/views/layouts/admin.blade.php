@@ -35,32 +35,38 @@
             <!-- User and Notifications -->
             <div class="flex items-center space-x-4">
                 <!-- Notifications Bell -->
-                <!-- Notification Dropdown -->
-<div class="relative">
-    <!-- Notification Icon -->
-    <button id="notificationBell" class="text-gray-700 hover:text-blue-500 transition-colors duration-300">
-        <i class="fas fa-bell text-lg"></i>
-        @if($unreadCount > 0)
-            <span
-                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                {{ $unreadCount }}
-            </span>
-        @endif
-    </button>
+                <div class="relative">
+                    <!-- Notification Icon -->
+                    <button id="notificationBell" class="text-gray-700 hover:text-blue-500 transition-colors duration-300">
+                        <i class="fas fa-bell text-lg"></i>
+                        @if($unreadCount > 0)
+                            <span
+                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                                {{ $unreadCount }}
+                            </span>
+                        @endif
+                    </button>
 
-    <!-- Notification Dropdown -->
-    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
-        <div class="p-4 border-b">
-            <h3 class="font-bold text-lg">Notifications</h3>
-        </div>
-        <div id="dropdownNotifications" class="max-h-64 overflow-y-auto">
-            <p class="p-4 text-gray-500 text-sm text-center">Loading...</p>
-        </div>
-        <div class="p-4 border-t text-center">
-            <a href="{{ route('notifications.index') }}" class="text-blue-500 text-sm">See All Notifications</a>
-        </div>
-    </div>
-</div>
+                    <!-- Notification Dropdown -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
+                        <div class="p-4 border-b flex justify-between items-center">
+                            <h3 class="font-bold text-lg">Notifications</h3>
+                            <button id="dropdownOptionsButton" class="text-gray-500 hover:text-blue-500 transition">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                        <div id="dropdownOptions" class="hidden px-4 py-2">
+                            <button id="markAllAsRead" class="text-sm text-blue-500 hover:underline">Mark All as Read</button>
+                        </div>
+                        <div id="dropdownNotifications" class="max-h-64 overflow-y-auto">
+                            <p class="p-4 text-gray-500 text-sm text-center">Loading...</p>
+                        </div>
+                        <div class="p-4 border-t text-center">
+                            <a href="{{ route('notifications.index') }}" class="text-blue-500 text-sm">See All Notifications</a>
+                        </div>
+                    </div>
+                </div>
+
 
 
 
@@ -101,9 +107,10 @@
                     <a href="{{ route('mvmsp') }}" class="sidebar-link font-semibold {{ request()->is('mvmsp') ? 'active' : '' }}">
                         <i class="fas fa-info-circle mr-3"></i> MVMSP
                     </a>
-                    <a href="#" class="sidebar-link font-semibold {{ request()->is('org-chart') ? 'active' : '' }}">
+                    <a href="{{ route('org-chart') }}" class="sidebar-link font-semibold {{ request()->is('pages/org-chart') ? 'active' : '' }}">
                         <i class="fas fa-sitemap mr-3"></i> ORG. CHART
                     </a>
+
                     <a href="{{ route('municipal-officials') }}" class="sidebar-link font-semibold {{ request()->is('municipal-officials') ? 'active' : '' }}">
                         <i class="fas fa-user-tie mr-3"></i> MUNICIPAL OFFICIALS
                     </a>
@@ -175,41 +182,82 @@
             color: #fff;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const bell = document.getElementById('notificationBell');
-            const dropdown = document.getElementById('notificationDropdown');
-            const dropdownNotifications = document.getElementById('dropdownNotifications');
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const notificationBell = document.getElementById('notificationBell');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const dropdownNotifications = document.getElementById('dropdownNotifications');
+        const dropdownOptionsButton = document.getElementById('dropdownOptionsButton');
+        const dropdownOptions = document.getElementById('dropdownOptions');
+        const markAllAsRead = document.getElementById('markAllAsRead');
 
-            bell.addEventListener('click', function () {
-                dropdown.classList.toggle('hidden');
+        // Toggle the notification dropdown
+        notificationBell.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent click from propagating
+            notificationDropdown.classList.toggle('hidden');
 
-                if (!dropdown.classList.contains('hidden')) {
-                    fetch('{{ route('notifications.fetch') }}') // Use the new fetch route
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.notifications.length) {
-                                dropdownNotifications.innerHTML = data.notifications.map(notification => `
-                                    <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
-                                        <div class="text-sm font-medium">${notification.title}</div>
-                                        <div class="text-xs text-gray-500">${notification.description}</div>
-                                        <div class="text-xs text-gray-400">${notification.created_at}</div>
-                                    </a>`).join('');
-                            } else {
-                                dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">No notifications</p>`;
-                            }
-                        });
-                }
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function (event) {
-                if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.classList.add('hidden');
-                }
-            });
+            // Fetch notifications if dropdown is opened
+            if (!notificationDropdown.classList.contains('hidden')) {
+                fetch('{{ route('notifications.fetch') }}') // Use your fetch route
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.notifications.length > 0) {
+                            dropdownNotifications.innerHTML = data.notifications.map(notification => `
+                                <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                                    <div class="text-sm font-medium">${notification.title}</div>
+                                    <div class="text-xs text-gray-500">${notification.description}</div>
+                                    <div class="text-xs text-gray-400">${notification.created_at}</div>
+                                </a>`).join('');
+                        } else {
+                            dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">No notifications</p>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching notifications:', error);
+                        dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">Error loading notifications</p>`;
+                    });
+            }
         });
-    </script>
+
+        // Toggle the dropdown options (Mark All as Read)
+        dropdownOptionsButton.addEventListener('click', function (event) {
+            event.stopPropagation();
+            dropdownOptions.classList.toggle('hidden');
+        });
+
+        // Mark all notifications as read
+        markAllAsRead.addEventListener('click', function () {
+            fetch('{{ route('notifications.markAllAsRead') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        dropdownNotifications.innerHTML = '<p class="p-4 text-gray-500 text-sm text-center">All notifications marked as read.</p>';
+                        const unreadBadge = document.querySelector('#notificationBell span');
+                        if (unreadBadge) unreadBadge.remove();
+                    }
+                })
+                .catch(error => console.error('Error marking all as read:', error));
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            if (
+                !notificationDropdown.contains(event.target) &&
+                !notificationBell.contains(event.target) &&
+                !dropdownOptionsButton.contains(event.target)
+            ) {
+                notificationDropdown.classList.add('hidden');
+                dropdownOptions.classList.add('hidden');
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

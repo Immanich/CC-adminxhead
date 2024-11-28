@@ -42,6 +42,13 @@ class AppServiceProvider extends ServiceProvider
                         ->count();
                 }
 
+                elseif ($user->hasRole('sub_user')) {
+                    // Sub-user: Fetch notifications specific to sub_user
+                    $unreadCount = Notification::where('user_id', $user->id)
+                        ->where('is_read', false)
+                        ->count();
+                }
+
                 // Share globally
                 $view->with('unreadCount', $unreadCount);
             }

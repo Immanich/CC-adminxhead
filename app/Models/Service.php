@@ -18,6 +18,7 @@ class Service extends Model
         'status',
         'checklist_of_requirements',
         'where_to_secure',
+        'created_by',
     ];
 
     protected static function boot()
@@ -83,5 +84,11 @@ class Service extends Model
             ->whereHas('language', fn($query) => $query->where('code', $languageCode))
             ->first();
     }
+
+    public function creator()
+{
+    return $this->belongsTo(User::class, 'created_by');
+}
+
 }
 

@@ -17,30 +17,25 @@ class OfficeController extends Controller
 {
     $user = auth()->user();
 
-    // Check if the user has the 'user' role
     if ($user->hasRole('user|sub_user')) {
-        // Fetch the office assigned to this user user
         $office = $user->office; // Assuming 'office' is a relationship in the User model
 
         if ($office) {
-            // Fetch services related to the office
-            $services = $office->services;
+            $services = $office->services()->where('status', 'approved')->get(); // Only approved services
+            $pendingServices = $office->services()->where('status', 'pending')->get(); // Pending services
+            $transactions = Transaction::all(); // Fetch all transactions (optional)
 
-            // Fetch all transactions for the dropdown (optional)
-            $transactions = Transaction::all();
-
-            // Redirect the user user directly to the services of their assigned office
-            return view('offices.services', compact('office', 'services', 'transactions'));
+            // Pass pendingServices to the view
+            return view('offices.services', compact('office', 'services', 'pendingServices', 'transactions'));
         } else {
-            // Handle the case where the user user has no office assigned
             return redirect()->back()->with('error', 'No office assigned to this user.');
         }
     }
 
-    // If the user is an admin, fetch all offices
     $offices = Office::all();
     return view('offices.offices', compact('offices'));
 }
+
 
 
     public function feedbacks() {
@@ -49,18 +44,15 @@ class OfficeController extends Controller
 
     public function showServices($id)
 {
-    // Fetch the services related to the office
-    $services = Service::where('office_id', $id)->get();
-
-    // Fetch the office information
+    $services = Service::where('office_id', $id)->where('status', 'approved')->get(); // Approved services
+    $pendingServices = Service::where('office_id', $id)->where('status', 'pending')->get(); // Pending services
     $office = Office::findOrFail($id);
-
-    // Fetch all transactions
     $transactions = Transaction::all();
 
-    // Pass the services, office, and transactions to the view
-    return view('offices.services', compact('services', 'office', 'transactions'));
+    // Pass pendingServices to the view
+    return view('offices.services', compact('services', 'pendingServices', 'office', 'transactions'));
 }
+
 
 
     public function serviceDetails($service_id, $office_id){

@@ -48,5 +48,27 @@ public function update(Request $request, $id)
     return redirect()->route('municipal-officials')->with('success', 'Official updated successfully!');
 }
 
+public function editYear()
+{
+    $yearData = MunicipalOfficial::select('start_year', 'end_year')->first(); // Retrieve the first entry's year
+    return response()->json($yearData);
+}
+
+public function updateYear(Request $request)
+{
+    $request->validate([
+        'start_year' => 'required|digits:4',
+        'end_year' => 'required|digits:4|gte:start_year',
+    ]);
+
+    $official = MunicipalOfficial::first(); // Update the first entry (or adjust logic for multiple)
+    $official->start_year = $request->start_year;
+    $official->end_year = $request->end_year;
+    $official->save();
+
+    return redirect()->back()->with('success', 'Year range updated successfully.');
+}
+
+
 
 }

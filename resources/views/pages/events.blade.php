@@ -17,70 +17,82 @@
         @endif
     </div>
 
-
+    <!-- Success and Error Messages -->
     @if(session('success'))
-<div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
-    <span class="block sm:inline">{{ session('success') }}</span>
-</div>
-@endif
-
-@if ($errors->any())
-<div id="errorMessage" class="bg-red-200 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-
-    {{-- @if (session('success'))
-        <div class="bg-green-500 text-white p-2 rounded mb-4 text-center">
-            {{ session('success') }}
+        <div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4">
+            <span class="block sm:inline">{{ session('success') }}</span>
         </div>
     @endif
 
-    @if (session('error'))
-        <div class="bg-red-500 text-white p-2 rounded mb-4 text-center">
-            {{ session('error') }}
+    @if ($errors->any())
+        <div id="errorMessage" class="bg-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
-    @endif --}}
+    @endif
 
-    <h2 class="text-lg font-bold mb-2">Events for You</h2>
+    <!-- Pending Events Section -->
+    @if(auth()->user()->hasRole('user') || auth()->user()->hasRole('sub_user'))
+    <div class="mt-8">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold mb-2">Pending Events</h2>
+            <button id="togglePendingEventsButton" class="text-blue-500 hover:underline">
+                Hide
+            </button>
+        </div>
+        <div id="pendingEventsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @if($pendingEvents->isEmpty())
+                <p class="text-gray-600 col-span-full">You have no pending events at the moment.</p>
+            @else
+                @foreach($pendingEvents as $event)
+                    <div class="border border-gray-300 rounded-lg shadow-md bg-white overflow-hidden">
+                        <div class="relative">
+                            <img src="{{ $event->image }}" alt="Event Image" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold">{{ $event->title }}</h3>
+                                <p class="text-sm text-gray-500">{{ Str::limit($event->description, 100) }}</p>
+                                <p class="mt-2 text-sm font-medium text-blue-600">
+                                    {{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="text-gray-400">Your created event is still pending. Once approved, it will be visible on the page.</h4>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    </div>
+@endif
 
-    <!-- Events Grid Section -->
+
+    <!-- Approved Events Section -->
+    <h2 class="text-lg font-bold mb-2 mt-8">Approved Events</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @foreach($approvedEvents as $event)
             <div class="relative group border border-gray-300 rounded-lg shadow-md bg-white overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full max-w-lg">
-                <!-- Event Image with Hover Overlay -->
                 <div class="relative">
                     <img src="{{ $event->image }}" alt="Event Image" class="w-full h-72 object-cover">
-
-                    <!-- Title and Description Overlay -->
                     <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black to-transparent transition-opacity duration-300 ease-in-out group-hover:bg-black group-hover:bg-opacity-50">
-                        <!-- Title - Positioned close to the bottom when not hovered, moves slightly up on hover -->
-                        <h2 class="text-lg font-semibold text-white opacity-100 transition-transform duration-300 ease-in-out transform group-hover:translate-y-[-5px]">
-                            {{ $event->title }}
-                        </h2>
-                        <!-- Description - Initially hidden, fades in on hover -->
-                        <p class="text-sm text-gray-200 opacity-0 transform translate-y-4 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-y-0">
+                        <h2 class="text-xl font-semibold text-white opacity-100">{{ $event->title }}</h2>
+                        <h3 class="text-sm font-medium text-gray-300">{{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y') }}</h3>
+                        <p class="text-sm text-gray-200 opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
                             {{ Str::limit($event->description, 50) }}
                         </p>
                     </div>
                 </div>
-
-                <!-- Centered Action Buttons -->
                 <div class="flex justify-center space-x-4 p-4">
-                    <!-- View Button -->
-                    <a href="{{ route('events.show', $event->id) }}"
-                        class="text-white bg-blue-500 hover:bg-blue-600 border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <i class="fas fa-eye"></i>
+                    <a href="{{ route('events.show', $event->id) }}" class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4">
+                        <i class="fas fa-eye mr-1"></i>View
                     </a>
-
                     @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
                     <button onclick="editEvent({{ $event->id }})"
-                        class="text-white bg-green-500 hover:bg-green-600 border border-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                        <i class="fas fa-edit"></i>
+                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                        <i class="fas fa-edit mr-1"></i>Edit
                     </button>
                 @endif
 
@@ -90,13 +102,12 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="text-white bg-red-500 hover:bg-red-600 border border-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-                            <i class="fas fa-trash-alt"></i>
+                            class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-500 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                            <i class="fas fa-trash-alt mr-1"></i>Delete
                         </button>
                     </form>
                 @endif
                 </div>
-
             </div>
         @endforeach
     </div>
@@ -123,6 +134,13 @@
                 <label for="description" class="block text-sm font-medium">Event Description</label>
                 <textarea id="description" name="description" class="mt-1 block w-full p-1 border rounded" rows="3" required></textarea>
             </div>
+
+            <!-- Event Date and Time -->
+            <div class="mb-2">
+                <label for="date_time" class="block text-sm font-medium">Event Date and Time</label>
+                <input type="datetime-local" id="date_time" name="date_time" class="mt-1 block w-full p-1 border rounded" required>
+            </div>
+
 
             <!-- Image Type Selector -->
             <div class="mb-2">
@@ -197,6 +215,7 @@ openAddModal.addEventListener('click', () => {
     document.getElementById('eventId').value = '';
     document.getElementById('title').value = '';
     document.getElementById('description').value = '';
+    document.getElementById('date_time').value = '';
     document.getElementById('image').value = '';
     document.getElementById('image_file').value = '';
     imageTypeUrl.checked = true; // Default to Image URL
@@ -215,6 +234,36 @@ closeModalButton.addEventListener('click', () => {
     modal.classList.remove('flex');
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('togglePendingEventsButton');
+        const pendingEventsContainer = document.getElementById('pendingEventsContainer');
+
+        // Check localStorage for saved visibility state
+        const isHidden = localStorage.getItem('pendingEventsHidden') === 'true';
+
+        // Apply the saved state
+        if (isHidden) {
+            pendingEventsContainer.style.display = 'none';
+            toggleButton.textContent = 'Unhide';
+        } else {
+            pendingEventsContainer.style.display = 'grid';
+            toggleButton.textContent = 'Hide';
+        }
+
+        // Toggle visibility and save state to localStorage
+        toggleButton.addEventListener('click', () => {
+            if (pendingEventsContainer.style.display === 'none') {
+                pendingEventsContainer.style.display = 'grid'; // Show the container
+                toggleButton.textContent = 'Hide'; // Set button text to "Hide"
+                localStorage.setItem('pendingEventsHidden', 'false'); // Save state
+            } else {
+                pendingEventsContainer.style.display = 'none'; // Hide the container
+                toggleButton.textContent = 'Unhide'; // Set button text to "Unhide"
+                localStorage.setItem('pendingEventsHidden', 'true'); // Save state
+            }
+        });
+    });
+
 // Open modal for editing an event
 function editEvent(id) {
     fetch(`/events/${id}/edit`)
@@ -223,6 +272,7 @@ function editEvent(id) {
             document.getElementById('eventId').value = event.id;
             document.getElementById('title').value = event.title;
             document.getElementById('description').value = event.description;
+            document.getElementById('date_time').value = event.date_time;
 
             if (event.image.startsWith('http')) {
                 imageTypeUrl.checked = true;

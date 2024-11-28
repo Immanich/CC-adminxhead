@@ -13,13 +13,13 @@
             <div class="flex space-x-4">
                 @if (empty($officeMvmsp->mandate) && empty($officeMvmsp->vision) && empty($officeMvmsp->mission) && empty($officeMvmsp->service_pledge))
                     <button id="openAddModal"
-                        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
-                        Create
+                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <i class="bi bi-plus-lg mr-1"></i>Create
                     </button>
                 @else
                     <button onclick="editMvmsp({{ $officeMvmsp->id ?? 'null' }})"
-                        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                        Edit
+                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                        <i class="fas fa-edit mr-1"></i>Edit
                     </button>
 
                     <form action="{{ route('mvmsp.delete', $officeMvmsp->id ?? 0) }}" method="POST"
@@ -27,8 +27,8 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                            Delete
+                            class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-500 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                            <i class="fas fa-trash-alt mr-1"></i>Delete
                         </button>
                     </form>
                 @endif

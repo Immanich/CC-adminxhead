@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\Log;
 class EventController extends Controller
 {
     public function index()
-    {
-        $approvedEvents = Event::where('status', 'approved')->orderBy('created_at', 'desc')->get();
-        return view('pages.events', compact('approvedEvents'));
-    }
+{
+    $approvedEvents = Event::where('status', 'approved')->orderBy('created_at', 'desc')->get();
+    $pendingEvents = Event::where('status', 'pending')
+                          ->where('user_id', auth()->id()) // Only pending events created by this user
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+    return view('pages.events', compact('approvedEvents', 'pendingEvents'));
+}
+
 
     public function store(Request $request)
 {
@@ -21,13 +26,15 @@ class EventController extends Controller
         'title' => 'required|string|max:255',
         'description' => 'required|string',
         'image' => 'nullable|string|url', // Allow nullable for image URL
-        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Allow file upload
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000', // Allow file upload
+        'date_time' => 'required|date',
     ]);
 
     try {
         $event = new Event();
         $event->title = $request->title;
         $event->description = $request->description;
+        $event->date_time = $request->date_time;
         $event->user_id = auth()->id();
 
         // Check if a file is uploaded
@@ -96,11 +103,13 @@ class EventController extends Controller
         'description' => 'required|string',
         'image' => 'nullable|string|url',
         'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'date_time' => 'required|date',
     ]);
 
     $event = Event::findOrFail($id);
     $event->title = $request->title;
     $event->description = $request->description;
+    $event->date_time = $request->date_time;
 
     if ($request->hasFile('image_file')) {
         $imagePath = $request->file('image_file')->store('events', 'public');

@@ -18,7 +18,7 @@
             </h1>
 
             <!-- Add Service Button (Visible only to Admin or user) -->
-            @role('admin|user')
+            @role('admin|user|sub_user')
             <button class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-12 h-12 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                     onclick="document.getElementById('addServiceModal').style.display='flex'">
                 <i class="fa-solid fa-plus"></i>
@@ -30,46 +30,6 @@
 
     <hr class="mb-6 border-2 border-gray-300">
 
-    <!-- Services List -->
-    <div id="servicesList" class="grid grid-cols-1 gap-6">
-        {{-- <h2>About this service:</h2> --}}
-        <h2 class="text-justify font-semibold">{{ $service->description }}</h2>
-
-        <!-- Office Information -->
-        <table class="border-collapse w-full">
-            <tbody>
-                <tr>
-                    <td class="border border-black px-4 py-2  font-bold">Office or Division:</td>
-                    <td class="border border-black px-4 py-2">{{ $service->office ? $service->office->office_name : 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <td class="border border-black px-4 py-2  font-bold">Classification</td>
-                    <td class="border border-black px-4 py-2">{{ $service->classification }}</td>
-                </tr>
-                <tr>
-                    <td class="border border-black px-4 py-2  font-bold">Type of Transaction:</td>
-                    <td class="border border-black px-4 py-2">{{ $service->transaction->type_of_transaction }}</td>
-                </tr>
-                <tr>
-                    <td class="border border-black px-4 py-2  font-bold">CHECKLIST OF REQUIREMENTS</td>
-                    <td class="border border-black px-4 py-2  font-bold">WHERE TO SECURE</td>
-                </tr>
-                @foreach(json_decode($service->checklist_of_requirements, true) ?? [] as $index => $checklist)
-                    <tr>
-                        <td class="border border-black px-4 py-2">{{ $checklist }}</td>
-                        <td class="border border-black px-4 py-2">
-                            {{ json_decode($service->where_to_secure, true)[$index] ?? ($service->office ? $service->office->office_name : 'N/A') }}
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        {{-- @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative ">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
-    @endif --}}
 
     @if(session('success'))
 <div id="successMessage" class="bg-green-200 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
@@ -99,6 +59,63 @@
                     <td class="border border-black px-4 py-2  font-bold">ACTION</td>
                 </tr>
 
+    <!-- Services List -->
+    <div id="servicesList" class="grid grid-cols-1 gap-6">
+        {{-- <h2>About this service:</h2> --}}
+        <h2 class="text-justify font-semibold">{!! nl2br(e($service->description)) !!}</h2>
+
+        <!-- Office Information -->
+        <table class="w-full border border-gray-300 rounded-lg shadow-md">
+            <tbody>
+                <!-- Office or Division -->
+                <tr class="bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-3 font-bold text-gray-800">Office or Division:</td>
+                    <td class="border border-gray-300 px-4 py-3 text-gray-700">{{ $service->office ? $service->office->office_name : 'N/A' }}</td>
+                </tr>
+                <!-- Classification -->
+                <tr>
+                    <td class="border border-gray-300 px-4 py-3 font-bold text-gray-800">Classification:</td>
+                    <td class="border border-gray-300 px-4 py-3 text-gray-700">{{ $service->classification }}</td>
+                </tr>
+                <!-- Type of Transaction -->
+                <tr class="bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-3 font-bold text-gray-800">Type of Transaction:</td>
+                    <td class="border border-gray-300 px-4 py-3 text-gray-700">{{ $service->transaction->type_of_transaction }}</td>
+                </tr>
+                <!-- Checklist Header -->
+                <tr class="bg-gray-200">
+                    <td class="border border-gray-300 px-4 py-3 font-bold text-gray-900">Checklist of Requirements</td>
+                    <td class="border border-gray-300 px-4 py-3 font-bold text-gray-900">Where to Secure</td>
+                </tr>
+                @foreach(json_decode($service->checklist_of_requirements, true) ?? [] as $index => $checklist)
+                <tr class="{{ $loop->odd ? 'bg-gray-50' : '' }}">
+                    <td class="border border-gray-300 px-4 py-3 text-gray-700">{{ $checklist }}</td>
+                    <td class="border border-gray-300 px-4 py-3 text-gray-700">
+                        @php
+                            $whereToSecureList = json_decode($service->where_to_secure, true) ?? [];
+                        @endphp
+                        {{ $whereToSecureList[$index] ?? 'N/A' }}
+                    </td>
+                </tr>
+                @endforeach
+
+                {{-- @endforeach --}}
+            </tbody>
+        </table>
+        <!-- Service Info Table -->
+        <table class="w-full text-sm text-left text-gray-700 border border-gray-300 rounded-lg shadow-md">
+            <thead class="bg-gray-200 text-gray-800 uppercase font-semibold text-sm">
+                <tr>
+                    <th class="px-4 py-3 border border-gray-300">Info Title</th>
+                    <th class="px-4 py-3 border border-gray-300">Follow These Steps</th>
+                    <th class="px-4 py-3 border border-gray-300">Agency Action</th>
+                    <th class="px-4 py-3 border border-gray-300">Fees</th>
+                    <th class="px-4 py-3 border border-gray-300">Processing Time</th>
+                    <th class="px-4 py-3 border border-gray-300">Person Responsible</th>
+                    <th class="px-4 py-3 border border-gray-300 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach($service->serviceInfos as $info)
                     @php
                         $clients = implode('<br>', json_decode($info->clients, true) ?? []);
@@ -106,26 +123,31 @@
                         $processingTimes = implode('<br>', json_decode($info->processing_time, true) ?? []);
                         $personsResponsible = implode('<br>', json_decode($info->person_responsible, true) ?? []);
                     @endphp
-
-                    <tr>
-                        <!-- <td class="border border-black px-4 py-2">{{ $info->info_title }}</td> -->
-                        <td class="border border-black px-4 py-2">{!! $clients !!}</td>
-                        <td class="border border-black px-4 py-2">{!! $agencyActions !!}</td>
-                        <td class="border border-black px-4 py-2">₱ {{ number_format($info->fees, 2) }}</td>
-                        <td class="border border-black px-4 py-2">{!! $processingTimes !!}</td>
-                        <td class="border border-black px-4 py-2">{!! $personsResponsible !!}</td>
-                        <td class="border border-black px-4 py-2">
-                            <!-- Edit and Delete Buttons Side by Side -->
-                            <div class="flex space-x-2">
-                                <button class="ml-3 text-green-500 hover:text-green-700"
-                                        onclick="openEditModal({{ $info->id }}, '{{ $info->step }}', '{{ $info->info_title }}', `{!! $clients !!}`, `{!! $agencyActions !!}`, '{{ $info->fees }}', `{!! $processingTimes !!}`, `{!! $personsResponsible !!}`)">
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-3 border border-gray-300">{{ $info->info_title }}</td>
+                        <td class="px-4 py-3 border border-gray-300">{!! $clients !!}</td>
+                        <td class="px-4 py-3 border border-gray-300">{!! $agencyActions !!}</td>
+                        <td class="px-4 py-3 border border-gray-300">{{ $info->fees }}</td>
+                        <td class="px-4 py-3 border border-gray-300">{!! $processingTimes !!}</td>
+                        <td class="px-4 py-3 border border-gray-300">{!! $personsResponsible !!}</td>
+                        <td class="px-4 py-3 border border-gray-300 text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <!-- Edit Button -->
+                                <button
+                                    onclick="openEditModal({{ $info->id }}, '{{ $info->step }}', '{{ $info->info_title }}', `{!! $clients !!}`, `{!! $agencyActions !!}`, '{{ $info->fees }}', `{!! $processingTimes !!}`, `{!! $personsResponsible !!}`)"
+                                    class="text-green-600 hover:text-green-800"
+                                >
                                     <i class="fas fa-edit"></i>
                                 </button>
-
-                                <form action="{{ route('services.info.delete', ['service_id' => $service->id, 'info_id' => $info->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service info?');" style="display:inline-block;">
+                                <!-- Delete Button -->
+                                <form
+                                    action="{{ route('services.info.delete', ['service_id' => $service->id, 'info_id' => $info->id]) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this service info?');"
+                                >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -133,47 +155,21 @@
                         </td>
                     </tr>
                 @endforeach
-
-                <!-- Total Fees and Processing Time -->
-                <tr>
-                    <td colspan="2" class="border border-gray-300 p-2 text-right font-bold">TOTAL</td>
-
-                    <!-- Calculate the total of numeric fees only -->
-                    <td class="border border-gray-300 p-2">
+                <!-- Summary Row -->
+                <tr class="bg-gray-50 font-semibold">
+                    <td colspan="2" class="px-4 py-3 border border-gray-300 text-right">Total:</td>
+                    <td class="px-4 py-3 border border-gray-300">
                         @php
-                            $totalFees = $service->serviceInfos->filter(function($info) {
-                                return is_numeric($info->fees);
-                            })->sum(function($info) {
-                                return (float) $info->fees;
-                            });
+                            $totalFees = $service->serviceInfos->sum(fn($info) => is_numeric($info->fees) ? (float) $info->fees : 0);
                         @endphp
 
                         {{ $totalFees > 0 ? '₱ ' . number_format($totalFees, 2) : 'None' }}
                     </td>
-
-                    <!-- Calculate total processing time -->
-                    {{-- <td class="border border-gray-300 p-2">
-                        @php
-                            $totalProcessingTime = 0;
-
-                            foreach ($service->serviceInfos as $info) {
-                                $processingTimes = json_decode($info->processing_time, true);
-
-                                foreach ($processingTimes as $time) {
-                                    if (preg_match('/(\d+)/', $time, $matches)) {
-                                        $totalProcessingTime += (int)$matches[1];
-                                    }
-                                }
-                            }
-                        @endphp
-
-                        {{ $totalProcessingTime > 0 ? $totalProcessingTime . ' minutes' : 'Depends' }}
-                    </td> --}}
-
-                    <td colspan="2" class="border border-gray-300 p-2"></td>
+                    <td colspan="3" class="px-4 py-3 border border-gray-300"></td>
                 </tr>
             </tbody>
         </table>
+
     </div>
 
     <!-- Modal for Adding Service Info -->

@@ -54,22 +54,24 @@
                     <td class="py-3 px-6 border-b">
                         <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
                             <!-- Edit User Button -->
-                            <button type="button" class="text-white bg-green-500 hover:bg-green-600 border border-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 editUserButton"
+                            <button type="button"
+                                    class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 editUserButton"
                                     data-user="{{ $user->id }}">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit mr-1"></i> Edit
                             </button>
 
                             <!-- Delete User Button -->
                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onclick="return confirm('Are you sure you want to delete this user?');">
-                                    <i class="fas fa-trash-alt"></i>
+                                <button type="submit"
+                                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-500 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                        onclick="return confirm('Are you sure you want to delete this user?');">
+                                    <i class="fas fa-trash-alt mr-1"></i> Delete
                                 </button>
                             </form>
 
                             <!-- Enable/Disable Account Button -->
-                           <!-- Enable/Disable Account Button -->
                             @if(
                                 auth()->user()->hasRole('admin') ||
                                 (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user'))
@@ -77,17 +79,18 @@
                                 <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('POST')
-                                    <button type="submit" class="text-white bg-gray-500 hover:bg-gray-600 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm w-8 h-8 flex items-center justify-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
+                                    <button type="submit"
+                                            class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-gray-500 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
                                         @if($user->is_disabled)
-                                            <i class="bi bi-toggle2-off"></i>
+                                            <i class="bi bi-toggle2-off mr-1"></i> Activate
                                         @else
-                                            <i class="bi bi-toggle2-on"></i>
+                                            <i class="bi bi-toggle2-on mr-1"></i> Deactivate
                                         @endif
                                     </button>
                                 </form>
                             @endif
-
                         </div>
+
 
 
                     </td>
@@ -109,19 +112,29 @@
 
                 <div class="mb-4">
                     <label for="username" class="block text-sm font-medium">Username</label>
-                    <input type="text" id="username" name="username" class="mt-1 p-2 block w-full border rounded" required>
+                    <input type="text" id="username" name="username" class="mt-1 p-2 block w-full border rounded" placeholder="Enter username" required>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-4 relative">
                     <label for="password" class="block text-sm font-medium">Password</label>
-                    <input type="password" id="password" name="password" class="mt-1 p-2 block w-full border rounded">
-                    <small class="text-gray-500">Leave blank to keep current password</small>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" class="mt-1 p-2 block w-full border rounded pr-10" placeholder="Enter password" required>
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-2 flex items-center">
+                            <i class="fas fa-eye text-gray-500" id="passwordIcon"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-4 relative">
                     <label for="password_confirmation" class="block text-sm font-medium">Confirm Password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" class="mt-1 p-2 block w-full border rounded">
+                    <div class="relative">
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="mt-1 p-2 block w-full border rounded pr-10" placeholder="Retype your password" required>
+                        <button type="button" id="togglePasswordConfirmation" class="absolute inset-y-0 right-2 flex items-center">
+                            <i class="fas fa-eye text-gray-500" id="passwordConfirmationIcon"></i>
+                        </button>
+                    </div>
                 </div>
+
 
                 <div class="mb-4">
                     <label for="role" class="block text-sm font-medium">Role</label>
@@ -194,6 +207,31 @@
         document.getElementById('closeModalButton').addEventListener('click', function () {
             document.getElementById('userModal').classList.add('hidden');
         });
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordField = document.getElementById('password');
+    const passwordIcon = document.getElementById('passwordIcon');
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        passwordIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        passwordIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+});
+
+document.getElementById('togglePasswordConfirmation').addEventListener('click', function () {
+    const passwordConfirmationField = document.getElementById('password_confirmation');
+    const passwordConfirmationIcon = document.getElementById('passwordConfirmationIcon');
+    if (passwordConfirmationField.type === 'password') {
+        passwordConfirmationField.type = 'text';
+        passwordConfirmationIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        passwordConfirmationField.type = 'password';
+        passwordConfirmationIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+});
+
 
         // Ensure window.onload is defined once, combining both success and error message fade logic
         window.onload = function() {
