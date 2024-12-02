@@ -39,7 +39,7 @@ class Notification extends NotificationBase
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class, 'service_id');
     }
 
     public function event()

@@ -40,8 +40,8 @@ class OfficeTranslationSeeder extends Seeder
     {
         // Define translations for Filipino
         $translations = [
-            'Accounting Office' => 'Tanggapan ng Accounting',
-            'Assessor\'s Office' => 'Tanggapan ng Tagatasa',
+            'Accounting Office' => 'Tanggapan ng Accounting1',
+            'Assessor\'s Office' => 'Tanggapan ng Tagatasa1',
             'Business Permits & Licensing Office' => 'Tanggapan ng Mga Pahintulot sa Negosyo at Lisensya',
             'Engineering Office' => 'Tanggapan ng Inhenyeriya',
             'Human Resource & Management Office' => 'Tanggapan ng Human Resource at Pamamahala',

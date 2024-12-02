@@ -37,7 +37,8 @@ class ServiceSeeder extends Seeder
                 "4. Audited DV's with duly accomplished Obligation Request (OBR) by the MBO",
                 '5. Audited & obligated DVs, payrolls and duly filled up/signed/dated supporting documents',
             ]),
-            'where_to_secure' => json_encode(['Accounting Office'])
+            'where_to_secure' => json_encode(['Accounting Office']),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -49,7 +50,8 @@ class ServiceSeeder extends Seeder
             'checklist_of_requirements' => json_encode([
                 'None',
             ]),
-            'where_to_secure' => json_encode(['Accounting Office'])
+            'where_to_secure' => json_encode(['Accounting Office']),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -62,6 +64,7 @@ class ServiceSeeder extends Seeder
                 'None',
             ]),
             'where_to_secure' => json_encode(['Accounting Office']),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -77,6 +80,7 @@ class ServiceSeeder extends Seeder
                 "4. Personal appearance of the Barangay Treasurer",
             ]),
             'where_to_secure' => json_encode(['Accounting Office']),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -94,6 +98,7 @@ class ServiceSeeder extends Seeder
                 '1. Municipal Treasurer’s Office',
                 '2. Notary Public',
                 '3. To be prepared by a Notary Public']),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -155,7 +160,8 @@ class ServiceSeeder extends Seeder
                 '',
                 '1. Geodetic Engineer',
                 "2. Municipal Assessor's Office",
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -176,7 +182,8 @@ class ServiceSeeder extends Seeder
                 '1.  Actual Inspection by the Municipal Assessor’s Staff ',
                 '',
                 '2. From the Supplier or Owner '
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -285,7 +292,8 @@ class ServiceSeeder extends Seeder
                 '5. From the banking institution',
                 '6. Municipal Treasurer’s Office',
                 '7. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -399,7 +407,8 @@ class ServiceSeeder extends Seeder
                 '6. Registry of Deeds Tagbilaran City',
                 '7. Municipal Treasurer’s Office',
                 '8. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -421,7 +430,8 @@ class ServiceSeeder extends Seeder
                 '3. From the Owner',
                 '4. Municipal Treasurer’s Office',
                 '5. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -435,7 +445,8 @@ class ServiceSeeder extends Seeder
             ]),
             'where_to_secure' => json_encode([
                 '1. Municipal Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -449,7 +460,8 @@ class ServiceSeeder extends Seeder
             ]),
             'where_to_secure' => json_encode([
                 '1. Municipal Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -463,7 +475,8 @@ class ServiceSeeder extends Seeder
             ]),
             'where_to_secure' => json_encode([
                 '1. Municipal Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -487,7 +500,8 @@ class ServiceSeeder extends Seeder
                 '4. Municipal Assessor’s Office Staff',
                 '5. Municipal Treasurer’s Office',
                 '6. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -515,7 +529,8 @@ class ServiceSeeder extends Seeder
                 '6. From the owner',
                 '7. Municipal Treasurer’s Office',
                 '8. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -558,7 +573,8 @@ class ServiceSeeder extends Seeder
                 '5. To be prepared by a Notary Public',
                 '6. Municipal Treasurer’s Office',
                 '7. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -586,7 +602,8 @@ class ServiceSeeder extends Seeder
                 '6. Municipal Treasurer’s Office',
                 '7. Municipal Treasurer’s Office',
                 '8. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -612,7 +629,8 @@ class ServiceSeeder extends Seeder
                 '5. Municipal Treasurer’s Office',
                 '6. Municipal Treasurer’s Office',
                 '7. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -640,7 +658,8 @@ class ServiceSeeder extends Seeder
                 '6. Municipal Treasurer’s Office',
                 '7. Municipal Treasurer’s Office',
                 '8. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
 
         Service::create([
@@ -668,7 +687,8 @@ class ServiceSeeder extends Seeder
                 '6. Municipal Treasurer’s Office',
                 '7. Municipal Treasurer’s Office',
                 '8. Provincial Treasurer’s Office',
-            ])
+            ]),
+            'status' => "approved",
         ]);
     }
 }
