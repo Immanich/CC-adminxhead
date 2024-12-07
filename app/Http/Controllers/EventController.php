@@ -10,14 +10,21 @@ use Illuminate\Support\Facades\Log;
 class EventController extends Controller
 {
     public function index()
-{
-    $approvedEvents = Event::where('status', 'approved')->orderBy('created_at', 'desc')->get();
-    $pendingEvents = Event::where('status', 'pending')
-                          ->where('user_id', auth()->id()) // Only pending events created by this user
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-    return view('pages.events', compact('approvedEvents', 'pendingEvents'));
-}
+    {
+        $approvedEvents = Event::where('status', 'approved')
+            ->where('expires_at', '>', now()) // Exclude expired events
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pendingEvents = Event::where('status', 'pending')
+            ->where('user_id', auth()->id())
+            ->where('expires_at', '>', now()) // Exclude expired events
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pages.events', compact('approvedEvents', 'pendingEvents'));
+    }
+
 
 
     public function store(Request $request)
@@ -28,6 +35,7 @@ class EventController extends Controller
         'image' => 'nullable|string|url', // Allow nullable for image URL
         'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000', // Allow file upload
         'date_time' => 'required|date',
+        'expires_at' => 'required|date',
     ]);
 
     try {
@@ -35,6 +43,7 @@ class EventController extends Controller
         $event->title = $request->title;
         $event->description = $request->description;
         $event->date_time = $request->date_time;
+        $event->expires_at = $request->expires_at;
         $event->user_id = auth()->id();
 
         // Check if a file is uploaded
@@ -104,12 +113,14 @@ class EventController extends Controller
         'image' => 'nullable|string|url',
         'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'date_time' => 'required|date',
+        'expires_at' => 'required|date',
     ]);
 
     $event = Event::findOrFail($id);
     $event->title = $request->title;
     $event->description = $request->description;
     $event->date_time = $request->date_time;
+    $event->expires_at = $request->expires_at;
 
     if ($request->hasFile('image_file')) {
         $imagePath = $request->file('image_file')->store('events', 'public');
@@ -155,7 +166,7 @@ public function delete($id)
         'event_id' => $event->id,
         'status' => 'approved',
     ]);
-        
+
     // Create a notification for the user who created the event
     if ($event->user_id) {
         Notification::create([

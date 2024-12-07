@@ -46,18 +46,6 @@
     </ul>
 </div>
 @endif
-        <!-- Service Info Table -->
-        <table class="border-collapse w-full ">
-            <tbody>
-                <tr>
-                    <!-- <td class="border border-black px-4 py-2  font-bold">INFO TITLE</td> -->
-                    <td class="border border-black px-4 py-2  font-bold">CLIENTS</td>
-                    <td class="border border-black px-4 py-2  font-bold">AGENCY ACTION</td>
-                    <td class="border border-black px-4 py-2  font-bold">FEES TO BE PAID</td>
-                    <td class="border border-black px-4 py-2  font-bold">PROCESSING TIME</td>
-                    <td class="border border-black px-4 py-2  font-bold">PERSON RESPONSIBLE</td>
-                    <td class="border border-black px-4 py-2  font-bold">ACTION</td>
-                </tr>
 
     <!-- Services List -->
     <div id="servicesList" class="grid grid-cols-1 gap-6">
@@ -127,7 +115,18 @@
                         <td class="px-4 py-3 border border-gray-300">{{ $info->info_title }}</td>
                         <td class="px-4 py-3 border border-gray-300">{!! $clients !!}</td>
                         <td class="px-4 py-3 border border-gray-300">{!! $agencyActions !!}</td>
-                        <td class="px-4 py-3 border border-gray-300">{{ $info->fees }}</td>
+                        <td class="px-4 py-3 border border-gray-300">
+                            @php
+                                $fees = json_decode($info->fees);
+                            @endphp
+
+                            @if (is_array($fees))
+                                {{ implode(', ', $fees) }}
+                            @else
+                                {{ $info->fees }}  <!-- Fallback if fees is not a valid JSON array -->
+                            @endif
+                        </td>
+
                         <td class="px-4 py-3 border border-gray-300">{!! $processingTimes !!}</td>
                         <td class="px-4 py-3 border border-gray-300">{!! $personsResponsible !!}</td>
                         <td class="px-4 py-3 border border-gray-300 text-center">
@@ -157,13 +156,12 @@
                 @endforeach
                 <!-- Summary Row -->
                 <tr class="bg-gray-50 font-semibold">
-                    <td colspan="2" class="px-4 py-3 border border-gray-300 text-right">Total:</td>
+                    <td colspan="3" class="px-4 py-3 border border-gray-300 text-right">Total:</td>
                     <td class="px-4 py-3 border border-gray-300">
                         @php
                             $totalFees = $service->serviceInfos->sum(fn($info) => is_numeric($info->fees) ? (float) $info->fees : 0);
                         @endphp
-
-                        {{ $totalFees > 0 ? '₱ ' . number_format($totalFees, 2) : 'None' }}
+                        {{ $totalFees > 0 ? '₱' . number_format($totalFees, 2) : 'Depends' }}
                     </td>
                     <td colspan="3" class="px-4 py-3 border border-gray-300"></td>
                 </tr>
@@ -189,7 +187,7 @@
 
                 <div class="mb-2">
                     <label for="info_title" class="block text-sm font-medium">Info Title</label>
-                    <input type="text" id="info_title" name="info_title" class="mt-1 p-2 block w-full border rounded" required>
+                    <input type="text" id="info_title" name="info_title" class="mt-1 p-2 block w-full border rounded" >
                 </div>
 
                 <div class="mb-2">
@@ -241,7 +239,7 @@
 
                 <div class="mb-2">
                     <label for="edit_info_title" class="block text-sm font-medium">Info Title</label>
-                    <input type="text" id="edit_info_title" name="info_title" class="mt-1 p-2 block w-full border rounded" required>
+                    <input type="text" id="edit_info_title" name="info_title" class="mt-1 p-2 block w-full border rounded">
                 </div>
 
                 <div class="mb-2">

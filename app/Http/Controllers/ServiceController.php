@@ -32,6 +32,63 @@ class ServiceController extends Controller
 
 
 
+<<<<<<< HEAD
+=======
+//     // Convert checklist and where_to_secure to JSON format
+//     $checklist = $request->checklist_of_requirements
+//         ? json_encode(explode("\n", trim($request->checklist_of_requirements)))
+//         : '[]';
+
+//     $whereToSecure = $request->where_to_secure
+//         ? json_encode(explode("\n", trim($request->where_to_secure)))
+//         : '[]';
+
+//     // Ensure the lengths of checklist and where_to_secure match
+//     if (json_decode($checklist, true) && json_decode($whereToSecure, true) &&
+//         count(json_decode($checklist, true)) !== count(json_decode($whereToSecure, true))) {
+//         return back()->withErrors([
+//             'where_to_secure' => 'The "Where to Secure" entries must match the number of checklist requirements.',
+//         ]);
+//     }
+
+//     // Set status based on user role
+//     $status = auth()->user()->hasRole('admin') ? 'approved' : 'pending';
+
+//     // Store service
+//     $service = $office->services()->create([
+//         'service_name' => $request->service_name,
+//         'description' => $request->description,
+//         'classification' => $request->classification,
+//         'transaction_id' => $request->transaction_id,
+//         'checklist_of_requirements' => $checklist, // Store as JSON
+//         'where_to_secure' => $whereToSecure,       // Store as JSON
+//         'status' => $status,
+//         'created_by' => auth()->id(),
+//     ]);
+
+//     // Notify admin
+//     if ($status === 'approved') {
+//         Notification::create([
+//             'title' => 'Service Approved',
+//             'description' => "The <strong>{$office->office_name}</strong> service has been approved.",
+//             'dateTime' => now(),
+//             'user_id' => 1, // You can replace this with the admin ID
+//             'link' => route('services.show', ['id' => $service->id]),
+//         ]);
+//     } elseif ($status === 'pending') {
+//         Notification::create([
+//             'title' => 'New Service Pending Approval',
+//             'description' => "The <strong>{$office->office_name}</strong> added a new service, awaiting approval.",
+//             'dateTime' => now(),
+//             'user_id' => 1, // Admin ID for pending notification
+//             'link' => route('pending.services'),
+//         ]);
+//     }
+
+//     return redirect()->back()->with('success', $status === 'approved' ? 'Service created successfully.' : 'Service created and is waiting for approval.');
+// }
+>>>>>>> origin/current
+
 
 public function showOfficeServices($officeId)
 {

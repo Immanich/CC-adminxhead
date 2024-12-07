@@ -101,136 +101,168 @@
 </table>
 
     <!-- Add/Edit User Modal -->
-    <div id="userModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
-        <div class="bg-white rounded-lg w-1/3 p-4 relative">
-            <h2 id="modalTitle" class="text-xl font-bold mb-4">Create User</h2>
-            <form id="userForm" action="{{ route('admin.storeUser') }}" method="POST">
-                @csrf
-                <!-- This hidden input is added dynamically when editing to use PUT method -->
-                <input type="hidden" name="_method" value="POST" id="methodField">
-                <input type="hidden" id="userId" name="user_id" value="">
+<div id="userModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg w-1/3 p-4 relative">
+        <h2 id="modalTitle" class="text-xl font-bold mb-4">Create User</h2>
+        <form id="userForm" action="{{ route('admin.storeUser') }}" method="POST">
+            @csrf
+            <!-- This hidden input is added dynamically when editing to use PUT method -->
+            <input type="hidden" name="_method" value="POST" id="methodField">
+            <input type="hidden" id="userId" name="user_id" value="">
 
-                <div class="mb-4">
-                    <label for="username" class="block text-sm font-medium">Username</label>
-                    <input type="text" id="username" name="username" class="mt-1 p-2 block w-full border rounded" placeholder="Enter username" required>
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium">Username</label>
+                <input type="text" id="username" name="username" class="mt-1 p-2 block w-full border rounded" placeholder="Enter username" required>
+            </div>
+
+            <!-- Password Change Field for Editing -->
+            <div id="passwordChangeField" class="mb-4 hidden">
+                <label for="changePassword" class="block text-sm font-medium">Password Change</label>
+                <select id="changePassword" name="changePassword" class="mt-1 p-2 block w-full border rounded" required>
+                    <option value="keep">Keep Current Password</option>
+                    <option value="edit">Edit Password</option>
+                </select>
+            </div>
+
+            <!-- Password Fields (Only show when 'Edit Password' is selected) -->
+            <div id="passwordFields" class="mb-4 hidden">
+                <label for="password" class="block text-sm font-medium">Password</label>
+                <div class="relative">
+                    <input type="password" id="password" name="password" class="mt-1 p-2 block w-full border rounded pr-10" placeholder="Enter password">
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-2 flex items-center">
+                        <i class="fas fa-eye text-gray-500" id="passwordIcon"></i>
+                    </button>
                 </div>
+            </div>
 
-                <div class="mb-4 relative">
-                    <label for="password" class="block text-sm font-medium">Password</label>
-                    <div class="relative">
-                        <input type="password" id="password" name="password" class="mt-1 p-2 block w-full border rounded pr-10" placeholder="Enter password" required>
-                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-2 flex items-center">
-                            <i class="fas fa-eye text-gray-500" id="passwordIcon"></i>
-                        </button>
-                    </div>
+            <div id="passwordConfirmationField" class="mb-4 hidden">
+                <label for="password_confirmation" class="block text-sm font-medium">Confirm Password</label>
+                <div class="relative">
+                    <input type="password" id="password_confirmation" name="password_confirmation" class="mt-1 p-2 block w-full border rounded pr-10" placeholder="Retype your password">
+                    <button type="button" id="togglePasswordConfirmation" class="absolute inset-y-0 right-2 flex items-center">
+                        <i class="fas fa-eye text-gray-500" id="passwordConfirmationIcon"></i>
+                    </button>
                 </div>
+            </div>
 
-                <div class="mb-4 relative">
-                    <label for="password_confirmation" class="block text-sm font-medium">Confirm Password</label>
-                    <div class="relative">
-                        <input type="password" id="password_confirmation" name="password_confirmation" class="mt-1 p-2 block w-full border rounded pr-10" placeholder="Retype your password" required>
-                        <button type="button" id="togglePasswordConfirmation" class="absolute inset-y-0 right-2 flex items-center">
-                            <i class="fas fa-eye text-gray-500" id="passwordConfirmationIcon"></i>
-                        </button>
-                    </div>
-                </div>
-
-
-                <div class="mb-4">
-                    <label for="role" class="block text-sm font-medium">Role</label>
-                    <select id="role" name="role" class="mt-1 p-2 block w-full border rounded" required>
-                        @if(auth()->user()->hasRole('user'))
-                            <option value="sub_user">Sub User</option>
-                        @else
-                            @foreach($roles as $role)
-                                @if($role->name !== 'admin') {{-- Exclude admin role --}}
-                                    <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                                @endif
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="office_id" class="block text-sm font-medium">Office</label>
-                    <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded" {{ auth()->user()->hasRole('user') ? 'disabled' : '' }}>
-                        <option value="">Select Office</option>
-                        @foreach($offices as $office)
-                            <option value="{{ $office->id }}" {{ auth()->user()->hasRole('user') && auth()->user()->office_id == $office->id ? 'selected' : '' }}>
-                                {{ $office->office_name }}
-                            </option>
-                        @endforeach
-                    </select>
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium">Role</label>
+                <select id="role" name="role" class="mt-1 p-2 block w-full border rounded" required>
                     @if(auth()->user()->hasRole('user'))
-                        <input type="hidden" name="office_id" value="{{ auth()->user()->office_id }}">
+                        <option value="sub_user">Sub User</option>
+                        <option value="user"> User</option>
+                    @else
+                        @foreach($roles as $role)
+                            @if($role->name !== 'admin') {{-- Exclude admin role --}}
+                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                            @endif
+                        @endforeach
                     @endif
-                </div>
+                </select>
+            </div>
 
-                <div class="flex justify-end">
-                    <button type="button" id="closeModalButton" class="mr-2 bg-gray-300 text-black px-4 py-2 rounded">Cancel</button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-                </div>
-            </form>
-        </div>
+            <div class="mb-4">
+                <label for="office_id" class="block text-sm font-medium">Office</label>
+                <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded" {{ auth()->user()->hasRole('user') ? 'disabled' : '' }}>
+                    <option value="">Select Office</option>
+                    @foreach($offices as $office)
+                        <option value="{{ $office->id }}" {{ auth()->user()->hasRole('user') && auth()->user()->office_id == $office->id ? 'selected' : '' }}>
+                            {{ $office->office_name }}
+                        </option>
+                    @endforeach
+                </select>
+                @if(auth()->user()->hasRole('user'))
+                    <input type="hidden" name="office_id" value="{{ auth()->user()->office_id }}">
+                @endif
+            </div>
+
+            <div class="flex justify-end">
+                <button type="button" id="closeModalButton" class="mr-2 bg-gray-300 text-black px-4 py-2 rounded">Cancel</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <script>
         document.getElementById('openAddModalButton').addEventListener('click', function () {
-            document.getElementById('modalTitle').textContent = 'Create User';
-            document.getElementById('userForm').reset();
-            document.getElementById('userId').value = '';
-            document.getElementById('userForm').action = '{{ route('admin.storeUser') }}';
-            document.getElementById('methodField').value = 'POST'; // Set form method to POST for creating
-            document.getElementById('userModal').classList.remove('hidden');
-        });
+    document.getElementById('modalTitle').textContent = 'Create User';
+    document.getElementById('userForm').reset();
+    document.getElementById('userId').value = '';
+    document.getElementById('userForm').action = '{{ route('admin.storeUser') }}';
+    document.getElementById('methodField').value = 'POST'; // Set form method to POST for creating
+    document.getElementById('passwordFields').classList.remove('hidden'); // Show password fields when creating
+    document.getElementById('passwordConfirmationField').classList.remove('hidden'); // Show confirm password when creating
+    document.getElementById('passwordChangeField').classList.add('hidden'); // Hide the password change field
+    document.getElementById('userModal').classList.remove('hidden');
+});
 
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.editUserButton').forEach(function(button) {
-                button.addEventListener('click', function () {
-                    var userId = this.getAttribute('data-user');
-                    fetch(`/admin/users/${userId}/edit`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('modalTitle').textContent = 'Edit User';
-                            document.getElementById('username').value = data.username;
-                            document.getElementById('office_id').value = data.office_id;
-                            document.getElementById('role').value = data.roles[0].name;
-                            document.getElementById('userId').value = data.id;
-                            document.getElementById('userForm').action = `/admin/users/${userId}`;
-                            document.getElementById('methodField').value = 'PUT'; // Set form method to PUT for editing
-                            document.getElementById('userModal').classList.remove('hidden');
-                        });
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.editUserButton').forEach(function(button) {
+        button.addEventListener('click', function () {
+            var userId = this.getAttribute('data-user');
+            fetch(`/admin/users/${userId}/edit`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('modalTitle').textContent = 'Edit User';
+                    document.getElementById('username').value = data.username;
+                    document.getElementById('office_id').value = data.office_id;
+                    document.getElementById('role').value = data.roles[0].name;
+                    document.getElementById('userId').value = data.id;
+                    document.getElementById('userForm').action = `/admin/users/${userId}`;
+                    document.getElementById('methodField').value = 'PUT'; // Set form method to PUT for editing
+                    document.getElementById('passwordFields').classList.add('hidden'); // Hide password fields initially
+                    document.getElementById('passwordConfirmationField').classList.add('hidden'); // Hide confirm password initially
+                    document.getElementById('passwordChangeField').classList.remove('hidden'); // Show password change field
+                    document.getElementById('userModal').classList.remove('hidden');
                 });
-            });
         });
+    });
+});
 
-        document.getElementById('closeModalButton').addEventListener('click', function () {
-            document.getElementById('userModal').classList.add('hidden');
-        });
+document.getElementById('closeModalButton').addEventListener('click', function () {
+    document.getElementById('userModal').classList.add('hidden');
+});
 
-        document.getElementById('togglePassword').addEventListener('click', function () {
-    const passwordField = document.getElementById('password');
-    const passwordIcon = document.getElementById('passwordIcon');
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        passwordIcon.classList.replace('fa-eye', 'fa-eye-slash');
+document.getElementById('changePassword').addEventListener('change', function() {
+    const passwordFields = document.getElementById('passwordFields');
+    const passwordConfirmationField = document.getElementById('passwordConfirmationField');
+    if (this.value === 'edit') {
+        passwordFields.classList.remove('hidden');
+        passwordConfirmationField.classList.remove('hidden');
     } else {
-        passwordField.type = 'password';
-        passwordIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        passwordFields.classList.add('hidden');
+        passwordConfirmationField.classList.add('hidden');
     }
 });
 
-document.getElementById('togglePasswordConfirmation').addEventListener('click', function () {
-    const passwordConfirmationField = document.getElementById('password_confirmation');
-    const passwordConfirmationIcon = document.getElementById('passwordConfirmationIcon');
-    if (passwordConfirmationField.type === 'password') {
-        passwordConfirmationField.type = 'text';
-        passwordConfirmationIcon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        passwordConfirmationField.type = 'password';
-        passwordConfirmationIcon.classList.replace('fa-eye-slash', 'fa-eye');
-    }
-});
+
+    // Toggle Password Visibility
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordField = document.getElementById('password');
+        const passwordIcon = document.getElementById('passwordIcon');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            passwordIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            passwordIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+
+    document.getElementById('togglePasswordConfirmation').addEventListener('click', function () {
+        const passwordConfirmationField = document.getElementById('password_confirmation');
+        const passwordConfirmationIcon = document.getElementById('passwordConfirmationIcon');
+        if (passwordConfirmationField.type === 'password') {
+            passwordConfirmationField.type = 'text';
+            passwordConfirmationIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordConfirmationField.type = 'password';
+            passwordConfirmationIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
 
 
         // Ensure window.onload is defined once, combining both success and error message fade logic
