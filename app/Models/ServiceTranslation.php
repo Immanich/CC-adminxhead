@@ -14,6 +14,8 @@ class ServiceTranslation extends Model
         'language_id',
         'service_name',
         'description',
+        'checklist_of_requirements',
+        'where_to_secure',
     ];
     public function service()
     {

@@ -10,39 +10,35 @@ use App\Models\ServicesInfo;
 use App\Models\OfficeTranslation;
 use App\Models\ServiceTranslation;
 use App\Models\Notification;
+use App\Models\ElectedOfficial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class GuestController extends Controller
 {
 
     public function getOffices(Request $request)
 {
-    // Get the language code from the query parameter, default to 'en' if not provided or invalid.
     $languageCode = $request->query('lang', 'en');
-    $validLanguages = ['en', 'fil'];  // Allowed languages
+    $validLanguages = ['en', 'fil'];
 
     if (!in_array($languageCode, $validLanguages)) {
-        // If the language is invalid, fall back to 'en'
         $languageCode = 'en';
     }
 
-    // Fetch the language record based on the 'code' column (not 'language_code')
     $language = \App\Models\Language::where('code', $languageCode)->first();
     if (!$language) {
-        // If no language record is found, fall back to the default language (English)
         $language = \App\Models\Language::where('code', 'en')->first();
     }
 
-    // Fetch office translations based on the language ID
     $translations = OfficeTranslation::where('language_id', $language->id)
         ->get()
-        ->keyBy('office_id'); // Key by office_id for easy lookup
+        ->keyBy('office_id');
 
     $offices = Office::all();
 
     $response = $offices->map(function ($office) use ($translations, $language) {
-        // Get the translation for the office if available
         $translation = $translations->get($office->id);
 
         return [
@@ -59,7 +55,19 @@ class GuestController extends Controller
 
 
 
-public function getServicesForOffice($officeId, Request $request)
+// public function getServicesForOffice($officeId, Request $request)
+// {
+//     // Fetch only approved services for mobile or general users
+//     $services = Service::where('office_id', $officeId)
+//         ->where('status', 'approved') // Only fetch approved services
+//         ->compact('transaction')
+//         ->get();
+
+//     // Return the services as a response
+//     return response()->json($services, 200);
+// }
+
+    public function getServicesForOffice($officeId, Request $request)
 {
     // Fetch only approved services for mobile or general users
     $services = Service::where('office_id', $officeId)
@@ -69,15 +77,48 @@ public function getServicesForOffice($officeId, Request $request)
     // Return the services as a response
     return response()->json($services, 200);
 }
-// public function getEvents()
-// {
-//     // Fetch all approved events
-//     $approvedEvents = Event::where('status', 'approved')->get();
-    
-//     // Return JSON response with approved events
-//     return response()->json($approvedEvents, 200);
-// }
 
+//     public function getServicesForOffice($officeId, Request $request)
+// {
+//     $languageCode = $request->query('lang', 'en');
+//     $validLanguages = ['en', 'fil']; 
+
+//     if (!in_array($languageCode, $validLanguages)) {
+//         $languageCode = 'en';
+//     }
+
+//     $language = \App\Models\Language::where('code', $languageCode)->first();
+//     if (!$language) {
+//         $language = \App\Models\Language::where('code', 'en')->first();
+//     }
+
+//     $services = Service::where('office_id', $officeId)
+//         ->where('status', 'approved')
+//         ->get();
+
+//     // Fetch translations for the services
+//     $translations = ServiceTranslation::where('language_id', $language->id)
+//         ->whereIn('service_id', $services->pluck('id'))
+//         ->get()
+//         ->keyBy('service_id'); 
+
+//     $response = $services->map(function ($service) use ($translations, $language) {
+//         $translation = $translations->get($service->id);
+
+//         return [
+//             'id' => $service->id,
+//             'service_name' => $translation ? $translation->service_name : $service->service_name,
+//             'description' => $translation ? $translation->description : "Default description for {$service->service_name}",
+//             'classification' => $service->classification,
+//             'type_of_transaction' => $service->type_of_transaction,
+//             'checklist_of_requirements' => $service->checklist_of_requirements,
+//             'where_to_secure' => $service->where_to_secure,
+//         ];
+//     });
+
+//     // Return the services with translations
+//     return response()->json($response, 200);
+// }
 
 
 
@@ -176,10 +217,7 @@ public function getEventById($event_id) {
             ];
         }
     }
-
 }
-
-
 // <?php
 
 // namespace App\Http\Controllers\API;
@@ -192,8 +230,10 @@ public function getEventById($event_id) {
 // use App\Models\OfficeTranslation;
 // use App\Models\ServiceTranslation;
 // use App\Models\Notification;
+// use App\Models\ElectedOfficial;
 // use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Log;
+// use Carbon\Carbon;
 
 // class GuestController extends Controller
 // {
@@ -243,38 +283,14 @@ public function getEventById($event_id) {
 
 // public function getServicesForOffice($officeId, Request $request)
 // {
-//     $languageCode = $request->query('lang', 'en');
+//     // Fetch only approved services for mobile or general users
+//     $services = Service::where('office_id', $officeId)
+//         ->where('status', 'approved') // Only fetch approved services
+//         ->get();
 
-//     // Get the language ID from the languages table
-//     $languageId = \App\Models\Language::where('code', $languageCode)->value('id');
-    
-//     if (!$languageId) {
-//         return response()->json(['error' => 'Language not found'], 400);
-//     }
-
-//     // Preload services with translations
-//     $translations = ServiceTranslation::where('language_id', $languageId)
-//         ->whereIn('service_id', Service::where('office_id', $officeId)->pluck('id'))
-//         ->get()
-//         ->keyBy('service_id'); // Key by service_id for fast lookup
-
-//     $services = Service::where('office_id', $officeId)->get();
-
-//     $translatedServices = $services->map(function ($service) use ($translations, $languageId) {
-//         $translation = $translations->get($service->id); // Get translation by service ID
-
-//         return [
-//             'id' => $service->id,
-//             'service_name' => $translation ? $translation->service_name : $service->service_name,
-//             'description' => $translation ? $translation->description : $service->description,
-//             'classification' => $service->classification,
-//             'status' => $service->status,
-//         ];
-//     });
-
-//     return response()->json($translatedServices);
+//     // Return the services as a response
+//     return response()->json($services, 200);
 // }
-
 
 
 // public function getServiceInfo($office_id, $service_id, Request $request)
@@ -372,5 +388,4 @@ public function getEventById($event_id) {
 //             ];
 //         }
 //     }
- 
 // }

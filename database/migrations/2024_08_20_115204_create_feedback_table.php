@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
             $table->text('feedback')->nullable();
             $table->text('reply')->nullable();
+            // $table->enum('status', ['active', 'archived'])->default('active');
+            $table->boolean('archived')->default(false);
             $table->timestamps();
         });
     }

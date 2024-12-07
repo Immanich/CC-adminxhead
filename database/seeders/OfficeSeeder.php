@@ -15,72 +15,164 @@ class OfficeSeeder extends Seeder
     {
         Office::create([
             'office_name' => 'Accounting Office',
+            'address' => '1st floor, Mun. Bldg., Potohan, Tubigon',
+            'email' => 'hdmugacpa@gmail.com ',
+            'mobile_number' => '09177710105',
+            'tel_number' => '5107007',
         ]);
         Office::create([
             'office_name' => "Assessor's Office",
+            'address' => '1st floor, Mun. Bldg., Potohan, Tubigon',
+            'email' => 'jessicainsonwise@gmail.com',
+            'mobile_number' => '09177710140',
+            'tel_number' => '5107016',
         ]);
         Office::create([
             'office_name' => 'Business Permits & Licensing Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
             'office_name' => 'Engineering Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
             'office_name' => 'Human Resource & Management Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
             'office_name' => "Mayor's Office",
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'MDRMMO',
+            'office_name' => 'Municipal Disaster Risk Reduction and Management Office(MDRRMO)',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'MENRO',
+            'office_name' => 'Municipal Environment & Natural Resources Office (MENRO)',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'MESWMO',
+            'office_name' => 'Municipal Ecological Solid Waste Managament Office (ESWMO)',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'MLGOO',
+            'office_name' => "Municipal Local Government Operations Office (MLGOO)",
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'MPDCO',
+            'office_name' => "Municipal Planning & Development Coordinator's Office (MPDCO)",
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'MSWDO',
+            'office_name' => "Municipal Social Welfare & Development Office (MSWDO)",
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Municipal Agriculture',
+            'office_name' => 'Municipal Agriculture Office (MAO)',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Municipal Budget',
+            'office_name' => 'Municipal Budget Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Municipal Civil Registrar',
+            'office_name' => "Municipal Civil Registrar's Office",
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
             'office_name' => 'Municipal Health Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
             'office_name' => 'Municipal Treasurer',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Senior Citizen Affairs',
+            'office_name' => 'Office of Senior Citizen Affairs (OSCA)',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Secretary to the SB',
+            'office_name' => 'Office of the Secretary to the Sangguniang Bayan',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'STAC',
+            'office_name' => "Stimulation and Therapeutic Activity Center (STAC)",
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Toll Roads',
+            'office_name' => 'Toll Roads Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
             'office_name' => 'Tubigon Community Hospital',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
         Office::create([
-            'office_name' => 'Waterworks',
+            'office_name' => 'Waterworks Office',
+            'address' => 'testing',
+            'email' => 'testing',
+            'mobile_number' => 'testing',
+            'tel_number' => 'testing',
         ]);
     }
 }

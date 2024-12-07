@@ -16,15 +16,27 @@ class Feedback extends Model
         'service_id',
         'feedback',
         'name',
+        'replied_by'
     ];
 
-    public function office()
-    {
-        return $this->belongsTo(Office::class);
+    // In Feedback.php model
+    public function office(){
+        // Make sure the foreign key is correctly referenced
+        return $this->belongsTo(Office::class, 'office_id');  // Adjust the foreign key if it's not 'office_id'
     }
+
 
     public function service()
     {
         return $this->belongsTo(Service::class);
     }
+
+    // Feedback Model
+    // Feedback model
+public function replied_by()
+{
+    return $this->belongsTo(User::class, 'user_id'); // Assuming user_id is the column for the reply
+}
+
+
 }

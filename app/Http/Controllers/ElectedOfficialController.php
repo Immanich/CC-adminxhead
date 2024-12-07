@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MunicipalOfficial;
+use App\Models\ElectedOfficial;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
-class MunicipalOfficialController extends Controller
+class ElectedOfficialController extends Controller
 {
     public function index()
     {
-        $officials = MunicipalOfficial::all(); // Fetch all officials
+        $officials = ElectedOfficial::all(); // Fetch all officials
         return view('pages.municipal-officials', compact('officials'));
     }
 
     public function edit($id)
 {
-    $official = MunicipalOfficial::findOrFail($id);
+    $official = ElectedOfficial::findOrFail($id);
     return response()->json($official);
 }
 
@@ -32,11 +33,12 @@ public function update(Request $request, $id)
         return redirect()->back()->withErrors(['image' => 'Either an image URL or a file must be provided.']);
     }
 
-    $official = MunicipalOfficial::findOrFail($id);
+    $official = ElectedOfficial::findOrFail($id);
 
     if ($request->hasFile('image_file')) {
         $imagePath = $request->file('image_file')->store('officials', 'public');
         $official->image = "/storage/" . $imagePath;
+        // dd($official);
     } elseif ($request->filled('image')) {
         $official->image = $request->image;
     }
@@ -50,7 +52,7 @@ public function update(Request $request, $id)
 
 public function editYear()
 {
-    $yearData = MunicipalOfficial::select('start_year', 'end_year')->first(); // Retrieve the first entry's year
+    $yearData = ElectedOfficial::select('start_year', 'end_year')->first(); // Retrieve the first entry's year
     return response()->json($yearData);
 }
 
@@ -61,7 +63,7 @@ public function updateYear(Request $request)
         'end_year' => 'required|digits:4|gte:start_year',
     ]);
 
-    $official = MunicipalOfficial::first(); // Update the first entry (or adjust logic for multiple)
+    $official = ElectedOfficial::first(); // Update the first entry (or adjust logic for multiple)
     $official->start_year = $request->start_year;
     $official->end_year = $request->end_year;
     $official->save();
@@ -69,6 +71,23 @@ public function updateYear(Request $request)
     return redirect()->back()->with('success', 'Year range updated successfully.');
 }
 
+// public function updateStatus()
+// {
+//     $officials = ElectedOfficial::all();
 
+//     foreach ($officials as $official) {
+//         $currentYear = Carbon::now()->year;
+
+//         if ($currentYear >= $official->start_year && $currentYear <= $official->end_year) {
+//             $official->status = 'current'; // The official is currently in office
+//         } elseif ($currentYear < $official->start_year) {
+//             $official->status = 'upcoming'; // The official has been elected but the term hasn't started
+//         } else {
+//             $official->status = 'expired'; // The official's term has expired
+//         }
+
+//         $official->save();
+//     }
+// }
 
 }

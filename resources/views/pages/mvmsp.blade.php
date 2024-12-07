@@ -11,7 +11,7 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-4xl font-bold text-indigo-800">M V M S P</h1>
             <div class="flex space-x-4">
-                @if (empty($officeMvmsp->mandate) && empty($officeMvmsp->vision) && empty($officeMvmsp->mission) && empty($officeMvmsp->service_pledge))
+                <!-- @if (empty($officeMvmsp->mandate) && empty($officeMvmsp->vision) && empty($officeMvmsp->mission) && empty($officeMvmsp->service_pledge))
                     <button id="openAddModal"
                         class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         <i class="bi bi-plus-lg mr-1"></i>Create
@@ -31,7 +31,7 @@
                             <i class="fas fa-trash-alt mr-1"></i>Delete
                         </button>
                     </form>
-                @endif
+                @endif -->
             </div>
         </div>
 

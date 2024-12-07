@@ -4,7 +4,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FeedbackController;
-use App\Http\Controllers\MunicipalOfficialController;
+// use App\Http\Controllers\Ele
+use App\Http\Controllers\ElectedOfficialController;
 use App\Http\Controllers\MvmspController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfficeController;
@@ -36,11 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/mvmsp/{id}/update', [MvmspController::class, 'update'])->name('mvmsp.update');
     Route::delete('/mvmsp/{id}', [MvmspController::class, 'destroy'])->name('mvmsp.delete');
 
-    Route::get('/municipal-officials', [MunicipalOfficialController::class, 'index'])->name('municipal-officials');
-    Route::get('/municipal-officials/{id}/edit', [MunicipalOfficialController::class, 'edit'])->name('municipal-officials.edit');
-    Route::put('/municipal-officials/{id}', [MunicipalOfficialController::class, 'update'])->name('municipal-officials.update');
-    Route::get('/year/edit', [MunicipalOfficialController::class, 'editYear']);
-    Route::post('/year/update', [MunicipalOfficialController::class, 'updateYear'])->name('updateYear');
+    Route::get('/municipal-officials', [ElectedOfficialController::class, 'index'])->name('municipal-officials');
+    Route::get('/municipal-officials/{id}/edit', [ElectedOfficialController::class, 'edit'])->name('municipal-officials.edit');
+    Route::put('/municipal-officials/{id}', [ElectedOfficialController::class, 'update'])->name('municipal-officials.update');
+    Route::get('/year/edit', [ElectedOfficialController::class, 'editYear']);
+    Route::post('/year/update', [ElectedOfficialController::class, 'updateYear'])->name('updateYear');
 
 
     Route::view('/pages/org-chart', 'pages.org-chart')->name('org-chart');
@@ -117,10 +118,21 @@ Route::middleware('auth')->group(function () {
 });
 
 // Feedback routes
+// Route to display feedbacks
 Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
+
+// Route to store feedbacks (POST method)
 Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
+
+// Route to archive feedback (PUT method)
+Route::put('feedbacks/{id}/archive', [FeedbackController::class, 'archive'])->name('feedbacks.archived-feedbacks');
+Route::put('feedbacks/{id}/restore', [FeedbackController::class, 'restore'])->name('feedbacks.restore');
+
+Route::get('feedbacks/archived', [FeedbackController::class, 'archived'])->name('feedbacks.archived');
+
 Route::post('/feedbacks/{feedback}/reply', [FeedbackController::class, 'reply'])->name('feedbacks.reply');
 Route::put('/feedbacks/{id}/update-reply', [FeedbackController::class, 'updateReply'])->name('feedbacks.updateReply');
+Route::delete('/feedbacks/{id}/archive', [FeedbackController::class, 'archivedDestroy'])->name('feedbacks.archivedDestroy');
 // web.php
 // Route::put('/feedbacks/{id}/reply', [FeedbackController::class, 'updateReply'])->name('feedbacks.updateReply');
 

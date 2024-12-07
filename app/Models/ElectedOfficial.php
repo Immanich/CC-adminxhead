@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MunicipalOfficial extends Model
+class ElectedOfficial extends Model
 {
     use HasFactory;
 

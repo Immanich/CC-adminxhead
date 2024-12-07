@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('office_name');
             $table->string('description')->nullable();
+            $table->string('address');
+            $table->string('email');
+            $table->string('mobile_number', 11);
+            $table->string('tel_number',7);
             $table->timestamps();
         });
     }

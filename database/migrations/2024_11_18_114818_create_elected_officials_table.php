@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('municipal_officials', function (Blueprint $table) {
+        Schema::create('elected_officials', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('title');
             $table->string('image')->nullable();
-            $table->string('start_year')->default('2023');
-            $table->string('end_year')->default('2025');
+            $table->year('start_year')->default('2023');
+            $table->year('end_year')->default('2025');
+            $table->enum('status', ['current', 'expired', 'upcoming'])->default('current');
             $table->timestamps();
         });
     }

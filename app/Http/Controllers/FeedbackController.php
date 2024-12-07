@@ -54,12 +54,135 @@ class FeedbackController extends Controller
         }
     }
 
-    public function index(){
-        $offices = Office::all();
-        $feedbacks = Feedback::with(['office', 'service'])->get();
 
-        return view('feedbacks.index', compact( 'feedbacks', 'offices'));
+// public function index(Request $request)
+// {
+//     $user = auth()->user();
+
+//     // Check if the user has an associated office
+//     if (!$user->office) {
+//         // Return empty collections instead of arrays
+//         return view('feedbacks.index', ['feedbacks' => collect(), 'archivedFeedbacks' => collect()]);
+//     }
+
+//     // Fetch the user's office ID
+//     $officeId = $user->office->id;
+
+//     // Fetch non-archived feedbacks based on the user's office
+//     $feedbacks = Feedback::where('office_id', $officeId)
+//                          ->where('archived', false) // Only non-archived feedbacks
+//                          ->when($request->sort, 
+//                             function ($query) use ($request) {
+//                              return $query->orderBy($request->sort, $request->direction);
+//                          }, function ($query) {
+//                              return $query->orderBy('created_at', 'desc');
+//                          })
+//                          ->get(); // This returns an Eloquent collection
+
+//     // Fetch archived feedbacks separately
+//     $archivedFeedbacks = Feedback::where('office_id', $officeId)
+//                                  ->where('archived', true) // Only archived feedbacks
+//                                  ->get(); // This also returns an Eloquent collection
+
+//     // Pass both collections to the view
+//     return view('feedbacks.index', compact('feedbacks', 'archivedFeedbacks'));
+// }
+
+public function index(Request $request)
+{
+    $user = auth()->user();
+
+    // Check if the user has an associated office
+    if (!$user->office) {
+        // Return empty collections instead of arrays
+        return view('feedbacks.index', ['feedbacks' => collect(), 'archivedFeedbacks' => collect()]);
     }
+
+    // Fetch the user's office ID
+    $officeId = $user->office->id;
+
+    // Fetch non-archived feedbacks based on the user's office
+    $feedbacks = Feedback::select('feedback.*') // Select feedback columns to avoid ambiguous column issues
+                         ->where('office_id', $officeId)
+                         ->where('archived', false)
+                         ->join('offices', 'feedback.office_id', '=', 'offices.id') // Join offices table for office_name
+                         ->when($request->sort, 
+                            function ($query) use ($request) {
+                                // Handle office_name sorting
+                                if ($request->sort === 'office_name') {
+                                    return $query->orderBy('offices.office_name', $request->direction ?? 'asc');
+                                }
+                                // Handle other sortable fields
+                                return $query->orderBy($request->sort, $request->direction ?? 'asc');
+                         }, function ($query) {
+                             // Default sorting by created_at
+                             return $query->orderBy('created_at', 'desc');
+                         })
+                         ->get(); // Returns an Eloquent collection
+
+    // Fetch archived feedbacks separately
+    $archivedFeedbacks = Feedback::where('office_id', $officeId)
+                                 ->where('archived', true)
+                                 ->get();
+
+    // Pass both collections to the view
+    return view('feedbacks.index', compact('feedbacks', 'archivedFeedbacks'));
+}
+
+
+public function archive($id)
+{
+    // Find the feedback by ID
+    $feedback = Feedback::findOrFail($id);
+
+    // Mark the feedback as archived
+    $feedback->archived = true;
+    $feedback->save();
+
+    // Return a JSON response to indicate success
+    return redirect()->route('feedbacks.index')->with('status', 'Feedback has been archived.');
+    // return response()->json(['status' => 'success', 'message' => 'Feedback has been archived.']);
+}
+
+
+
+// public function archive($id)
+// {
+//     // Find the feedback by ID
+//     $feedback = Feedback::findOrFail($id);
+
+//     // Mark the feedback as archived
+//     $feedback->archived = true;
+//     $feedback->save();
+
+//     // Redirect back with success message
+//     return redirect()->route('feedbacks.index')->with('status', 'Feedback has been archived.');
+// }
+
+
+public function archived()
+{
+    // Fetch all archived feedbacks
+    $feedbacks = Feedback::where('archived', true)->get();
+
+    return view('feedbacks.archived-feedbacks', compact('feedbacks'));
+}
+
+
+public function restore($id)
+{
+    // Find the archived feedback
+    $feedback = Feedback::findOrFail($id);
+
+    // Mark it as not archived (restore)
+    $feedback->archived = false;
+    $feedback->save();
+
+    // Redirect back with a success message
+    return redirect()->route('feedbacks.archived')->with('status', 'Feedback restored successfully!');
+}
+
+
 
     public function getFeedbackData()
 {
@@ -80,63 +203,107 @@ class FeedbackController extends Controller
 
 public function getReplies($feedbackId)
 {
-    Log::info("Fetching reply for feedback ID: $feedbackId"); // Debugging
+    Log::info("Fetching reply for feedback ID: $feedbackId");
 
-    $feedback = Feedback::find($feedbackId);
+    // Eager load the office relationship
+    $feedback = Feedback::with('office')->find($feedbackId);
 
     if (!$feedback) {
-        Log::warning("No feedback found for ID: $feedbackId"); // Additional debugging
+        Log::warning("No feedback found for ID: $feedbackId");
         return response()->json(['message' => 'Feedback not found'], 404);
     }
 
-    Log::info("Reply found for feedback ID: $feedbackId"); // Success log
+    Log::info("Reply found for feedback ID: $feedbackId");
+
+    // Check if the office relationship is loaded and its name
+    $office = $feedback->office;
+    Log::info("Office ID: ", ['office_id' => $feedback->office_id]);  // Log the office_id
+    Log::info("Office Name: ", ['office_name' => $office ? $office->office_name : null]);
+
+    $officeName = $office ? $office->office_name : 'Admin';
+
     return response()->json([
         'feedback_id' => $feedback->id,
         'feedback' => $feedback->feedback,
         'reply' => $feedback->reply,
+        'role' => 'By', // You can modify this based on how you want to determine the role
+        'replied_by' => $officeName, // Return the office name
     ], 200);
 }
 
+public function reply(Request $request, $feedbackId){
+    $request->validate([
+        'reply' => 'required|string',
+    ]);
 
+    $feedback = Feedback::findOrFail($feedbackId);
+    $feedback->reply = $request->input('reply');
+    $feedback->save(); 
 
-    
-    public function reply(Request $request, $feedbackId){
-        $request->validate([
-            'reply' => 'required|string',
-        ]);
+    return redirect()->route('feedbacks.index')->with('success', 'Reply submitted successfully');
+}
 
-        $feedback = Feedback::findOrFail($feedbackId);
-        $feedback->reply = $request->input('reply');
-        $feedback->save(); 
+public function updateReply(Request $request, $feedbackId)
+{
+    $validatedData = $request->validate([
+        'reply' => 'required|string',
+    ]);
 
-        return redirect()->route('feedbacks.index')->with('success', 'Reply submitted successfully');
+    $feedback = Feedback::findOrFail($feedbackId);
+    $feedback->reply = $validatedData['reply'];
+    $feedback->save();
+
+    return redirect()->route('feedbacks.index')->with('success', 'Reply updated successfully');
+}
+
+public function destroy($id){
+    try {
+        $feedback = Feedback::findOrFail($id);
+        $feedback->delete();
+
+        return redirect()->route('feedbacks.index')->with('success', 'Feedback deleted successfully.');
+    } catch (\Exception $e) {
+        return redirect()->route('feedbacks.index')->with('error', 'Failed to delete feedback.');
     }
-    
-    public function updateReply(Request $request, $feedbackId)
-    {
-        $validatedData = $request->validate([
-            'reply' => 'required|string',
-        ]);
+}
 
-        $feedback = Feedback::findOrFail($feedbackId);
-        $feedback->reply = $validatedData['reply'];
-        $feedback->save();
+public function archivedDestroy($id){
+    try {
+        $feedback = Feedback::findOrFail($id);
+        $feedback->delete();
 
-        return redirect()->route('feedbacks.index')->with('success', 'Reply updated successfully');
+        return redirect()->route('feedbacks.archived-feedbacks')->with('success', 'Feedback deleted successfully.');
+    } catch (\Exception $e) {
+        return redirect()->route('feedbacks.archived-feedbacks')->with('error', 'Failed to delete feedback.');
     }
-
-    public function destroy($id){
-        try {
-            $feedback = Feedback::findOrFail($id);
-            $feedback->delete();
-
-            return redirect()->route('feedbacks.index')->with('success', 'Feedback deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('feedbacks.index')->with('error', 'Failed to delete feedback.');
-        }
-    }
+}
 
 }
+
+
+
+
+
+// public function getReplies($feedbackId)
+// {
+//     Log::info("Fetching reply for feedback ID: $feedbackId"); // Debugging
+
+//     $feedback = Feedback::find($feedbackId);
+
+//     if (!$feedback) {
+//         Log::warning("No feedback found for ID: $feedbackId"); // Additional debugging
+//         return response()->json(['message' => 'Feedback not found'], 404);
+//     }
+
+//     Log::info("Reply found for feedback ID: $feedbackId"); // Success log
+//     return response()->json([
+//         'feedback_id' => $feedback->id,
+//         'feedback' => $feedback->feedback,
+//         'reply' => $feedback->reply,
+//     ], 200);
+// }
+
+    
 
     // public function updateReply(Request $request, $id){
     //     $request->validate([

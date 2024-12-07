@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\GuestController;
+use App\Http\Controllers\ElectedOfficialController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfficeController;
@@ -18,6 +19,7 @@ Route::get('/offices/{office_id}/services/{service_id}', [GuestController::class
 Route::get('/notifications', [NotificationController::class, 'getNotifications']);
 Route::get('/events', [GuestController::class, 'getEvents']);
 Route::get('/events/{event_id}', [GuestController::class, 'getEventById']);
+Route::get('/elected_officials', [GuestController::class, 'getElectedOfficials']);
 
 
 Route::options('/feedback', function (Request $request) {
@@ -26,6 +28,8 @@ Route::options('/feedback', function (Request $request) {
 // Define routes for feedback submission, fetching, and replying
 Route::middleware(['cors'])->post('/feedback', [FeedbackController::class, 'store']);
 Route::middleware(['cors'])->get('/feedback', [FeedbackController::class, 'getFeedbackData']);
+// Define a route to handle feedback archiving
+Route::middleware(['cors'])->post('/feedback/{id}/archive', [FeedbackController::class, 'archive']);
 
 Route::middleware(['cors'])->get('/feedback/{feedbackId}/replies', [FeedbackController::class, 'getReplies']);
 Route::middleware(['cors'])->post('/feedback/{feedbackId}/reply', [FeedbackController::class, 'reply']);

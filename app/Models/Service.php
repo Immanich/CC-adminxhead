@@ -50,9 +50,12 @@ class Service extends Model
     }
 
     // Define the relationship with the transaction
-    public function transaction(){
-        return $this->belongsTo(Transaction::class, 'transaction_id');
-    }
+    // Service Model
+public function transaction()
+{
+    return $this->belongsTo(Transaction::class);
+}
+
 
 
     // Define the relationship with service info

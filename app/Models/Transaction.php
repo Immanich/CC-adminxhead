@@ -13,8 +13,10 @@ class Transaction extends Model
         'type_of_transaction',
     ];
     
-    public function services()
-    {
-        return $this->hasMany(Service::class);
-    }
+    // Transaction Model
+public function services()
+{
+    return $this->hasMany(Service::class);
+}
+
 }
