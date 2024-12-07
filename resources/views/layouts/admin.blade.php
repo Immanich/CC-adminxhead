@@ -25,7 +25,7 @@
 <body class="font-sans antialiased">
     <div class="h-screen flex flex-col">
         <!-- Navbar -->
-        <nav class="w-full bg-[#9fb3fb] shadow-md px-6 py-4 flex items-center justify-between fixed top-0 left-0 z-50">
+        <nav class="w-full bg-gradient-to-r from-[#c0d2fc] to-[#9fb3fb] shadow-md px-6 py-4 flex items-center justify-between fixed top-0 left-0 z-50">
             <!-- Logo and Title -->
             <div class="flex items-center">
                 <a href="">
@@ -52,9 +52,10 @@
                     <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
                         <div class="p-4 border-b flex justify-between items-center">
                             <h3 class="font-bold text-lg">Notifications</h3>
-                            <button id="dropdownOptionsButton" class="text-gray-500 hover:text-blue-500 transition">
+                            <button id="dropdownOptionsButton" class="text-gray-500 hover:text-[#9fb3fb] focus:text-[#9fb3fb] transition">
                                 <i class="fas fa-ellipsis-h"></i>
                             </button>
+
                         </div>
                         <div id="dropdownOptions" class="hidden px-4 py-2">
                             <button id="markAllAsRead" class="text-sm text-blue-500 hover:underline">Mark All as Read</button>
@@ -103,7 +104,7 @@
             <aside class="w-64 bg-[#e7ecfe] shadow-md text-black p-4 space-y-3 fixed top-16 left-0 h-[calc(100%-4rem)] overflow-y-auto">
                 <!-- Navigation Links -->
                 <nav class="space-y-3">
-                    <div class="text-gray-600 font-bold text-center">General Information</div>
+                    <div class="text-gray-600 font-bold text-center text-lg p-2">General Information</div>
 
                     <a href="{{ route('mvmsp') }}" class="sidebar-link font-semibold {{ request()->is('mvmsp') ? 'active' : '' }}">
                         <i class="fas fa-info-circle mr-3"></i> MVMSP
@@ -116,9 +117,9 @@
                         <i class="fas fa-user-tie mr-3"></i> MUNICIPAL OFFICIALS
                     </a>
 
-                    <hr class="mb-6 border-1 border-gray-400">
+                    {{-- <hr class="mb-6 border-1 border-gray-400"> --}}
 
-                    <div class="text-gray-600 font-bold text-center">Administration</div>
+                    <div class="text-gray-600 font-bold text-center text-lg p-2">Administration</div>
 
                     @role('admin|user')
                     <a href="/admin/users" class="sidebar-link font-semibold {{ request()->is('admin/users') ? 'active' : '' }}">
@@ -185,39 +186,63 @@
     </style>
    <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Cache elements and create a unique ID or class to prevent conflicts with other scripts
         const notificationBell = document.getElementById('notificationBell');
         const notificationDropdown = document.getElementById('notificationDropdown');
         const dropdownNotifications = document.getElementById('dropdownNotifications');
+        const unreadCountBadge = document.getElementById('unreadCountBadge');
         const dropdownOptionsButton = document.getElementById('dropdownOptionsButton');
         const dropdownOptions = document.getElementById('dropdownOptions');
         const markAllAsRead = document.getElementById('markAllAsRead');
-        const unreadBadge = document.querySelector('#notificationBell span');
+
+        // Function to fetch notifications and update the dropdown
+        function fetchNotifications() {
+            fetch('{{ route('notifications.fetch') }}') // Adjust the URL as needed
+                .then(response => response.json())
+                .then(data => {
+                    if (data.notifications.length > 0) {
+                        dropdownNotifications.innerHTML = data.notifications.map(notification => `
+                            <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                                <div class="text-sm font-medium">${notification.title}</div>
+                                <div class="text-xs text-gray-500">${notification.description}</div>
+                                <div class="text-xs text-gray-400">${notification.created_at}</div>
+                            </a>`).join('');
+                    } else {
+                        dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">No notifications</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching notifications:', error);
+                    dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">Error loading notifications</p>`;
+                });
+        }
+
+        // Function to update the unread notification count
+        function updateUnreadCount() {
+            fetch('/notifications/fetch')  // Call the route that returns unread count
+                .then(response => response.json())
+                .then(data => {
+                    const unreadCount = data.unreadCount;
+                    if (unreadCount > 0) {
+                        unreadCountBadge.style.display = 'flex';  // Show badge
+                        unreadCountBadge.textContent = unreadCount;
+                    } else {
+                        unreadCountBadge.style.display = 'none';  // Hide badge if no unread notifications
+                    }
+                })
+                .catch(error => console.error('Error fetching unread count:', error));
+        }
+
+        // Call the function immediately when the page loads to set initial unread count
+        updateUnreadCount();
 
         // Fetch notifications only when the bell icon is clicked
         notificationBell.addEventListener('click', function (event) {
             event.stopPropagation(); // Prevent click from propagating
             notificationDropdown.classList.toggle('hidden');
 
-            // Fetch notifications if dropdown is opened
             if (!notificationDropdown.classList.contains('hidden')) {
-                fetch('{{ route('notifications.fetch') }}') // Use your fetch route
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.notifications.length > 0) {
-                            dropdownNotifications.innerHTML = data.notifications.map(notification => `
-                                <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
-                                    <div class="text-sm font-medium">${notification.title}</div>
-                                    <div class="text-xs text-gray-500">${notification.description}</div>
-                                    <div class="text-xs text-gray-400">${notification.created_at}</div>
-                                </a>`).join('');
-                        } else {
-                            dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">No notifications</p>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching notifications:', error);
-                        dropdownNotifications.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">Error loading notifications</p>`;
-                    });
+                fetchNotifications(); // Fetch notifications when dropdown is shown
             }
         });
 
@@ -226,32 +251,6 @@
             event.stopPropagation();
             dropdownOptions.classList.toggle('hidden');
         });
-
-        // Function to update unread notification count
-        function updateUnreadCount() {
-            fetch('/notifications/fetch')  // Make an AJAX call to the route that returns notifications
-                .then(response => response.json())
-                .then(data => {
-                    const unreadCount = data.unreadCount;
-                    const unreadCountElement = document.getElementById('unreadCountBadge');
-
-                    // If unread count is greater than 0, show the badge, otherwise hide it
-                    if (unreadCount > 0) {
-                        unreadCountElement.style.display = 'flex';  // Show badge
-                        unreadCountElement.textContent = unreadCount;
-                    } else {
-                        unreadCountElement.style.display = 'none';  // Hide badge
-                    }
-                })
-                .catch(error => console.error('Error fetching unread count:', error));
-        }
-
-        // Call the function immediately when the page loads
-        updateUnreadCount();
-
-        // Update unread count every 0.5 seconds (500 milliseconds)
-        setInterval(updateUnreadCount, 500);  // Update every 500 milliseconds
-
 
         // Mark all notifications as read
         markAllAsRead.addEventListener('click', function () {
@@ -262,23 +261,14 @@
                     'Content-Type': 'application/json',
                 },
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the notifications in the dropdown to reflect 'read' status
-                    dropdownNotifications.innerHTML = data.notifications.map(notification => `
-                        <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
-                            <div class="text-sm font-medium">${notification.title}</div>
-                            <div class="text-xs text-gray-500">${notification.description}</div>
-                            <div class="text-xs text-gray-400">${notification.created_at}</div>
-                        </a>`).join('');
-
-                    // Remove the unread badge if all are marked as read
-                    const unreadBadge = document.querySelector('#notificationBell span');
-                    if (unreadBadge) unreadBadge.remove();
-                }
-            })
-            .catch(error => console.error('Error marking all as read:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        dropdownNotifications.innerHTML = '<p class="p-4 text-gray-500 text-sm text-center">All notifications marked as read.</p>';
+                        updateUnreadCount(); // Update count after marking as read
+                    }
+                })
+                .catch(error => console.error('Error marking all as read:', error));
         });
 
         // Close dropdown when clicking outside
@@ -292,6 +282,9 @@
                 dropdownOptions.classList.add('hidden');
             }
         });
+
+        // Optional: Update unread count at regular intervals (e.g., 10 seconds)
+        setInterval(updateUnreadCount, 10000); // Adjust the time as needed
     });
 </script>
 

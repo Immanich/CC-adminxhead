@@ -9,7 +9,7 @@
 
         <!-- Header -->
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-4xl font-bold text-indigo-800">M V M S P</h1>
+            <h1 class="text-5xl font-bold text-indigo-800">M V M S P</h1>
             <div class="flex space-x-4">
                 @if (empty($officeMvmsp->mandate) && empty($officeMvmsp->vision) && empty($officeMvmsp->mission) && empty($officeMvmsp->service_pledge))
                     <button id="openAddModal"
@@ -55,16 +55,16 @@
 
         <!-- MVMSP Display -->
         <ul>
-            <li class="mb-6 text-xl text-justify">I. <span class="underline font-semibold text-gray-800">MANDATE</span>
+            <li class="mb-6 text-lg text-justify font-semibold">I. <span class="underline font-semibold text-gray-800">MANDATE</span>
                 <p class="mt-2 text-gray-700 leading-relaxed">&emsp;&emsp;{{ $officeMvmsp->mandate }}</p>
             </li>
-            <li class="mb-6 text-xl text-justify">II. <span class="underline font-semibold text-gray-800">VISION</span>
+            <li class="mb-6 text-lg text-justify font-semibold">II. <span class="underline font-semibold text-gray-800">VISION</span>
                 <p class="mt-2 text-gray-700 leading-relaxed">&emsp;&emsp;{{ $officeMvmsp->vision }}</p>
             </li>
-            <li class="mb-6 text-xl text-justify">III. <span class="underline font-semibold text-gray-800">MISSION</span>
+            <li class="mb-6 text-lg text-justify font-semibold">III. <span class="underline font-semibold text-gray-800">MISSION</span>
                 <p class="mt-2 text-gray-700 leading-relaxed">&emsp;&emsp;{{ $officeMvmsp->mission }}</p>
             </li>
-            <li class="mb-6 text-xl text-justify">IV. <span class="underline font-semibold text-gray-800">SERVICE PLEDGE</span>
+            <li class="mb-6 text-lg text-justify font-semibold">IV. <span class="underline font-semibold text-gray-800">SERVICE PLEDGE</span>
                 <p class="mt-2 text-gray-700 leading-relaxed">&emsp;&emsp;{{ $officeMvmsp->service_pledge }}</p>
             </li>
 

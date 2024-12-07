@@ -12,21 +12,15 @@
             </div>
         @endif
 
-        <!-- @if(session('success'))
-            <div id="successMessage" class="bg-green-100 text-green-700 px-4 py-3 rounded relative mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
-        @endif -->
-
-@if ($errors->any())
-<div id="errorMessage" class="bg-red-100 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+        @if ($errors->any())
+        <div id="errorMessage" class="bg-red-100 text-red-700 p-4 rounded mb-4 opacity-100 transition-opacity duration-1000 ease-in-out">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
         @if($pendingServices->isEmpty())
         <div class="text-center bg-gray-100 p-6 rounded-lg shadow-lg">
@@ -51,16 +45,16 @@
                                 <!-- Approve Button -->
                                 <form action="{{ route('services.approve', $service->id) }}" method="POST" class="inline-block">
                                     @csrf
-                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
-                                        Approve
+                                    <button type="submit" class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                        <i class="bi bi-check-circle mr-1"></i>Approve
                                     </button>
                                 </form>
 
                                 <!-- Reject Button -->
                                 <form action="{{ route('services.reject', $service->id) }}" method="POST" class="inline-block">
                                     @csrf
-                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
-                                        Reject
+                                    <button type="submit" class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-500 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                        <i class="bi bi-x-circle mr-1"></i> Reject
                                     </button>
                                 </form>
                             </td>
