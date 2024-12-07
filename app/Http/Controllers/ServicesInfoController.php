@@ -15,7 +15,7 @@ class ServicesInfoController extends Controller
     $request->validate([
         'clients' => 'required|string|max:255',
         'agency_action' => 'required|string|max:255',
-        'info_title' => 'required|string|max:255',
+        'info_title' => 'nullable|string|max:255',
         'fees' => 'required|string|max:255', // Allow string input for fees
         'processing_time' => 'required|string|max:255',
         'person_responsible' => 'required|string|max:255',
@@ -29,8 +29,8 @@ class ServicesInfoController extends Controller
         ServicesInfo::create([
             'clients' => json_encode([$request->clients]),
             'agency_action' => json_encode([$request->agency_action]),
-            'info_title' => $request->info_title,
-            'fees' => $request->fees,  // Directly store the fees as a string
+            'info_title' => $request->info_title ?? null,
+            'fees' => json_encode([$request->fees]),  // Directly store the fees as a string
             'processing_time' => json_encode([$request->processing_time]),
             'person_responsible' => json_encode([$request->person_responsible]),
             'step' => $request->step,
@@ -55,10 +55,11 @@ public function update(Request $request, $service_id, $info_id)
     $request->validate([
         'clients' => 'required|string|max:255',
         'agency_action' => 'required|string|max:255',
-        'info_title' => 'required|string|max:255',
+        'info_title' => 'nullable|string|max:255',
         'fees' => 'required|string|max:255',
         'processing_time' => 'required|string|max:255',
         'person_responsible' => 'required|string|max:255',
+        'step' => 'required|string|max:255', // Validate step field
     ]);
 
     // Find the service info by ID
@@ -67,10 +68,11 @@ public function update(Request $request, $service_id, $info_id)
     // Update the service info fields
     $info->clients = json_encode([$request->clients]);
     $info->agency_action = json_encode([$request->agency_action]);
-    $info->info_title = $request->info_title;
-    $info->fees = $request->fees;
+    $info->info_title = $request->filled('info_title') ? $request->info_title : null;
+    $info->fees = json_encode([$request->fees]);
     $info->processing_time = json_encode([$request->processing_time]);
     $info->person_responsible = json_encode([$request->person_responsible]);
+    $info->step = $request->step; // Update step field
 
     // Save the changes
     $info->save();

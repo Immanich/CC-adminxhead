@@ -22,7 +22,7 @@ return new class extends Migration
             // $table->timestamp('dateTime');
             $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->dateTime('dateTime')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('dateTime')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->string('link')->nullable();
             // $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->boolean('is_read')->default(false); 

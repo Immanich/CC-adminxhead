@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-id" content="{{ auth()->user()->id }}">
+
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -39,13 +41,12 @@
                     <!-- Notification Icon -->
                     <button id="notificationBell" class="text-gray-700 hover:text-blue-500 transition-colors duration-300">
                         <i class="fas fa-bell text-lg"></i>
-                        @if($unreadCount > 0)
-                            <span
-                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                                {{ $unreadCount }}
-                            </span>
-                        @endif
+                        <span id="unreadCountBadge" style="display:none;"
+                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                            {{ $unreadCount }}
+                        </span>
                     </button>
+
 
                     <!-- Notification Dropdown -->
                     <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
@@ -190,8 +191,9 @@
         const dropdownOptionsButton = document.getElementById('dropdownOptionsButton');
         const dropdownOptions = document.getElementById('dropdownOptions');
         const markAllAsRead = document.getElementById('markAllAsRead');
+        const unreadBadge = document.querySelector('#notificationBell span');
 
-        // Toggle the notification dropdown
+        // Fetch notifications only when the bell icon is clicked
         notificationBell.addEventListener('click', function (event) {
             event.stopPropagation(); // Prevent click from propagating
             notificationDropdown.classList.toggle('hidden');
@@ -225,6 +227,32 @@
             dropdownOptions.classList.toggle('hidden');
         });
 
+        // Function to update unread notification count
+        function updateUnreadCount() {
+            fetch('/notifications/fetch')  // Make an AJAX call to the route that returns notifications
+                .then(response => response.json())
+                .then(data => {
+                    const unreadCount = data.unreadCount;
+                    const unreadCountElement = document.getElementById('unreadCountBadge');
+
+                    // If unread count is greater than 0, show the badge, otherwise hide it
+                    if (unreadCount > 0) {
+                        unreadCountElement.style.display = 'flex';  // Show badge
+                        unreadCountElement.textContent = unreadCount;
+                    } else {
+                        unreadCountElement.style.display = 'none';  // Hide badge
+                    }
+                })
+                .catch(error => console.error('Error fetching unread count:', error));
+        }
+
+        // Call the function immediately when the page loads
+        updateUnreadCount();
+
+        // Update unread count every 0.5 seconds (500 milliseconds)
+        setInterval(updateUnreadCount, 500);  // Update every 500 milliseconds
+
+
         // Mark all notifications as read
         markAllAsRead.addEventListener('click', function () {
             fetch('{{ route('notifications.markAllAsRead') }}', {
@@ -234,15 +262,23 @@
                     'Content-Type': 'application/json',
                 },
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        dropdownNotifications.innerHTML = '<p class="p-4 text-gray-500 text-sm text-center">All notifications marked as read.</p>';
-                        const unreadBadge = document.querySelector('#notificationBell span');
-                        if (unreadBadge) unreadBadge.remove();
-                    }
-                })
-                .catch(error => console.error('Error marking all as read:', error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the notifications in the dropdown to reflect 'read' status
+                    dropdownNotifications.innerHTML = data.notifications.map(notification => `
+                        <a href="/notifications/${notification.id}/read" class="block px-4 py-2 hover:bg-gray-100 transition ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                            <div class="text-sm font-medium">${notification.title}</div>
+                            <div class="text-xs text-gray-500">${notification.description}</div>
+                            <div class="text-xs text-gray-400">${notification.created_at}</div>
+                        </a>`).join('');
+
+                    // Remove the unread badge if all are marked as read
+                    const unreadBadge = document.querySelector('#notificationBell span');
+                    if (unreadBadge) unreadBadge.remove();
+                }
+            })
+            .catch(error => console.error('Error marking all as read:', error));
         });
 
         // Close dropdown when clicking outside

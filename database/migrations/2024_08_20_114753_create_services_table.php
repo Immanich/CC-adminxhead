@@ -23,6 +23,7 @@ return new class extends Migration
             $table->json('where_to_secure')->nullable();
             // $table->string('where_to_secure')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            // $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

@@ -43,11 +43,23 @@ public function markAllAsRead()
 {
     $user = auth()->user();
 
-    // Update all notifications for the authenticated user
-    Notification::where('user_id', $user->id)->update(['is_read' => true]);
+    // Update all unread notifications for the authenticated user
+    Notification::where('user_id', $user->id)
+        ->where('is_read', false)  // Only mark unread notifications as read
+        ->update(['is_read' => true]);
 
-    return response()->json(['success' => true]);
+    // Fetch the updated notifications
+    $notifications = Notification::where('user_id', $user->id)
+        ->orderBy('is_read', 'asc')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'notifications' => $notifications,
+    ]);
 }
+
 
 
 

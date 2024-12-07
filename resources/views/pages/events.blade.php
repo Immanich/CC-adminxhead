@@ -74,42 +74,44 @@
     <h2 class="text-lg font-bold mb-2 mt-8">Approved Events</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @foreach($approvedEvents as $event)
-            <div class="relative group border border-gray-300 rounded-lg shadow-md bg-white overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full max-w-lg">
-                <div class="relative">
-                    <img src="{{ $event->image }}" alt="Event Image" class="w-full h-72 object-cover">
-                    <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black to-transparent transition-opacity duration-300 ease-in-out group-hover:bg-black group-hover:bg-opacity-50">
-                        <h2 class="text-xl font-semibold text-white opacity-100">{{ $event->title }}</h2>
-                        <h3 class="text-sm font-medium text-gray-300">{{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y') }}</h3>
-                        <p class="text-sm text-gray-200 opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                            {{ Str::limit($event->description, 50) }}
-                        </p>
-                    </div>
-                </div>
-                <div class="flex justify-center space-x-4 p-4">
-                    <a href="{{ route('events.show', $event->id) }}" class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4">
-                        <i class="fas fa-eye mr-1"></i>View
-                    </a>
-                    @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
-                    <button onclick="editEvent({{ $event->id }})"
-                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                        <i class="fas fa-edit mr-1"></i>Edit
-                    </button>
-                @endif
-
-                <!-- Delete Button -->
-                @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
-                    <form action="{{ route('events.delete', $event->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                            class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-500 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
-                            <i class="fas fa-trash-alt mr-1"></i>Delete
-                        </button>
-                    </form>
-                @endif
-                </div>
+    <div class="event-card relative group border border-gray-300 rounded-lg shadow-md bg-white overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full max-w-lg"
+         data-expiration="{{ $event->expires_at }}">
+        <div class="relative">
+            <img src="{{ $event->image }}" alt="Event Image" class="w-full h-72 object-cover">
+            <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black to-transparent transition-opacity duration-300 ease-in-out group-hover:bg-black group-hover:bg-opacity-50">
+                <h2 class="text-xl font-semibold text-white opacity-100">{{ $event->title }}</h2>
+                <h3 class="text-sm font-medium text-gray-300">{{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y') }}</h3>
+                <p class="text-sm text-gray-200 opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                    {{ Str::limit($event->description, 50) }}
+                </p>
             </div>
-        @endforeach
+        </div>
+        <div class="flex justify-center space-x-4 p-4">
+            <a href="{{ route('events.show', $event->id) }}" class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4">
+                <i class="fas fa-eye mr-1"></i>View
+            </a>
+            @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
+                <button onclick="editEvent({{ $event->id }})"
+                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                    <i class="fas fa-edit mr-1"></i>Edit
+                </button>
+            @endif
+
+            <!-- Delete Button -->
+            @if(auth()->user()->hasRole('admin') || auth()->id() === $event->user_id)
+                <form action="{{ route('events.delete', $event->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-red-500 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                        <i class="fas fa-trash-alt mr-1"></i>Delete
+                    </button>
+                </form>
+            @endif
+        </div>
+    </div>
+@endforeach
+
     </div>
 
  <!-- Add/Edit Event Modal -->
@@ -138,7 +140,15 @@
             <!-- Event Date and Time -->
             <div class="mb-2">
                 <label for="date_time" class="block text-sm font-medium">Event Date and Time</label>
-                <input type="datetime-local" id="date_time" name="date_time" class="mt-1 block w-full p-1 border rounded" required>
+                <input type="datetime-local" id="date_time" name="date_time" class="mt-1 block w-full p-1 border rounded"
+                       required min="{{ now()->format('Y-m-d\TH:i') }}">
+            </div>
+
+            <!-- Event Expiry Date and Time -->
+            <div class="mb-2">
+                <label for="expires_at" class="block text-sm font-medium">Event Expiration Date</label>
+                <input type="datetime-local" id="expires_at" name="expires_at" class="mt-1 block w-full p-1 border rounded"
+                    required min="{{ now()->format('Y-m-d\TH:i') }}">
             </div>
 
 
@@ -182,7 +192,18 @@
     </div>
 </div>
 
+<style>
+    /* Fade-out effect */
+    .fade-out {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
 
+    /* Hidden class to remove from the DOM after fade-out */
+    .hidden {
+        display: none;
+    }
+</style>
 <!-- Modal Script -->
 <script>
    const openAddModal = document.getElementById('openAddModal');
@@ -216,12 +237,14 @@ openAddModal.addEventListener('click', () => {
     document.getElementById('title').value = '';
     document.getElementById('description').value = '';
     document.getElementById('date_time').value = '';
+    document.getElementById('expires_at').value = '';
     document.getElementById('image').value = '';
     document.getElementById('image_file').value = '';
     imageTypeUrl.checked = true; // Default to Image URL
     toggleImageFields(); // Reset input fields
 
     // Set form for creating
+    modalTitle.textContent = 'Create New Event';
     formMethodField.value = 'POST';
     eventForm.action = '{{ route("events.store") }}';
     modal.classList.remove('hidden');
@@ -269,10 +292,16 @@ function editEvent(id) {
     fetch(`/events/${id}/edit`)
         .then(response => response.json())
         .then(event => {
+
+            modalTitle.textContent = 'Edit Event'; // Change the modal title to "Edit Event"
+            formMethodField.value = 'PUT'; // Change method to PUT for editing
+            eventForm.action = `/events/${eventId}`;
+
             document.getElementById('eventId').value = event.id;
             document.getElementById('title').value = event.title;
             document.getElementById('description').value = event.description;
             document.getElementById('date_time').value = event.date_time;
+            document.getElementById('expires_at').value = event.expires_at;
 
             if (event.image.startsWith('http')) {
                 imageTypeUrl.checked = true;
@@ -317,6 +346,26 @@ window.onload = function() {
         }, 2000); // 2 seconds delay before starting fade-out
     }
 };
+
+// Fade-out and remove expired events dynamically
+document.addEventListener('DOMContentLoaded', function() {
+        const eventCards = document.querySelectorAll('.event-card');
+
+        // Check each event card for expiration
+        eventCards.forEach(function(card) {
+            const expirationDate = new Date(card.getAttribute('data-expiration'));
+            const currentDate = new Date();
+
+            // If expired, fade out and remove the event card
+            if (expirationDate < currentDate) {
+                card.classList.add('fade-out');
+
+                setTimeout(() => {
+                    card.classList.add('hidden'); // Remove the event card from view after fade-out
+                }, 1000); // Match the duration of the fade-out effect
+            }
+        });
+    });
 
 </script>
 @endsection

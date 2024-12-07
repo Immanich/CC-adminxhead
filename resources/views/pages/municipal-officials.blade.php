@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container bg-white p-6 rounded-lg shadow-md bg-main-content" style="min-height: 100vh; padding-bottom: 5rem;">
+<div class="container bg-black p-6 rounded-lg shadow-md bg-main-content" style="min-height: 100vh; padding-bottom: 5rem;">
     <h1 class="text-6xl font-bold text-center mb-6" style="font-family: 'Old English Text MT', serif;">Municipal Officials</h1>
     <h2 class="text-2xl text-center font-bold mb-4 text-red-500">TUBIGON, BOHOL, PHILIPPINES</h2>
     <h3 class="text-xl text-center font-bold mb-8 text-red-800">
@@ -225,11 +225,11 @@
 
 <style>
     .bg-main-content {
-    background-image: url('/assets/images/bg.jpg'); /* Adjust path as needed */
+    /* background-image: url('/assets/images/bg.jpg');  */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.5); /* Adjust color and opacity */
+    background-color: rgba(255, 255, 255, 0);
     background-blend-mode: overlay; /* Blend color with the image */
 }
 

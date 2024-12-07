@@ -42,6 +42,8 @@ class AuthenticatedSessionController extends Controller
         // Regenerate the session and redirect to the intended page
         $request->session()->regenerate();
 
+        $request->session()->forget('url.intended');
+
         // Redirect to the MVMPS page or the intended destination
         return redirect()->intended(route('mvmsp'));
     }

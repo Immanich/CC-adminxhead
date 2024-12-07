@@ -98,9 +98,7 @@ public function store(Request $request)
     $user->username = $validatedData['username'];
 
     // Require a password if it's left blank
-    if (empty($request->password)) {
-        return redirect()->back()->withErrors(['password' => 'Password cannot be left blank when editing a user.']);
-    } else {
+    if ($request->filled('password')) {
         $user->password = Hash::make($validatedData['password']);
     }
 
