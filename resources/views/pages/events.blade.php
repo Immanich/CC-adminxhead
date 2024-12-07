@@ -57,6 +57,7 @@
                                 <p class="mt-2 text-sm font-medium text-blue-600">
                                     {{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y h:i A') }}
                                 </p>
+
                             </div>
                         </div>
                         <div class="p-4">

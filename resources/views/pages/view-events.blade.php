@@ -14,8 +14,12 @@
         </h1>
 
         <!-- Event DateTime -->
-        <p class="text-lg font-semibold text-gray-600 mt-1 text-center">
+        <p class="text-lg font-semibold text-gray-600 mt-1 text-center">When:
             {{ \Carbon\Carbon::parse($event->date_time)->format('M d, Y - h:i A') }}
+        </p>
+        <p class="text-lg font-semibold text-gray-600 mt-1 text-center">
+            Expires At:
+            {{ \Carbon\Carbon::parse($event->expires_at)->format('M d, Y - h:i A') }}
         </p>
     </div>
 

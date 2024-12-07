@@ -75,16 +75,17 @@ class ServiceController extends Controller
         'created_by' => auth()->id(),
     ]);
 
-    // Notify admin
-    if ($status === 'approved') {
+    // If the service is created by an admin, no notification is required
+    if ($status === 'approved' && !auth()->user()->hasRole('admin')) {
         Notification::create([
             'title' => 'Service Approved',
             'description' => "The <strong>{$office->office_name}</strong> service has been approved.",
             'dateTime' => now(),
-            'user_id' => 1, // You can replace this with the admin ID
+            'user_id' => 1, // Admin ID for approval notification
             'link' => route('services.show', ['id' => $service->id]),
         ]);
     } elseif ($status === 'pending') {
+        // Notify admin when the service is pending
         Notification::create([
             'title' => 'New Service Pending Approval',
             'description' => "The <strong>{$office->office_name}</strong> added a new service, awaiting approval.",
@@ -96,6 +97,7 @@ class ServiceController extends Controller
 
     return redirect()->back()->with('success', $status === 'approved' ? 'Service created successfully.' : 'Service created and is waiting for approval.');
 }
+
 
 
 public function showOfficeServices($officeId)
