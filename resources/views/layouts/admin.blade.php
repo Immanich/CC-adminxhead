@@ -151,6 +151,9 @@
                         <i class="fas fa-comment-alt mr-3"></i> FEEDBACKS
                     </a>
 
+                    <a href="{{ route('events.archived') }}" class="sidebar-link font-semibold {{ request()->is('archived') ? 'active' : '' }}">
+                        <i class="fas fa-archive mr-3"></i> ARCHIVES
+                    </a>
                 </nav>
             </aside>
 

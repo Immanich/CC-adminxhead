@@ -10,21 +10,38 @@ use Illuminate\Support\Facades\Log;
 class EventController extends Controller
 {
     public function index()
-    {
-        $approvedEvents = Event::where('status', 'approved')
-            ->where('expires_at', '>', now()) // Exclude expired events
-            ->orderBy('created_at', 'desc')
-            ->get();
+{
+    // Fetch approved events that are not expired
+    $approvedEvents = Event::where('status', 'approved')
+        ->where('expires_at', '>', now()) // Exclude expired events
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        $pendingEvents = Event::where('status', 'pending')
-            ->where('user_id', auth()->id())
-            ->where('expires_at', '>', now()) // Exclude expired events
-            ->orderBy('created_at', 'desc')
-            ->get();
+    // Fetch pending events that are not expired
+    $pendingEvents = Event::where('status', 'pending')
+        ->where('user_id', auth()->id())
+        ->where('expires_at', '>', now()) // Exclude expired events
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        return view('pages.events', compact('approvedEvents', 'pendingEvents'));
-    }
+    // Fetch expired events (archived)
+    $archivedEvents = Event::where('expires_at', '<', now()) // Only expired events
+        ->orderBy('expires_at', 'desc')
+        ->get();
 
+    return view('pages.events', compact('approvedEvents', 'pendingEvents', 'archivedEvents'));
+}
+
+
+public function archived()
+{
+    // Fetch archived (expired) events
+    $archivedEvents = Event::where('expires_at', '<', now()) // Only expired events
+        ->orderBy('expires_at', 'desc')
+        ->get();
+
+    return view('pages.archived', compact('archivedEvents'));
+}
 
 
     public function store(Request $request)
@@ -92,6 +109,23 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         return view('pages.view-events', compact('event'));
     }
+
+    public function showPendingEvent($id)
+{
+    $event = Event::where('id', $id)->where('status', 'pending')->firstOrFail();
+
+    return view('pendings-folder.view-pending-event', compact('event'));
+}
+
+// In EventController
+
+public function showExpiredEvent($id)
+{
+    // Find the archived event by its ID
+    $event = Event::findOrFail($id);
+
+    return view('pages.show-archived-events', compact('event'));
+}
 
     public function edit($id)
 {

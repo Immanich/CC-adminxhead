@@ -60,6 +60,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/admin/offices/{id}', [OfficeController::class, 'update'])->name('admin.updateOffice');
         Route::delete('/admin/offices/{id}', [OfficeController::class, 'destroy'])->name('admin.deleteOffice');
 
+        Route::get('/events/archived', [EventController::class, 'archived'])->name('events.archived');
+        Route::get('/events/{id}/show-archived', [EventController::class, 'showExpiredEvent'])->name('events.showExpiredEvent');
+
+
         // Service management (accessible to both roles)
         Route::post('/admin/services/{officeId}/store', [ServiceController::class, 'storeService'])->name('admin.storeService');
         Route::get('/admin/services/{id}/edit', [ServiceController::class, 'edit'])->name('admin.editService');
@@ -70,6 +74,7 @@ Route::middleware('auth')->group(function () {
     // admin
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/pending-services', [ServiceController::class, 'pendingServices'])->name('pending.services');
+        Route::get('/pending-services/{id}', [ServiceController::class, 'showPendingService'])->name('pending.services.show');
         Route::post('/admin/services/{serviceId}/approve', [ServiceController::class, 'approveService'])->name('services.approve');
         Route::post('/admin/services/{serviceId}/reject', [ServiceController::class, 'rejectService'])->name('services.reject');
 
@@ -78,6 +83,7 @@ Route::middleware('auth')->group(function () {
         })->name('pendings');
         // Pending events (admin approval)
         Route::get('/admin/pending-events', [EventController::class, 'showPendingEvents'])->name('pending.events');
+        Route::get('/pending-events/{id}', [EventController::class, 'showPendingEvent'])->name('pending.events.show');
         Route::post('/admin/events/{id}/approve', [EventController::class, 'approveEvent'])->name('events.approve');
         Route::post('/admin/events/{id}/reject', [EventController::class, 'rejectEvent'])->name('events.reject');
     });

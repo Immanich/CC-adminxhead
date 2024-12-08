@@ -30,6 +30,16 @@ class ServiceController extends Controller
         return view('services.show', compact('service', 'services_infos'));
     }
 
+    public function showPendingService($id)
+{
+    // Find the pending service by its ID
+    $service = Service::where('id', $id)->where('status', 'pending')->firstOrFail();
+
+    // Return the view with the service details
+    return view('pendings-folder.view-pending-service', compact('service'));
+}
+
+
     public function storeService(Request $request, $officeId)
 {
     $request->validate([

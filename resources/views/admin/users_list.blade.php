@@ -73,22 +73,22 @@
 
                             <!-- Enable/Disable Account Button -->
                             @if(
-                                auth()->user()->hasRole('admin') ||
-                                (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user'))
-                            )
-                                <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('POST')
-                                    <button type="submit"
-                                            class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-gray-500 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
-                                        @if($user->is_disabled)
-                                            <i class="bi bi-toggle2-off mr-1"></i> Activate
-                                        @else
-                                            <i class="bi bi-toggle2-on mr-1"></i> Deactivate
-                                        @endif
-                                    </button>
-                                </form>
-                            @endif
+                            auth()->user()->hasRole('admin') ||
+                            (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user'))
+                        )
+                            <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline" onsubmit="return confirmStatusChange({{ $user->is_disabled ? 'true' : 'false' }})">
+                                @csrf
+                                @method('POST')
+                                <button type="submit"
+                                        class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-gray-500 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900">
+                                    @if($user->is_disabled)
+                                        <i class="bi bi-toggle2-off mr-1"></i> Activate
+                                    @else
+                                        <i class="bi bi-toggle2-on mr-1"></i> Deactivate
+                                    @endif
+                                </button>
+                            </form>
+                        @endif
                         </div>
 
 
@@ -198,6 +198,10 @@
     document.getElementById('userModal').classList.remove('hidden');
 });
 
+function confirmStatusChange(isDisabled) {
+        var message = isDisabled ? 'Are you sure you want to activate this user?' : 'Are you sure you want to deactivate this user?';
+        return confirm(message);
+    }
 
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.editUserButton').forEach(function(button) {
