@@ -36,6 +36,15 @@ class OfficeController extends Controller
     return view('offices.offices', compact('offices'));
 }
 
+public function informations()
+{
+    // Fetch all offices from the database
+    $offices = Office::all();
+
+    // Pass the data to the Blade view
+    return view('offices.informations', compact('offices'));
+}
+
 
 
     public function feedbacks() {
@@ -68,6 +77,9 @@ class OfficeController extends Controller
         $validatedData = $request->validate([
             'office_name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'email' => 'nullable|string|max:255',
+            'contact_number' => 'nullable|string|max:255',
         ]);
 
         Office::create($validatedData);
@@ -119,14 +131,30 @@ public function update(Request $request, $id)
 {
     $office = Office::findOrFail($id);
 
+    $user = auth()->user();
+
+    // Check if the user has permission to edit this office
+    if ($user->hasRole('user|sub_user')) {
+        if ($office->id !== $user->office_id) { // Assuming 'office_id' links the user to their assigned office
+            return redirect()->back()->with('error', 'You are not authorized to edit this office.');
+        }
+    }
+
+    // Validate the request
     $validatedData = $request->validate([
         'office_name' => 'required|string|max:255',
+        'description' => 'nullable|string|max:255',
+        'address' => 'nullable|string|max:255',
+        'email' => 'nullable|string|max:255',
+        'contact_number' => 'nullable|string|max:255',
     ]);
 
+    // Update the office
     $office->update($validatedData);
 
     return redirect()->route('admin.offices.index')->with('success', 'Office updated successfully.');
 }
+
 
 public function destroy($id)
 {

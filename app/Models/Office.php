@@ -13,7 +13,7 @@ class Office extends Model
     use HasFactory;
 
     protected $fillable = [
-        'office_name',
+        'office_name', 'description', 'address', 'email', 'contact_number',
     ];
 
     protected static function boot()
@@ -38,7 +38,7 @@ class Office extends Model
         });
     }
 
-    
+
     public function services()
     {
         return $this->hasMany(Service::class);
@@ -70,9 +70,12 @@ class Office extends Model
         ->first();
 }
 
+public function employees()
+{
+    return $this->hasMany(Employee::class);
+}
 
 
-    
     public function mvmsp()
     {
         return $this->hasOne(Mvmsp::class);

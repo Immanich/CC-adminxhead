@@ -57,7 +57,7 @@
 
                     @role('admin')
                         <!-- Edit Button -->
-                        <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}')"
+                        <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}', '{{ $office->description }}', '{{ $office->address }}', '{{ $office->email }}', '{{ $office->contact_number }}')"
                             class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                             <i class="fas fa-edit mr-1"></i>Edit
                         </button>
@@ -94,6 +94,26 @@
                         <input type="text" id="office_name" name="office_name" class="mt-1 p-2 block w-full border rounded" required>
                     </div>
 
+                    <div class="mb-4">
+                        <label for="description" class="block text-sm font-medium">Description</label>
+                        <input type="text" id="description" name="description" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="address" class="block text-sm font-medium">Office Location</label>
+                        <input type="text" id="address" name="address" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium">Office Email</label>
+                        <input type="text" id="email" name="email" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="contact_number" class="block text-sm font-medium">Office Contact #</label>
+                        <input type="text" id="contact_number" name="contact_number" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
                     <div class="flex justify-end">
                         <button type="button" id="closeOfficeModalButton" class="mr-2 bg-gray-300 text-black px-4 py-2 rounded">Cancel</button>
                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
@@ -113,6 +133,26 @@
                     <div class="mb-4">
                         <label for="edit_office_name" class="block text-sm font-medium">Office Name</label>
                         <input type="text" id="edit_office_name" name="office_name" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="edit_description" class="block text-sm font-medium">Description</label>
+                        <input type="text" id="edit_description" name="description" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="edit_address" class="block text-sm font-medium">Office Location</label>
+                        <input type="text" id="edit_address" name="address" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="edit_email" class="block text-sm font-medium">Office Email</label>
+                        <input type="text" id="edit_email" name="email" class="mt-1 p-2 block w-full border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="edit_contact_number" class="block text-sm font-medium">Office Contact #</label>
+                        <input type="text" id="edit_contact_number" name="contact_number" class="mt-1 p-2 block w-full border rounded" required>
                     </div>
 
                     <div class="flex justify-end">
@@ -136,9 +176,13 @@
         });
 
         // Edit Office Modal
-        function openEditOfficeModal(id, name) {
+        function openEditOfficeModal(id, name, description, address, email, contact_number) {
             document.getElementById('editOfficeForm').action = '/admin/offices/' + id;
             document.getElementById('edit_office_name').value = name;
+            document.getElementById('edit_description').value = description;
+            document.getElementById('edit_address').value = address;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_contact_number').value = contact_number;
             document.getElementById('editOfficeModal').classList.remove('hidden');
         }
 

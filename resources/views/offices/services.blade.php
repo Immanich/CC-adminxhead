@@ -9,10 +9,12 @@
 @endif --}}
 <div class="flex items-center justify-between mb-4">
     <!-- Feedback Button -->
-    <!-- <a href="{{ route('feedbacks') }}"
-       class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
-        Feedback
-    </a> -->
+    <a href="{{ route('offices.employees', ['officeId' => $office->id]) }}">
+        <button class="flex items-center space-x-2 text-white bg-yellow-500 hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:focus:ring-yellow-700">
+            <i class="fa-solid fa-users"></i>
+            <span>Employees</span>
+        </button>
+    </a>
 
     <!-- List of Services Title + Add Service Button -->
     <div class="flex items-center space-x-4 flex-1 justify-center">
@@ -28,7 +30,16 @@
         </button>
         @endrole
     </div>
+
+    <!-- Info Button -->
+    <a href="{{ route('offices.informations') }}">
+        <button class="flex items-center text-white bg-gray-500 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+            <i class="fa-solid fa-circle-info"></i>
+            <span class="ml-2">Info</span>
+        </button>
+    </a>
 </div>
+
 
 
     <hr class="mb-6 border-2 border-gray-300">

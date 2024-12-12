@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\MunicipalOfficialController;
@@ -59,6 +60,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/offices', [OfficeController::class, 'store'])->name('admin.storeOffice');
         Route::put('/admin/offices/{id}', [OfficeController::class, 'update'])->name('admin.updateOffice');
         Route::delete('/admin/offices/{id}', [OfficeController::class, 'destroy'])->name('admin.deleteOffice');
+
+        Route::get('/offices/informations', [OfficeController::class, 'informations'])->name('offices.informations');
+
+        Route::get('/offices/{officeId}/employees', [EmployeeController::class, 'index'])->name('offices.employees');
+        Route::post('/offices/{officeId}/employees', [EmployeeController::class, 'store'])->name('employees.store');
+        Route::get('/employees/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+        Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+
 
         Route::get('/events/archived', [EventController::class, 'archived'])->name('events.archived');
         Route::get('/events/{id}/show-archived', [EventController::class, 'showExpiredEvent'])->name('events.showExpiredEvent');

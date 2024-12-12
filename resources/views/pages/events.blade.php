@@ -111,9 +111,9 @@
             @endif
         </div>
     </div>
-@endforeach
+    @endforeach
 
-    </div>
+</div>
 
  <!-- Add/Edit Event Modal -->
 <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
@@ -207,15 +207,15 @@
 </style>
 <!-- Modal Script -->
 <script>
-   const openAddModal = document.getElementById('openAddModal');
-const closeModalButton = document.getElementById('closeModal');
-const modal = document.getElementById('eventModal');
-const eventForm = document.getElementById('eventForm');
-const formMethodField = document.getElementById('formMethod');
-const imageTypeUrl = document.getElementById('image_type_url');
-const imageTypeFile = document.getElementById('image_type_file');
-const imageUrlField = document.getElementById('imageUrlField');
-const imageFileField = document.getElementById('imageFileField');
+    const openAddModal = document.getElementById('openAddModal');
+    const closeModalButton = document.getElementById('closeModal');
+    const modal = document.getElementById('eventModal');
+    const eventForm = document.getElementById('eventForm');
+    const formMethodField = document.getElementById('formMethod');
+    const imageTypeUrl = document.getElementById('image_type_url');
+    const imageTypeFile = document.getElementById('image_type_file');
+    const imageUrlField = document.getElementById('imageUrlField');
+    const imageFileField = document.getElementById('imageFileField');
 
 // Toggle between Image URL and File Upload
 function toggleImageFields() {
