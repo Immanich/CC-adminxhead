@@ -20,28 +20,32 @@ class EmployeeController extends Controller
     }
 
     public function store(Request $request, $officeId)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000', // Ensure the image is validated
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'position' => 'required|string|max:255',
+        'image_url' => 'nullable|url|required_without:image_file',
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000|required_without:image_url',
+    ]);
 
-        // Handle image upload if file is uploaded
-        if ($request->hasFile('image')) {
-            // Store the image in the 'public' disk and get the relative path
-            $imagePath = $request->file('image')->store('employees', 'public');
-            // Store only the relative path to the image (without 'public/' prefix)
-            $validated['image'] = $imagePath;
-        }
-
-        // Create the employee record
-        $validated['office_id'] = $officeId;
-        Employee::create($validated);
-
-        return redirect()->route('offices.employees', $officeId)
-                         ->with('success', 'Employee added successfully.');
+    // Determine which image source to use
+    if ($request->hasFile('image_file')) {
+        // Store uploaded file and get relative path
+        $imagePath = $request->file('image_file')->store('employees', 'public');
+        $validated['image'] = $imagePath;
+    } elseif ($request->filled('image_url')) {
+        // Use the provided URL
+        $validated['image'] = $request->input('image_url');
+    } else {
+        $validated['image'] = null; // No image provided
     }
+
+    $validated['office_id'] = $officeId;
+    Employee::create($validated);
+
+    return redirect()->route('offices.employees', $officeId)
+                     ->with('success', 'Employee added successfully.');
+}
 
 
 
@@ -54,26 +58,30 @@ class EmployeeController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000', // Make sure to validate the image file
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'position' => 'required|string|max:255',
+        'image_url' => 'nullable|url|required_without:image_file',
+        'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5000|required_without:image_url',
+    ]);
 
-        $employee = Employee::findOrFail($id);
+    $employee = Employee::findOrFail($id);
 
-        // If an image is uploaded, handle the update of the image field
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('employees', 'public');
-        }
-
-        // Update the employee record
-        $employee->update($validated);
-
-        return redirect()->route('offices.employees', $employee->office_id)
-                         ->with('success', 'Employee updated successfully.');
+    // Determine which image source to use
+    if ($request->hasFile('image_file')) {
+        $imagePath = $request->file('image_file')->store('employees', 'public');
+        $validated['image'] = $imagePath;
+    } elseif ($request->filled('image_url')) {
+        $validated['image'] = $request->input('image_url');
     }
+
+    $employee->update($validated);
+
+    return redirect()->route('offices.employees', $employee->office_id)
+                     ->with('success', 'Employee updated successfully.');
+}
+
 
 
     public function destroy($id)

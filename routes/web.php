@@ -9,6 +9,8 @@ use App\Http\Controllers\MunicipalOfficialController;
 use App\Http\Controllers\MvmspController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\OrganizationalChartController;
+use App\Http\Controllers\OrgChartController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServicesInfoController;
@@ -97,6 +99,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/pending-events/{id}', [EventController::class, 'showPendingEvent'])->name('pending.events.show');
         Route::post('/admin/events/{id}/approve', [EventController::class, 'approveEvent'])->name('events.approve');
         Route::post('/admin/events/{id}/reject', [EventController::class, 'rejectEvent'])->name('events.reject');
+
+        Route::get('/org-chart', [OrganizationalChartController::class, 'index'])->name('org-chart.index');
+        Route::get('/org-chart/edit', [OrganizationalChartController::class, 'edit'])->name('org-chart.edit');
+        Route::post('/org-chart/store', [OrganizationalChartController::class, 'store'])->name('org-chart.store');
+        Route::put('/org-chart/update/{id}', [OrganizationalChartController::class, 'update'])->name('org-chart.update');
+        Route::delete('/org-chart/destroy/{id}', [OrganizationalChartController::class, 'destroy'])->name('org-chart.destroy');
     });
 
     // admin/user

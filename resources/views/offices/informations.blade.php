@@ -9,7 +9,7 @@
             <i class="bi bi-arrow-left mr-2"></i> Back
         </a>
         <!-- Page Title -->
-        <h1 class="text-2xl font-bold text-gray-800 flex-1 text-center">Office Information</h1>
+        <h1 class="text-4xl font-bold text-gray-800 flex-1 text-center">Office Information</h1>
     </div>
 
     <!-- Cards Container -->

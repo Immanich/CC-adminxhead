@@ -43,7 +43,7 @@
                             <td class="py-4 px-6 text-gray-600">{!! nl2br(e($service->description)) !!}</td>
                             <td class="py-4 px-6 flex justify-center space-x-2">
 
-                                <a href="{{ route('pending.services.show', ['id' => $service->id]) }}" class="px-3 py-2 text-xs font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800">
+                                <a href="{{ route('pending.services.show', ['id' => $service->id]) }}" class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     <i class="fas fa-eye mr-1"></i>View
                                 </a>
                                 <!-- Approve Button -->
