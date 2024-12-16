@@ -23,7 +23,7 @@
         </h1>
 
         <!-- Add Service Button -->
-        @role('admin|user|sub_user')
+        @role('admin|head|sub_head')
         <button id="openAddServiceModalButton"
                 class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-11 h-11 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
             <i class="fa-solid fa-plus"></i>
@@ -60,7 +60,7 @@
 </div>
 @endif
 
-@if(auth()->user()->hasRole('user') || auth()->user()->hasRole('sub_user'))
+@if(auth()->user()->hasRole('head') || auth()->user()->hasRole('sub_head'))
     <div class="mt-8">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold mb-2">Pending Services</h2>
@@ -116,7 +116,7 @@
                         <i class="fas fa-eye mr-1"></i>View
                     </a>
 
-                    @role('admin|user|sub_user')
+                    @role('admin|head|sub_head')
                     <!-- Edit Button -->
                     <button type="button" onclick="openEditServiceModal({{ $service->id }})"
                         class="px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-green-500 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
@@ -143,7 +143,7 @@
 
 
     <!-- Add Service Modal -->
-    @role('admin|user|sub_user')
+    @role('admin|head|sub_head')
         <div id="addServiceModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
             <div class="bg-white rounded-lg w-3/4 p-4">
                 <h2 class="text-xl font-bold mb-1">Add New Service</h2>

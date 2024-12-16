@@ -4,7 +4,7 @@
 <div class="container mx-auto mt-2">
     <!-- Heading with Back Button -->
     <div class="flex items-center justify-between mb-6">
-        @role('admin|user|sub_user')
+        @role('admin|head|sub_head')
         <a href="{{ route('offices.showServices', $office->id) }}" class="flex items-center rounded-full bg-gray-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
             <i class="bi bi-arrow-left"> Back</i>
         </a>

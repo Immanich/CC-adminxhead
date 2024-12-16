@@ -31,7 +31,7 @@
             <th class="py-3 px-6 border-b text-left">Username</th>
             <th class="py-3 px-6 border-b text-left">Office</th>
             <th class="py-3 px-6 border-b text-left">Role</th>
-            @if(auth()->user()->hasRole('admin|user'))
+            @if(auth()->user()->hasRole('admin|head'))
                 <th class="py-3 px-6 border-b text-left">Actions</th>
             @endif
         </tr>
@@ -50,7 +50,7 @@
                 <td class="py-3 px-6 border-b">{{ $user->office ? $user->office->office_name : 'N/A' }}</td>
                 <td class="py-3 px-6 border-b">{{ $user->roles->pluck('name')->implode(', ') }}</td>
 
-                @if(auth()->user()->hasRole('admin|user') && $user->roles->pluck('name')->implode(', ') !== 'admin')
+                @if(auth()->user()->hasRole('admin|head') && $user->roles->pluck('name')->implode(', ') !== 'admin')
                     <td class="py-3 px-6 border-b">
                         <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
                             <!-- Edit User Button -->
@@ -74,7 +74,7 @@
                             <!-- Enable/Disable Account Button -->
                             @if(
                             auth()->user()->hasRole('admin') ||
-                            (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user'))
+                            (auth()->user()->hasRole('head') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_head'))
                         )
                             <form action="{{ route('admin.users.toggleStatus', $user->id) }}" method="POST" class="inline" onsubmit="return confirmStatusChange({{ $user->is_disabled ? 'true' : 'false' }})">
                                 @csrf
@@ -148,9 +148,9 @@
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium">Role</label>
                 <select id="role" name="role" class="mt-1 p-2 block w-full border rounded" required>
-                    @if(auth()->user()->hasRole('user'))
-                        <option value="sub_user">Sub User</option>
-                        <option value="user"> User</option>
+                    @if(auth()->user()->hasRole('head'))
+                        <option value="sub_head">Sub Head</option>
+                        <option value="head"> Head</option>
                     @else
                         @foreach($roles as $role)
                             @if($role->name !== 'admin') {{-- Exclude admin role --}}
@@ -163,15 +163,15 @@
 
             <div class="mb-4">
                 <label for="office_id" class="block text-sm font-medium">Office</label>
-                <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded" {{ auth()->user()->hasRole('user') ? 'disabled' : '' }}>
+                <select id="office_id" name="office_id" class="mt-1 p-2 block w-full border rounded" {{ auth()->user()->hasRole('head') ? 'disabled' : '' }}>
                     <option value="">Select Office</option>
                     @foreach($offices as $office)
-                        <option value="{{ $office->id }}" {{ auth()->user()->hasRole('user') && auth()->user()->office_id == $office->id ? 'selected' : '' }}>
+                        <option value="{{ $office->id }}" {{ auth()->user()->hasRole('head') && auth()->user()->office_id == $office->id ? 'selected' : '' }}>
                             {{ $office->office_name }}
                         </option>
                     @endforeach
                 </select>
-                @if(auth()->user()->hasRole('user'))
+                @if(auth()->user()->hasRole('head'))
                     <input type="hidden" name="office_id" value="{{ auth()->user()->office_id }}">
                 @endif
             </div>

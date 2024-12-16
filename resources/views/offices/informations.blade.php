@@ -22,7 +22,7 @@
             <p class="text-sm text-gray-600 mb-1"><strong>Email:</strong> {{ $office->email }}</p>
             <p class="text-sm text-gray-600 mb-1"><strong>Contact:</strong> {{ $office->contact_number }}</p>
 
-            @if(auth()->user()->hasRole('admin') || (auth()->user()->hasRole('user|sub_user') && auth()->user()->office_id == $office->id))
+            @if(auth()->user()->hasRole('admin') || (auth()->user()->hasRole('head|sub_head') && auth()->user()->office_id == $office->id))
                 <!-- Pen Icon in the Upper Right Corner -->
                 <button onclick="openEditOfficeModal({{ $office->id }}, '{{ $office->office_name }}', '{{ $office->description }}', '{{ $office->address }}', '{{ $office->email }}', '{{ $office->contact_number }}')"
                     class="absolute top-2 right-2 text-gray-600 hover:text-blue-600 transition-colors">

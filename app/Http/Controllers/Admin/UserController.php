@@ -27,7 +27,7 @@ class UserController extends Controller
     }
 
     // Show roles based on user's role: admin sees all roles; user sees only 'sub_user'
-    $roles = auth()->user()->hasRole('admin') ? Role::all() : Role::where('name', 'sub_user')->get();
+    $roles = auth()->user()->hasRole('admin') ? Role::all() : Role::where('name', 'sub_head')->get();
     $offices = Office::all();
 
     return view('admin.users_list', compact('users', 'roles', 'offices'));
@@ -57,7 +57,7 @@ public function store(Request $request)
     ], $messages);
 
     // Determine if the current user is creating a sub-user
-    $isSubUser = auth()->user()->hasRole('user') && !$request->has('user_id');
+    $isSubUser = auth()->user()->hasRole('head') && !$request->has('user_id');
 
     // Prepare user data, setting `created_by` and `office_id` based on whether it's a sub-user
     $userData = [
@@ -72,7 +72,7 @@ public function store(Request $request)
 
     // Assign the appropriate role
     if ($isSubUser) {
-        $user->syncRoles(['sub_user']); // Assign 'sub_user' role if created by a non-admin user
+        $user->syncRoles(['sub_head']); // Assign 'sub_user' role if created by a non-admin user
     } elseif ($request->has('role')) {
         $user->syncRoles([$request->role]);
     }
@@ -136,7 +136,7 @@ public function store(Request $request)
     }
 
     // Allow users to toggle sub_users in their office
-    if (auth()->user()->hasRole('user') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_user')) {
+    if (auth()->user()->hasRole('head') && $user->office_id === auth()->user()->office_id && $user->roles->contains('name', 'sub_head')) {
         $user->is_disabled = !$user->is_disabled;
         $user->save();
         return redirect()->route('admin.users.index')->with('success', 'User status updated successfully.');

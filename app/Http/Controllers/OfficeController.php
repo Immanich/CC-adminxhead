@@ -17,7 +17,7 @@ class OfficeController extends Controller
 {
     $user = auth()->user();
 
-    if ($user->hasRole('user|sub_user')) {
+    if ($user->hasRole('head|sub_head')) {
         $office = $user->office; // Assuming 'office' is a relationship in the User model
 
         if ($office) {
@@ -134,7 +134,7 @@ public function update(Request $request, $id)
     $user = auth()->user();
 
     // Check if the user has permission to edit this office
-    if ($user->hasRole('user|sub_user')) {
+    if ($user->hasRole('head|sub_head')) {
         if ($office->id !== $user->office_id) { // Assuming 'office_id' links the user to their assigned office
             return redirect()->back()->with('error', 'You are not authorized to edit this office.');
         }

@@ -54,8 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
 
-    // admin/users/sub_users
-    Route::middleware('role:admin|user|sub_user')->group(function () {
+    // admin/head/sub_head
+    Route::middleware('role:admin|head|sub_head')->group(function () {
 
         // Office management
         Route::get('/admin/offices', [OfficeController::class, 'index'])->name('admin.offices.index');
@@ -108,7 +108,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // admin/user
-    Route::middleware('role:admin|user')->group(function () {
+    Route::middleware('role:admin|head')->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.storeUser');
         Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');

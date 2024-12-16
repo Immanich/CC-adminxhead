@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
                 $unreadCount = 0;
 
                 // Handle logic based on roles
-                if ($user->hasRole('user')) {
+                if ($user->hasRole('head')) {
                     // Normal user: Fetch unread notifications specific to the user
                     $unreadCount = Notification::where('user_id', $user->id)
                         ->where('is_read', false)
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                         ->count();
                 }
 
-                elseif ($user->hasRole('sub_user')) {
+                elseif ($user->hasRole('sub_head')) {
                     // Sub-user: Fetch notifications specific to sub_user
                     $unreadCount = Notification::where('user_id', $user->id)
                         ->where('is_read', false)

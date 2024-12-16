@@ -121,7 +121,7 @@
 
                     <div class="text-gray-600 font-bold text-center text-lg p-2">Administration</div>
 
-                    @role('admin|user')
+                    @role('admin|head')
                     <a href="/admin/users" class="sidebar-link font-semibold {{ request()->is('admin/users') ? 'active' : '' }}">
                         <i class="fas fa-users mr-3"></i> USERS
                     </a>

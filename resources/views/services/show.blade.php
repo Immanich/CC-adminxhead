@@ -5,7 +5,7 @@
     <!-- User Section -->
     <div class="flex items-center justify-between mb-4">
         <!-- Back Button -->
-        @role('admin|user|sub_user')
+        @role('admin|head|sub_head')
         <a href="{{ route('offices.showServices', $service->office_id) }}" class="flex items-center rounded-full bg-gray-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
             <i class="bi bi-arrow-left"> Back</i>
         </a>
@@ -18,7 +18,7 @@
             </h1>
 
             <!-- Add Service Button (Visible only to Admin or user) -->
-            @role('admin|user|sub_user')
+            @role('admin|head|sub_head')
             <button class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-12 h-12 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                     onclick="document.getElementById('addServiceModal').style.display='flex'">
                 <i class="fa-solid fa-plus"></i>

@@ -16,6 +16,7 @@
         @endif
 
         <!-- Dropdown Menu -->
+        @role('admin')
         <div class="absolute top-4 right-4">
             <div class="relative">
                 <button onclick="toggleDropdown()" class="text-white bg-gray-400 px-2 rounded-full hover:bg-gray-600 focus:outline-none">
@@ -49,6 +50,7 @@
                 </div>
             </div>
         </div>
+        @endrole
     </div>
 </div>
 

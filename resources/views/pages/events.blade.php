@@ -8,7 +8,7 @@
         </h1>
 
         <!-- Add Button -->
-        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('user') || auth()->user()->hasRole('sub_user'))
+        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('head') || auth()->user()->hasRole('sub_head'))
         <button type="button"
                 id="openAddModal"
                 class="text-white bg-blue-700 hover:text-white border border-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-10 h-10 flex items-center justify-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
@@ -35,7 +35,7 @@
     @endif
 
     <!-- Pending Events Section -->
-    @if(auth()->user()->hasRole('user') || auth()->user()->hasRole('sub_user'))
+    @if(auth()->user()->hasRole('head') || auth()->user()->hasRole('sub_head'))
     <div class="mt-8">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold mb-2">Pending Events</h2>
