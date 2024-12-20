@@ -50,7 +50,7 @@
                 <td class="py-3 px-6 border-b">{{ $user->office ? $user->office->office_name : 'N/A' }}</td>
                 <td class="py-3 px-6 border-b">{{ $user->roles->pluck('name')->implode(', ') }}</td>
 
-                @if(auth()->user()->hasRole('admin|head') && $user->roles->pluck('name')->implode(', ') !== 'admin')
+                {{-- @if(auth()->user()->hasRole('admin|head') && $user->roles->pluck('name')->implode(', ') !== 'admin') --}}
                     <td class="py-3 px-6 border-b">
                         <div class="flex space-x-2"> <!-- Flex container to keep buttons side-by-side -->
                             <!-- Edit User Button -->
@@ -61,6 +61,8 @@
                             </button>
 
                             <!-- Delete User Button -->
+                  @if(auth()->user()->hasRole('admin|head') && $user->roles->pluck('name')->implode(', ') !== 'admin')
+
                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -90,11 +92,12 @@
                             </form>
                         @endif
                         </div>
+                        @endif
 
 
 
                     </td>
-                @endif
+                {{-- @endif --}}
             </tr>
         @endforeach
     </tbody>
@@ -148,18 +151,17 @@
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium">Role</label>
                 <select id="role" name="role" class="mt-1 p-2 block w-full border rounded" required>
-                    @if(auth()->user()->hasRole('head'))
+                    @if(auth()->user()->hasRole('admin'))
+                        <option value="admin">Admin</option>
+                        <option value="head">Head</option>
                         <option value="sub_head">Sub Head</option>
-                        <option value="head"> Head</option>
-                    @else
-                        @foreach($roles as $role)
-                            @if($role->name !== 'admin') {{-- Exclude admin role --}}
-                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                            @endif
-                        @endforeach
+                    @elseif(auth()->user()->hasRole('head'))
+                        <option value="head">Head</option>
+                        <option value="sub_head">Sub Head</option>
                     @endif
                 </select>
             </div>
+
 
             <div class="mb-4">
                 <label for="office_id" class="block text-sm font-medium">Office</label>

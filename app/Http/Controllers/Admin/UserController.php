@@ -87,28 +87,40 @@ public function store(Request $request)
     // Add the update method to handle PUT/PATCH requests
     public function update(Request $request, $id)
 {
+    $user = User::findOrFail($id); // Retrieve the user being updated
+
+    // Validate data with conditional logic for office_id
     $validatedData = $request->validate([
         'username' => 'required|string|max:255|unique:users,username,' . $id,
         'password' => 'nullable|string|min:8|confirmed', // Password is optional but validated if provided
         'role' => 'required|exists:roles,name',
-        'office_id' => 'nullable|exists:offices,id',
+        'office_id' => [
+            'nullable',
+            function ($attribute, $value, $fail) use ($request) {
+                if ($request->role !== 'admin' && is_null($value)) {
+                    $fail('The office field is required unless the role is admin.');
+                }
+            },
+            'exists:offices,id',
+        ],
     ]);
 
-    $user = User::findOrFail($id);
+    // Update user details
     $user->username = $validatedData['username'];
 
-    // Require a password if it's left blank
+    // Update password if provided
     if ($request->filled('password')) {
         $user->password = Hash::make($validatedData['password']);
     }
 
     // Sync role and office
     $user->syncRoles([$validatedData['role']]);
-    $user->office_id = $validatedData['office_id'];
+    $user->office_id = $validatedData['office_id'] ?? null; // Set to null if office_id is not provided
     $user->save();
 
     return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
 }
+
 
     public function edit($id)
     {
